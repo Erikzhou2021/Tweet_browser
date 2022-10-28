@@ -44,15 +44,6 @@ def parse_data(filename):
         return
     return df
 
-class Column(Enum):
-    userName: 4
-    tweet: 15
-    reTweet: 16
-    timeStamp: 17
-    country: 71
-    state: 72
-    city: 73
-
 class Operation:
     parents = []
     outputs = []
@@ -144,7 +135,7 @@ class Session:
         for i in range(inputSet.size):
             if inputSet.indices[i]:
                 population.append(i)
-        temp = random.sample(population, k=size)
+        temp = np.random.choice(population, size, replace=False)
         for j in temp:
             ans[j] = True
         self.makeOperation(ans, size, "simpleRandomSample", size)
@@ -159,24 +150,29 @@ class Session:
             print("Invalid sample size")
             return
         population = []
+        weights = []
+        sum = 0
         for i in range(inputSet.size):
             if inputSet.indices[i]:
                 population.append(i)
-        weights = []
-        for j in population:
-            value = retrieveRow(j)[headerDict[colName]]
-            if value == math.nan: # still need to check if the colName corresponds with a number that can be weighted
-                value = 0
-            value += 1
-            weights.append(retrieveRow(j)[headerDict[colName]])
-            #print(j, value)
-        temp = random.sample(population, k=size, counts=weights)
-        print(temp)
+                value = retrieveRow(i)[headerDict[colName]]
+                if value != value : # still need to check if the colName corresponds with a number that can be weighted
+                    value = 0
+                value += 1
+                sum += value
+                weights.append(int(value))
+        for j in range(len(weights)):
+            weights[j] = float(weights[j] / sum)  
+        temp = np.random.choice(population, size, replace=False, p=weights)
+        #temp.sort()
+        #print(temp)
         for k in temp:
             ans[k] = True
+            #print(retrieveRow(k)[headerDict[colName]], end=" ")
+        #print()
         self.makeOperation(ans, size, "weightedSample", colName + str(size))
 
-    def searchKeyword(self, keywords: list, inputSet: Subset = None):
+    def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
         if (inputSet == None):
             inputSet = self.currentSet
         ans = bitarray(self.length)
@@ -184,29 +180,18 @@ class Session:
         count = 0
         for i in range(self.length):
             if(inputSet.indices[i]):
-                include = True
-                for j in keywords:
-                    if (retrieveRow(i)[15].find(j) == -1):
-                        include = False
-                        break
-                if include:
-                    ans[i] = True
-                    count += 1
-        self.makeOperation(ans, count, "searchKeyword", keywords)
-
-    def searchKeywordOr(self, keywords: list, inputSet: Subset = None):
-        if (inputSet == None):
-            inputSet = self.currentSet
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if(inputSet.indices[i]):
-                include = False
-                for j in keywords:
-                    if (retrieveRow(i)[15].find(j) != -1):
-                        include = True
-                        break
+                if (orMode):
+                    include = False
+                    for j in keywords:
+                        if (retrieveRow(i)[15].find(j) != -1):
+                            include = True
+                            break
+                else:
+                    include = True
+                    for j in keywords:
+                        if (retrieveRow(i)[15].find(j) == -1):
+                            include = False
+                            break
                 if include:
                     ans[i] = True
                     count += 1
@@ -245,12 +230,12 @@ class Session:
         count = 0
         for i in range(self.length):
             if(inputSet.indices[i]):
-                if(re.findall(expression, retrieveRow(i)[15])):
+                if(re.findall(expression, retrieveRow(i)[15]), re.M):
                     ans[i] = True
                     count += 1
         self.makeOperation(ans, count, "advancedSearch", expression)
     
-    def filterBy(self, colName: int, value, inputSet: Subset = None):
+    def filterBy(self, colName: str, value, inputSet: Subset = None):
         if (inputSet == None):
             inputSet = self.currentSet
         ans = bitarray(self.length)
@@ -358,6 +343,7 @@ def test2():
     s.back()
     s.back()
     s.filterBy("State", "California")
+    print(s.currentSet.size)
     s.back()
     s.advancedSearch("'trump' and not 'Trump'")
     print(s.currentSet.size)
@@ -395,6 +381,9 @@ def test4():
     s.regexSearch("trump|Trump")
     print(s.currentSet.size)
     s.back()
+    s.searchKeyword(["trump", "Trump"], True)
+    print(s.currentSet.size)
+    s.back()
     s.advancedSearch("'trump' or 'Trump'")
     print(s.currentSet.size)
     s.regexSearch("^[1-9]")
@@ -423,7 +412,7 @@ def test5():
     print(s.currentSet.size)
     s.back()
     s.weightedSample(10, "Retweets")
-    s.printCurrSubset()
+    #s.printCurrSubset()
     print(s.currentSet.size)
 
 if __name__=='__main__':
