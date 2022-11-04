@@ -415,15 +415,16 @@ def test5():
     #s.printCurrSubset()
     print(s.currentSet.size)
 
-if __name__=='__main__':
+def test6():
+    s = Session(dataSet)
+    s.simpleRandomSample(30)
+    s.printCurrSubset()
+    print("\n\n ---------------------------------------------------------- \n")
+    s.back()
+    s.simpleRandomSample(30)
+    s.printCurrSubset()
 
-    """
-    Want to keep:
-        username
-        date of tweet
-        location
-        retweet/original
-    """
+if __name__=='__main__':
     test = parse_data("allCensus_sample.csv")
     #print(type(test))
     dataSet = test.values
@@ -432,10 +433,6 @@ if __name__=='__main__':
         colName = headers[i]
         headerDict[colName] = i
     test5()
-
-    
-    #print(retrieveRow(13801)[15])
-    #print(re.findall("\(.*\)", retrieveRow(13801)[15]))
 
     
 
