@@ -25,7 +25,6 @@ import warnings
 #from formatter import NullFormatter
 warnings.filterwarnings("ignore")
 
-
 # this function reads in the data (copied from online)
 def parse_data(filename):
     path = './' + filename
@@ -92,6 +91,13 @@ class Session:
         for i in range(self.length):
             if (self.currentSet.indices[i]):
                 print(retrieveRow(i)[column])
+
+    def getCurrentSubset(self):
+        s = []
+        for i in range(self.length):
+            if (self.currentSet.indices[i]):
+                s.append(retrieveRow(i))
+        return s
 
     def printCurrSubset(self, verbose: bool = False):
         for i in range(self.length):
@@ -303,12 +309,25 @@ class Session:
         for i in self.currentSet.children:
             print("Type = ", i.operationType, " parameters = ", i.parameters)
 
-dataSet = None
-headers = None
-headerDict = dict()
+# dataSet = None
+# headers = None
+# headerDict = dict()
 def retrieveRow(rowNum: int):
     return dataSet[rowNum]
 
+def createSession(fileName: str) -> Session:
+    data = parse_data("allCensus_sample.csv")
+    global dataSet 
+    global headers
+    global headerDict
+    dataSet = data.values
+    headers = data.columns
+    headerDict = dict()
+    for i in range(len(headers)):
+        colName = headers[i]
+        headerDict[colName] = i
+    s = Session(dataSet)
+    return s
 
 def test1():
     s = Session(dataSet)
@@ -420,19 +439,37 @@ def test6():
     s.simpleRandomSample(30)
     s.printCurrSubset()
     print("\n\n ---------------------------------------------------------- \n")
+    temp = s.getCurrentSubset()
+    print(temp)
+
+def test7(): #same as test 1
+    s = createSession("allCensus_sample.csv")
+    print(type(dataSet))
+    s.advancedSearch("'covid' and ('hospital' or 'vaccine')")
+    #s.printCurrSubset()
+    print(s.currentSet.size)
     s.back()
-    s.simpleRandomSample(30)
-    s.printCurrSubset()
+    s.filterBy("State", "California")
+    print(s.currentSet.size)
+    s.advancedSearch("('hospital' or 'vaccine') and not 'Trump'")
+    print(s.currentSet.size)
+    s.back()
+
+    s.advancedSearch("'trump' and not 'Trump'")
+    print(s.currentSet.size)
+    #s.printCurrSubset()
+    s.back()
+    s.regexSearch("trump")
+    print(s.currentSet.size)
 
 if __name__=='__main__':
-    test = parse_data("allCensus_sample.csv")
-    #print(type(test))
-    dataSet = test.values
-    headers = test.columns
-    for i in range(len(headers)):
-        colName = headers[i]
-        headerDict[colName] = i
-    test5()
+    # test = parse_data("allCensus_sample.csv")
+    # dataSet = test.values
+    # headers = test.columns
+    # for i in range(len(headers)):
+    #     colName = headers[i]
+    #     headerDict[colName] = i
+    test7()
 
-    
+
 

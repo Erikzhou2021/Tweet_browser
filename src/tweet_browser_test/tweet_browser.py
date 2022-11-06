@@ -93,6 +93,13 @@ class Session:
             if (self.currentSet.indices[i]):
                 print(retrieveRow(i)[column])
 
+    def getCurrentSubset(self):
+        s = []
+        for i in range(self.length):
+            if (self.currentSet.indices[i]):
+                s.append(retrieveRow(i))
+        return s
+
     def printCurrSubset(self, verbose: bool = False):
         for i in range(self.length):
             if (self.currentSet.indices[i]):
@@ -303,130 +310,25 @@ class Session:
         for i in self.currentSet.children:
             print("Type = ", i.operationType, " parameters = ", i.parameters)
 
-dataSet = None
-headers = None
-headerDict = dict()
+# dataSet = None
+# headers = None
+# headerDict = dict()
 def retrieveRow(rowNum: int):
     return dataSet[rowNum]
 
-
-def test1():
-    s = Session(dataSet)
-    s.advancedSearch("'covid' and ('hospital' or 'vaccine')")
-    #s.printCurrSubset()
-    print(s.currentSet.size)
-    s.back()
-    s.filterBy("State", "California")
-    print(s.currentSet.size)
-    s.advancedSearch("('hospital' or 'vaccine') and not 'Trump'")
-    print(s.currentSet.size)
-    s.back()
-
-    s.advancedSearch("'trump' and not 'Trump'")
-    print(s.currentSet.size)
-    #s.printCurrSubset()
-    s.back()
-    s.regexSearch("trump")
-    print(s.currentSet.size)
-
-def test2():
-    s = Session(dataSet)
-    s.randomSubset(0.01)
-    print(s.currentSet.size)
-    s.back()
-    print(s.currentSet.size)
-    s.back()
-    s.next()
-    print(s.currentSet.size)
-    s.searchKeyword(["the"])
-    print(s.currentSet.size)
-    s.back()
-    s.back()
-    s.filterBy("State", "California")
-    print(s.currentSet.size)
-    s.back()
-    s.advancedSearch("'trump' and not 'Trump'")
-    print(s.currentSet.size)
-    s.back()
-    s.back()
-    s.printChildren()
-    s.next(0)
-    print(s.currentSet.size)
-    s.next(0)
-    print(s.currentSet.size)
-    s.next()
-
-def test3():
-    s = Session(dataSet)
-    s.randomSubset(0.001)
-    print(s.currentSet.size)
-    tempSet = s.currentSet
-    s.back()
-    print(tempSet.size)
-    print(s.currentSet.size)
-    s.advancedSearch("'the'", tempSet)
-    print(s.currentSet.size)
-    #s.printCurrSubset()
-    s.searchKeyword(["the"], tempSet)
-    print(s.currentSet.size)
-
-def test4():
-    s = Session(dataSet)
-    s.searchKeyword(["the", "Census"])
-    print(s.currentSet.size)
-    s.back()
-    s.advancedSearch("'the' and 'Census'")
-    print(s.currentSet.size)
-    s.back()
-    s.regexSearch("trump|Trump")
-    print(s.currentSet.size)
-    s.back()
-    s.searchKeyword(["trump", "Trump"], True)
-    print(s.currentSet.size)
-    s.back()
-    s.advancedSearch("'trump' or 'Trump'")
-    print(s.currentSet.size)
-    s.regexSearch("^[1-9]")
-    #s.printCurrSubset()
-    print(s.currentSet.size)
-    s.back()
-    s.back()
-    s.advancedSearch("'(' and ')' and not ('{' or '}')")
-    #s.printCurrSubset()
-    print(s.currentSet.size)
-    s.back()
-    s.regexSearch("\(.*\)")
-    print(s.currentSet.size)
-    temp = s.currentSet
-    s.back()
-    s.advancedSearch(" '(' and ')' ")
-    print(s.currentSet.size)
-    s.setDiff(temp)
-    #s.printCurrSubset()
-    print(s.currentSet.size)
-    
-def test5():
-    s = Session(dataSet)
-    s.simpleRandomSample(17000)
-    #s.printCurrSubset()
-    print(s.currentSet.size)
-    s.back()
-    s.weightedSample(10, "Retweets")
-    #s.printCurrSubset()
-    print(s.currentSet.size)
-
-if __name__=='__main__':
-    test = parse_data("allCensus_sample.csv")
-    #print(type(test))
-    dataSet = test.values
-    headers = test.columns
+def createSession(fileName: str) -> Session:
+    data = parse_data("allCensus_sample.csv")
+    global dataSet 
+    global headers
+    global headerDict
+    dataSet = data.values
+    headers = data.columns
+    headerDict = dict()
     for i in range(len(headers)):
         colName = headers[i]
         headerDict[colName] = i
-    test5()
+    s = Session(dataSet)
+    return s
 
-    
-
-### https://test.pypi.org/project/tweet-browser-test/0.0.1/
-### token:
-### pypi-AgENdGVzdC5weXBpLm9yZwIkOTRkYWFlYTYtYTc2Zi00MzkzLThkYzQtOTE2YzcyM2JkZTRkAAIqWzMsImJlZGM4MmNmLThmMmEtNGViOS1hM2VkLWU1OTlmYmE5NTc2ZCJdAAAGIBINYQWOPBDjWu6BcTVhPZwMJR3jB5Fur1C7gv5bSDLv
+if __name__=='__main__':
+    print("You weren't supposed to run this")
