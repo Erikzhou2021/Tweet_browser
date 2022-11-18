@@ -236,10 +236,10 @@ class Session:
         count = 0
         for i in range(self.length):
             if(inputSet.indices[i]):
-                if(re.findall(expression, retrieveRow(i)[15]), re.M):
+                if(re.findall(expression, retrieveRow(i)[15], re.M)):
                     ans[i] = True
                     count += 1
-        self.makeOperation(ans, count, "advancedSearch", expression)
+        self.makeOperation(ans, count, "regexSearch", expression)
     
     def filterBy(self, colName: str, value, inputSet: Subset = None):
         if (inputSet == None):
@@ -458,6 +458,8 @@ def test7(): #same as test 1
     s.advancedSearch("'trump' and not 'Trump'")
     print(s.currentSet.size)
     #s.printCurrSubset()
+    s.back()
+    s.back()
     s.back()
     s.regexSearch("trump")
     print(s.currentSet.size)
