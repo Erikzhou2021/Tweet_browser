@@ -12,6 +12,11 @@ import random
 import tracemalloc
 import re
 from enum import Enum
+import string
+from nltk.stem import PorterStemmer
+#nltk.download('stopwords')
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer
 
 # clear 'temp' folder every week
 import os, sys, time
@@ -43,6 +48,30 @@ def parse_data(filename):
         print(e)
         return
     return df
+
+def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, removeStopwords=True, 
+    removeNumbers=False, removePunctuation=True):
+    """
+    Cleans tweets by removing words, stemming, etc.
+    """
+    ps = PorterStemmer()
+    tweet = tweet.lower()
+    tweet = re.sub(r"\\n", " ", tweet)
+    tweet = re.sub(r"&amp", " ", tweet)
+    if removeURL==True:
+        tweet = re.sub(r"http\S+", " ", tweet)
+    if removeNumbers==True:
+        tweet=  ''.join(i for i in tweet if not i.isdigit())
+    if removePunctuation==True:
+        for punct in string.punctuation:
+            tweet = tweet.replace(punct, ' ')
+    if removeStopwords==True:
+        tweet = ' '.join([word for word in tweet.split() if word not in stopwords.words('english')])
+    if len(removeWords)>0:
+        tweet = ' '.join([word for word in tweet.split() if word not in removeWords])
+    if stem==True:
+        tweet = ' '.join([ps.stem(word) for word in tweet.split()])
+    return tweet
 
 class Operation:
     parents = []
@@ -309,6 +338,28 @@ class Session:
             return
         for i in self.currentSet.children:
             print("Type = ", i.operationType, " parameters = ", i.parameters)
+    
+
+
+    ##### Clustering ######
+    
+    def make_full_docWordMatrix(self, inputSet: Subset = None):
+        cleanedTweets = []
+        for i in range(self.length):
+            if self.currentSet.indices[i]:
+                cleanedTweets.append([preProcessingFcn(tweet) for tweet in retrieveRow(i)[15]])
+
+        # create document-word matrix
+        vectorizer = CountVectorizer(strip_accents='unicode', min_df=5, binary=False)
+        docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
+        docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
+        # save as sparse document-word matrix as json file
+        rows_orig, cols_orig = docWordMatrix_orig.nonzero()
+        data_orig = docWordMatrix_orig.data
+        docWordMatrix_orig_json = json.dumps({'rows_orig':rows_orig.tolist(), 'cols_orig':cols_orig.tolist(),
+            'data_orig':data_orig.tolist(), 'dims_orig':[docWordMatrix_orig.shape[0], docWordMatrix_orig.shape[1]],
+            'feature_names':vectorizer.get_feature_names(), 'indices':headers})
+        return docWordMatrix_orig_json
 
 # dataSet = None
 # headers = None
