@@ -13,14 +13,23 @@ import tracemalloc
 import re
 from enum import Enum
 import string
+import scipy
+import sklearn
+import nltk
+import plotly.express as px
 from nltk.stem import PorterStemmer
 #nltk.download('stopwords')
-from nltk.corpus import stopwords
+#from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
-
-# clear 'temp' folder every week
-import os, sys, time
-from subprocess import call
+from sklearn.decomposition import TruncatedSVD
+from scipy.sparse.csc import csc_matrix
+import umap
+from sklearn.mixture import GaussianMixture
+from sklearn.cluster import KMeans
+import hdbscan
+from sklearn.neighbors import kneighbors_graph
+import leidenalg
+import igraph as ig
 
 # Ignore warnings
 import warnings
@@ -65,8 +74,8 @@ def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, remov
     if removePunctuation==True:
         for punct in string.punctuation:
             tweet = tweet.replace(punct, ' ')
-    if removeStopwords==True:
-        tweet = ' '.join([word for word in tweet.split() if word not in stopwords.words('english')])
+    #if removeStopwords==True:
+        #tweet = ' '.join([word for word in tweet.split() if word not in stopwords.words('english')])
     if len(removeWords)>0:
         tweet = ' '.join([word for word in tweet.split() if word not in removeWords])
     if stem==True:
@@ -339,31 +348,136 @@ class Session:
         for i in self.currentSet.children:
             print("Type = ", i.operationType, " parameters = ", i.parameters)
     
-
-
     ##### Clustering ######
     
-    def make_full_docWordMatrix(self, inputSet: Subset = None):
+    # functions for dimension reduction: PCA and UMAP
+    def dimred_PCA(self, docWordMatrix, ndims=25):
+        tsvd = TruncatedSVD(n_components=ndims)
+        tsvd.fit(docWordMatrix)
+        docWordMatrix_pca = tsvd.transform(docWordMatrix)
+        return docWordMatrix_pca
+
+    def dimred_UMAP(self, matrix, ndims=2, n_neighbors=15):
+        umap_2d = umap.UMAP(n_components=ndims, random_state=42, n_neighbors=n_neighbors, min_dist=0.0)
+        proj_2d = umap_2d.fit_transform(matrix)
+        return proj_2d
+
+    # functions for clustering
+    # HDBSCAN
+    def cluster_hdbscan(self, points, min_obs):
+        hdbscan_fcn = hdbscan.HDBSCAN(min_samples=10, min_cluster_size=min_obs)
+        clusters = hdbscan_fcn.fit_predict(points).astype(str)
+        return clusters
+
+    # Gaussian Mixure Models
+    def cluster_gmm(self, points, num_clusters):
+        gmm_fcn = GaussianMixture(n_components=num_clusters, random_state=42).fit(points)
+        clusters = gmm_fcn.predict(points).astype(str)
+        return clusters
+
+    # K-Means
+    def cluster_kmeans(self, points, num_clusters):
+        kmean_fcn = KMeans(init='random', n_clusters=num_clusters, random_state=42)
+        clusters = kmean_fcn.fit(points).labels_.astype(str)
+        return clusters
+
+
+    def cluster_polis_leiden(self, points, num_neighbors):
+        A = kneighbors_graph(points, num_neighbors, mode="connectivity", metric="euclidean", 
+        p=2, metric_params=None, include_self=True, n_jobs=None)
+
+        sources, targets = A.nonzero()
+        weights = A[sources, targets]
+        if isinstance(weights, np.matrix): # ravel data
+                weights = weights.A1
+
+        g = ig.Graph(directed=False)
+        g.add_vertices(A.shape[0])  # each observation is a node
+        edges = list(zip(sources, targets))
+        g.add_edges(edges)
+        g.es['weight'] = weights
+        weights = np.array(g.es["weight"]).astype(np.float64)
+
+        part = leidenalg.find_partition(
+            g, 
+            leidenalg.ModularityVertexPartition
+        );
+
+        leidenClusters = np.array(part.membership).astype(str)
+        leidenClustersStr = [str(i) for i in leidenClusters]
+    
+        return leidenClusters
+
+    def make_full_docWordMatrix(self, min_df = 5, inputSet: Subset = None):
+        if (inputSet == None):
+            inputSet = self.currentSet
+        if inputSet.size == 0:
+            return
         cleanedTweets = []
         for i in range(self.length):
-            if self.currentSet.indices[i]:
-                cleanedTweets.append([preProcessingFcn(tweet) for tweet in retrieveRow(i)[15]])
+            if inputSet.indices[i]:
+                cleanedTweets.append(preProcessingFcn(retrieveRow(i)[15]))
 
         # create document-word matrix
-        vectorizer = CountVectorizer(strip_accents='unicode', min_df=5, binary=False)
+        vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
-        # save as sparse document-word matrix as json file
-        rows_orig, cols_orig = docWordMatrix_orig.nonzero()
-        data_orig = docWordMatrix_orig.data
-        docWordMatrix_orig_json = json.dumps({'rows_orig':rows_orig.tolist(), 'cols_orig':cols_orig.tolist(),
-            'data_orig':data_orig.tolist(), 'dims_orig':[docWordMatrix_orig.shape[0], docWordMatrix_orig.shape[1]],
-            'feature_names':vectorizer.get_feature_names(), 'indices':headers})
-        return docWordMatrix_orig_json
+        return docWordMatrix_orig, vectorizer.get_feature_names()
+
+
+    def dimRed_and_clustering(self, docWordMatrix_orig, 
+    dimRed1_method, dimRed1_dims, dimRed2_method, 
+    clustering_when, clustering_method1, num_clusters, min_obs, num_neighbors, inputSet = None):
+        if (inputSet == None):
+            inputSet = self.currentSet
+        # read in document-word matrix
+        data = docWordMatrix_orig.data
+        rows, cols = docWordMatrix_orig.nonzero()
+        dims = docWordMatrix_orig.shape   
+        docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
+
+        # do stage 1 dimension reduction
+        if dimRed1_method == 'pca':
+            dimRed1 = self.dimred_PCA(docWordMatrix, docWordMatrix_orig.shape[1])
+        elif dimRed1_method == 'umap':
+            dimRed1 = self.dimred_UMAP(docWordMatrix, docWordMatrix_orig.shape[1])
+        # do stage 2 dimension reduction (if any)
+        if dimRed1_dims > 2:
+            if dimRed2_method == 'pca':
+                dimRed2 = self.dimred_PCA(dimRed1, ndims=2)
+            elif dimRed2_method == 'umap':
+                dimRed2 = self.dimred_UMAP(dimRed1, ndims=2)
+        else:
+            dimRed2 = dimRed1
+        # Clustering
+        # get matrix at proper stage
+        if clustering_when == 'before_stage1':
+            clustering_data = docWordMatrix
+        elif clustering_when == 'btwn':
+            clustering_data = dimRed1
+        elif clustering_when == 'after_stage2':
+            clustering_data = dimRed2
+        # perform clustering
+        if clustering_method1 == 'gmm':
+            if clustering_when == 'before_stage1':
+                clustering_data = clustering_data.toarray()
+            clusters = self.cluster_gmm(clustering_data, num_clusters=num_clusters)
+        elif clustering_method1 == 'k-means':
+            clusters = self.cluster_kmeans(clustering_data, num_clusters=num_clusters)
+        elif clustering_method1 == 'hdbscan':
+            clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
+        elif clustering_method1 == 'leiden':
+            clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
+
+        dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters)
+        #dimRed_cluster_plot.show()
+        # dimRed_cluster_plot.update_layout(clickmode='event+select')
+        return dimRed_cluster_plot
 
 # dataSet = None
 # headers = None
 # headerDict = dict()
+
 def retrieveRow(rowNum: int):
     return dataSet[rowNum]
 

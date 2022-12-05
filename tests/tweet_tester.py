@@ -26,8 +26,10 @@ from scipy.sparse.csc import csc_matrix
 import umap
 from sklearn.mixture import GaussianMixture
 from sklearn.cluster import KMeans
-#import hdbscan
+import hdbscan
 from sklearn.neighbors import kneighbors_graph
+import leidenalg
+import igraph as ig
 
 # Ignore warnings
 import warnings
@@ -362,10 +364,10 @@ class Session:
 
     # functions for clustering
     # HDBSCAN
-    # def cluster_hdbscan(points, min_obs):
-    #     hdbscan_fcn = hdbscan.HDBSCAN(min_samples=10, min_cluster_size=min_obs)
-    #     clusters = hdbscan_fcn.fit_predict(points).astype(str)
-    #     return clusters
+    def cluster_hdbscan(self, points, min_obs):
+        hdbscan_fcn = hdbscan.HDBSCAN(min_samples=10, min_cluster_size=min_obs)
+        clusters = hdbscan_fcn.fit_predict(points).astype(str)
+        return clusters
 
     # Gaussian Mixure Models
     def cluster_gmm(self, points, num_clusters):
@@ -379,6 +381,33 @@ class Session:
         clusters = kmean_fcn.fit(points).labels_.astype(str)
         return clusters
 
+
+    def cluster_polis_leiden(self, points, num_neighbors):
+        A = kneighbors_graph(points, num_neighbors, mode="connectivity", metric="euclidean", 
+        p=2, metric_params=None, include_self=True, n_jobs=None)
+
+        sources, targets = A.nonzero()
+        weights = A[sources, targets]
+        if isinstance(weights, np.matrix): # ravel data
+                weights = weights.A1
+
+        g = ig.Graph(directed=False)
+        g.add_vertices(A.shape[0])  # each observation is a node
+        edges = list(zip(sources, targets))
+        g.add_edges(edges)
+        g.es['weight'] = weights
+        weights = np.array(g.es["weight"]).astype(np.float64)
+
+        part = leidenalg.find_partition(
+            g, 
+            leidenalg.ModularityVertexPartition
+        );
+
+        leidenClusters = np.array(part.membership).astype(str)
+        leidenClustersStr = [str(i) for i in leidenClusters]
+    
+        return leidenClusters
+
     def make_full_docWordMatrix(self, min_df = 5, inputSet: Subset = None):
         if (inputSet == None):
             inputSet = self.currentSet
@@ -388,20 +417,12 @@ class Session:
         for i in range(self.length):
             if inputSet.indices[i]:
                 cleanedTweets.append(preProcessingFcn(retrieveRow(i)[15]))
-                print(preProcessingFcn(retrieveRow(i)[15]))
 
         # create document-word matrix
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
         return docWordMatrix_orig, vectorizer.get_feature_names()
-        # save as sparse document-word matrix as json file
-        rows_orig, cols_orig = docWordMatrix_orig.nonzero()
-        data_orig = docWordMatrix_orig.data
-        docWordMatrix_orig_json = json.dumps({'rows_orig':rows_orig.tolist(), 'cols_orig':cols_orig.tolist(),
-            'data_orig':data_orig.tolist(), 'dims_orig':[docWordMatrix_orig.shape[0], docWordMatrix_orig.shape[1]],
-            'feature_names':vectorizer.get_feature_names()})
-        return docWordMatrix_orig_json
 
 
     def dimRed_and_clustering(self, docWordMatrix_orig, 
@@ -438,20 +459,20 @@ class Session:
             clustering_data = dimRed2
         # perform clustering
         if clustering_method1 == 'gmm':
+            if clustering_when == 'before_stage1':
+                clustering_data = clustering_data.toarray()
             clusters = self.cluster_gmm(clustering_data, num_clusters=num_clusters)
         elif clustering_method1 == 'k-means':
             clusters = self.cluster_kmeans(clustering_data, num_clusters=num_clusters)
-        # elif clustering_method1 == 'hdbscan':
-        #     clusters = cluster_hdbscan(clustering_data, min_obs=min_obs)
-        # elif clustering_method1 == 'leiden':
-        #     clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
-
-
+        elif clustering_method1 == 'hdbscan':
+            clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
+        elif clustering_method1 == 'leiden':
+            clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
 
         dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters)
-        dimRed_cluster_plot.show()
+        #dimRed_cluster_plot.show()
         # dimRed_cluster_plot.update_layout(clickmode='event+select')
-        return clusters
+        return dimRed_cluster_plot
 
 # dataSet = None
 # headers = None
@@ -620,9 +641,9 @@ def test8():
     print(s.currentSet.size)
     #s.printCurrSubset()
     matrix, words = s.make_full_docWordMatrix(min_df= 1)
-    print(words)
-    print(matrix)
-    test = s.dimRed_and_clustering(matrix, 'pca', 2, 'umap', 'btwn', 'gmm', 25, 2, 25)
+    #print(words)
+    #print(matrix)
+    test = s.dimRed_and_clustering(matrix, 'pca', 2, 'umap', 'after_stage2', 'gmm', 25, 2, 25)
     print(test)
     #print(matrix)
 
