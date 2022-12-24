@@ -174,10 +174,10 @@ class Session:
         ans = bitarray(self.length)
         ans.setall(0)
         if(inputSet.size < size):
-            print("Invalid sample size")
-            return
+            # print("Invalid sample size")
+            raise ValueError
         population = []
-        for i in range(inputSet.size):
+        for i in range(self.length):
             if inputSet.indices[i]:
                 population.append(i)
         temp = np.random.choice(population, size, replace=False)
@@ -192,12 +192,12 @@ class Session:
         ans = bitarray(self.length)
         ans.setall(0)
         if(inputSet.size < size):
-            print("Invalid sample size")
-            return
+            # print("Invalid sample size")
+            raise ValueError
         population = []
         weights = []
         sum = 0
-        for i in range(inputSet.size):
+        for i in range(self.length):
             if inputSet.indices[i]:
                 population.append(i)
                 value = retrieveRow(i)[headerDict[colName]]
@@ -330,15 +330,15 @@ class Session:
 
     def back(self, index: int = 0):
         if(self.currentSet.size == self.length) or index >= len(self.currentSet.parent.parents):
-        #if(self.currentSet == self.base):
-            print("Can't go back")
-            return
+        # if(self.currentSet == self.base):
+            # print("Can't go back")
+            raise IndexError
         self.currentSet = self.currentSet.parent.parents[index]
     
     def next(self, index = -1):
         if len(self.currentSet.children) == 0 or index >= len(self.currentSet.children):
-            print("Can't go next")
-            return
+            # print("Can't go next")
+            raise IndexError
         self.currentSet = self.currentSet.children[index].outputs[0]
 
     def printChildren(self):
@@ -481,12 +481,16 @@ class Session:
 def retrieveRow(rowNum: int):
     return dataSet[rowNum]
 
+# def retrieveRow(rowNum: int):
+#     return dataSet.iloc[rowNum].values
+
 def createSession(fileName: str) -> Session:
     data = parse_data("allCensus_sample.csv")
     global dataSet 
     global headers
     global headerDict
     dataSet = data.values
+    #dataSet = data
     headers = data.columns
     headerDict = dict()
     for i in range(len(headers)):

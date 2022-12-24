@@ -174,10 +174,10 @@ class Session:
         ans = bitarray(self.length)
         ans.setall(0)
         if(inputSet.size < size):
-            print("Invalid sample size")
-            return
+            # print("Invalid sample size")
+            raise ValueError
         population = []
-        for i in range(inputSet.size):
+        for i in range(self.length):
             if inputSet.indices[i]:
                 population.append(i)
         temp = np.random.choice(population, size, replace=False)
@@ -192,12 +192,12 @@ class Session:
         ans = bitarray(self.length)
         ans.setall(0)
         if(inputSet.size < size):
-            print("Invalid sample size")
-            return
+            # print("Invalid sample size")
+            raise ValueError
         population = []
         weights = []
         sum = 0
-        for i in range(inputSet.size):
+        for i in range(self.length):
             if inputSet.indices[i]:
                 population.append(i)
                 value = retrieveRow(i)[headerDict[colName]]
@@ -330,15 +330,15 @@ class Session:
 
     def back(self, index: int = 0):
         if(self.currentSet.size == self.length) or index >= len(self.currentSet.parent.parents):
-        #if(self.currentSet == self.base):
-            print("Can't go back")
-            return
+        # if(self.currentSet == self.base):
+            # print("Can't go back")
+            raise IndexError
         self.currentSet = self.currentSet.parent.parents[index]
     
     def next(self, index = -1):
         if len(self.currentSet.children) == 0 or index >= len(self.currentSet.children):
-            print("Can't go next")
-            return
+            # print("Can't go next")
+            raise IndexError
         self.currentSet = self.currentSet.children[index].outputs[0]
 
     def printChildren(self):
@@ -647,6 +647,13 @@ def test8():
     print(test)
     #print(matrix)
 
+def test9():
+    s = createSession("allCensus_sample.csv")
+    s.simpleRandomSample(10)
+    print(s.currentSet.size)
+    s.simpleRandomSample(4)
+    print(s.currentSet.size)
+
 if __name__=='__main__':
     # test = parse_data("allCensus_sample.csv")
     # dataSet = test.values
@@ -654,4 +661,4 @@ if __name__=='__main__':
     # for i in range(len(headers)):
     #     colName = headers[i]
     #     headerDict[colName] = i
-    test8()
+    test9()
