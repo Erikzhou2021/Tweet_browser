@@ -23,7 +23,7 @@ from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import TruncatedSVD
 from scipy.sparse.csc import csc_matrix
-import umap
+import umap.umap_ as umap
 from sklearn.mixture import GaussianMixture
 from sklearn.cluster import KMeans
 import hdbscan
@@ -359,7 +359,7 @@ class Session:
 
     def dimred_UMAP(self, matrix, ndims=2, n_neighbors=15):
         umap_2d = umap.UMAP(n_components=ndims, random_state=42, n_neighbors=n_neighbors, min_dist=0.0)
-        proj_2d = umap_2d.fit_transform(matrix)
+        proj_2d = umap_2d.fit_transform(matrix.toarray())
         return proj_2d
 
     # functions for clustering
@@ -426,8 +426,8 @@ class Session:
 
 
     def dimRed_and_clustering(self, docWordMatrix_orig, 
-    dimRed1_method, dimRed1_dims, dimRed2_method, 
-    clustering_when, clustering_method1, num_clusters, min_obs, num_neighbors, inputSet = None):
+    dimRed1_method, dimRed1_dims, clustering_when, clustering_method1, 
+    num_clusters, min_obs, num_neighbors, dimRed2_method = None, inputSet = None):
         if (inputSet == None):
             inputSet = self.currentSet
         # read in document-word matrix
@@ -447,6 +447,8 @@ class Session:
                 dimRed2 = self.dimred_PCA(dimRed1, ndims=2)
             elif dimRed2_method == 'umap':
                 dimRed2 = self.dimred_UMAP(dimRed1, ndims=2)
+            else:
+                raise ValueError
         else:
             dimRed2 = dimRed1
         # Clustering
@@ -457,7 +459,10 @@ class Session:
             clustering_data = dimRed1
         elif clustering_when == 'after_stage2':
             clustering_data = dimRed2
+        else:
+            raise ValueError
         # perform clustering
+        # rename clustering_method1 later
         if clustering_method1 == 'gmm':
             if clustering_when == 'before_stage1':
                 clustering_data = clustering_data.toarray()
@@ -468,6 +473,8 @@ class Session:
             clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
         elif clustering_method1 == 'leiden':
             clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
+        else:
+            raise ValueError
 
         dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters)
         #dimRed_cluster_plot.show()
@@ -654,6 +661,13 @@ def test9():
     s.simpleRandomSample(4)
     print(s.currentSet.size)
 
+def test10():
+    s = createSession("allCensus_sample.csv")
+    s.simpleRandomSample(30)
+    matrix, words = s.make_full_docWordMatrix(3)
+    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='before', 
+        clustering_method1='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
+    print(test)
 if __name__=='__main__':
     # test = parse_data("allCensus_sample.csv")
     # dataSet = test.values
@@ -661,4 +675,4 @@ if __name__=='__main__':
     # for i in range(len(headers)):
     #     colName = headers[i]
     #     headerDict[colName] = i
-    test9()
+    test10()
