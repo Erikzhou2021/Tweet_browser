@@ -22,7 +22,7 @@ from nltk.stem import PorterStemmer
 #from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import TruncatedSVD
-from scipy.sparse.csc import csc_matrix
+from scipy.sparse import csc_matrix
 import umap.umap_ as umap
 from sklearn.mixture import GaussianMixture
 from sklearn.cluster import KMeans
@@ -359,7 +359,8 @@ class Session:
 
     def dimred_UMAP(self, matrix, ndims=2, n_neighbors=15):
         umap_2d = umap.UMAP(n_components=ndims, random_state=42, n_neighbors=n_neighbors, min_dist=0.0)
-        proj_2d = umap_2d.fit_transform(matrix.toarray())
+        proj_2d = umap_2d.fit_transform(matrix)
+        #proj_2d = umap_2d.fit(matrix)
         return proj_2d
 
     # functions for clustering
@@ -389,7 +390,7 @@ class Session:
         sources, targets = A.nonzero()
         weights = A[sources, targets]
         if isinstance(weights, np.matrix): # ravel data
-                weights = weights.A1
+            weights = weights.A1
 
         g = ig.Graph(directed=False)
         g.add_vertices(A.shape[0])  # each observation is a node
@@ -423,6 +424,7 @@ class Session:
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
         return docWordMatrix_orig, vectorizer.get_feature_names()
+        #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
 
 
     def dimRed_and_clustering(self, docWordMatrix_orig, 
@@ -431,16 +433,20 @@ class Session:
         if (inputSet == None):
             inputSet = self.currentSet
         # read in document-word matrix
-        data = docWordMatrix_orig.data
-        rows, cols = docWordMatrix_orig.nonzero()
-        dims = docWordMatrix_orig.shape   
-        docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
+        # data = docWordMatrix_orig.data
+        # rows, cols = docWordMatrix_orig.nonzero()
+        # dims = docWordMatrix_orig.shape   
+        # docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
+        docWordMatrix = docWordMatrix_orig.tocsc()
 
         # do stage 1 dimension reduction
         if dimRed1_method == 'pca':
             dimRed1 = self.dimred_PCA(docWordMatrix, docWordMatrix_orig.shape[1])
         elif dimRed1_method == 'umap':
-            dimRed1 = self.dimred_UMAP(docWordMatrix, docWordMatrix_orig.shape[1])
+            #dimRed1 = self.dimred_UMAP(docWordMatrix, docWordMatrix_orig.shape[1])
+            dimRed1 = self.dimred_UMAP(docWordMatrix, dimRed1_dims)
+        else:
+            raise ValueError("Dimension reduction method can be either 'pca' or 'umap'")
         # do stage 2 dimension reduction (if any)
         if dimRed1_dims > 2:
             if dimRed2_method == 'pca':
@@ -448,7 +454,7 @@ class Session:
             elif dimRed2_method == 'umap':
                 dimRed2 = self.dimred_UMAP(dimRed1, ndims=2)
             else:
-                raise ValueError
+                raise ValueError("Dimension reduction method can be either 'pca' or 'umap'")
         else:
             dimRed2 = dimRed1
         # Clustering
@@ -459,8 +465,8 @@ class Session:
             clustering_data = dimRed1
         elif clustering_when == 'after_stage2':
             clustering_data = dimRed2
-        else:
-            raise ValueError
+        else: # also have to check if 'after_stage2' is used only when there is a stage 2
+            raise ValueError("clustering_when should be in [before_stage1, btwn, after_stage2]")
         # perform clustering
         # rename clustering_method1 later
         if clustering_method1 == 'gmm':
@@ -474,7 +480,7 @@ class Session:
         elif clustering_method1 == 'leiden':
             clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
         else:
-            raise ValueError
+            raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
 
         dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters)
         #dimRed_cluster_plot.show()
@@ -665,8 +671,8 @@ def test10():
     s = createSession("allCensus_sample.csv")
     s.simpleRandomSample(30)
     matrix, words = s.make_full_docWordMatrix(3)
-    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='before', 
-        clustering_method1='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
+    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
+        clustering_method1='leiden', num_clusters=2, min_obs= 2, num_neighbors=2)
     print(test)
 if __name__=='__main__':
     # test = parse_data("allCensus_sample.csv")
