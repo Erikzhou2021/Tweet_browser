@@ -106,7 +106,13 @@ class Session:
     base = None
     currentSet = None
     length = 0
+    #allData = None
     def __init__(self, baseSet):
+        self.allData = baseSet
+        self.headerDict = dict()
+        for i in range(len(baseSet.columns)):
+            colName = baseSet.columns[i]
+            self.headerDict[colName] = i
         self.length = len(baseSet)
         arr = bitarray(self.length)
         arr.setall(1)
@@ -122,29 +128,24 @@ class Session:
         newOp = Operation([input], [newSet], funcName, params)
         newOp.outputs[0].parent = newOp
         #input.children.append(deepcopy(newOp))
-        #can't use append
+        #can't use appendgetCurrentSubset
         newOp.parents[0].children = newOp.parents[0].children + [newOp]
         self.currentSet = newSet
 
     def printColumn(self, column: int):
         for i in range(self.length):
-            if (self.currentSet.indices[i]):
-                print(retrieveRow(i)[column])
+            print(self.allData.iloc[self.currentSet.indices, [column]])
+            # if (self.currentSet.indices[i]):
+            #     print(retrieveRow(i)[column])
 
     def getCurrentSubset(self):
-        s = []
-        for i in range(self.length):
-            if (self.currentSet.indices[i]):
-                s.append(retrieveRow(i))
-        return s
+        return self.allData.iloc[self.currentSet.indices]
 
     def printCurrSubset(self, verbose: bool = False):
-        for i in range(self.length):
-            if (self.currentSet.indices[i]):
-                if verbose:
-                    print(retrieveRow(i))
-                else:
-                    print(i, ": ", retrieveRow(i)[15])
+        if verbose:
+            print(self.allData.iloc[self.currentSet.indices])
+        else:
+            print(self.allData.iloc[self.currentSet.indices, self.headerDict['Message']])
 
     def invert(self, input: bitarray):
         for i in range(len(input)):
@@ -174,8 +175,7 @@ class Session:
         ans = bitarray(self.length)
         ans.setall(0)
         if(inputSet.size < size):
-            # print("Invalid sample size")
-            raise ValueError
+            raise ValueError("Invalid sample size")
         population = []
         for i in range(self.length):
             if inputSet.indices[i]:
@@ -192,15 +192,14 @@ class Session:
         ans = bitarray(self.length)
         ans.setall(0)
         if(inputSet.size < size):
-            # print("Invalid sample size")
-            raise ValueError
+            raise ValueError("Invalid sample size")
         population = []
         weights = []
         sum = 0
         for i in range(self.length):
             if inputSet.indices[i]:
                 population.append(i)
-                value = retrieveRow(i)[headerDict[colName]]
+                value = self.allData.iloc[i].at[colName]
                 if value != value : # still need to check if the colName corresponds with a number that can be weighted
                     value = 0
                 value += 1
@@ -228,13 +227,13 @@ class Session:
                 if (orMode):
                     include = False
                     for j in keywords:
-                        if (retrieveRow(i)[15].find(j) != -1):
+                        if (self.allData.iloc[i].at["Message"].find(j) != -1): # might be slow
                             include = True
                             break
                 else:
                     include = True
                     for j in keywords:
-                        if (retrieveRow(i)[15].find(j) == -1):
+                        if (self.allData.iloc[i].at["Message"].find(j) != -1):
                             include = False
                             break
                 if include:
@@ -257,7 +256,7 @@ class Session:
             if(inputSet.indices[i]):
                 newExpression = expression
                 for j in keywords:
-                    if(retrieveRow(i)[15].find(j[1:-1]) > -1):
+                    if(self.allData.iloc[i].at["Message"].find(j[1:-1]) > -1): # might be slow
                         newExpression = newExpression.replace(j, " True")
                     else:
                         newExpression = newExpression.replace(j, " False")
@@ -275,7 +274,7 @@ class Session:
         count = 0
         for i in range(self.length):
             if(inputSet.indices[i]):
-                if(re.findall(expression, retrieveRow(i)[15], re.M)):
+                if(re.findall(expression, self.allData.iloc[i].at["Message"], re.M)): #might be slow
                     ans[i] = True
                     count += 1
         self.makeOperation(ans, count, "regexSearch", expression)
@@ -287,7 +286,7 @@ class Session:
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if (inputSet.indices[i] and retrieveRow(i)[headerDict[colName]] == value):
+            if (inputSet.indices[i] and self.allData.iloc[i].at[colName]== value): # might be slow
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "filterBy", colName + " = " + value)
@@ -331,14 +330,12 @@ class Session:
     def back(self, index: int = 0):
         if(self.currentSet.size == self.length) or index >= len(self.currentSet.parent.parents):
         # if(self.currentSet == self.base):
-            # print("Can't go back")
-            raise IndexError
+            raise IndexError("Can't go back (Out of bounds)")
         self.currentSet = self.currentSet.parent.parents[index]
     
     def next(self, index = -1):
         if len(self.currentSet.children) == 0 or index >= len(self.currentSet.children):
-            # print("Can't go next")
-            raise IndexError
+            raise IndexError("Can't got next (Out of bounds)")
         self.currentSet = self.currentSet.children[index].outputs[0]
 
     def printChildren(self):
@@ -417,7 +414,7 @@ class Session:
         cleanedTweets = []
         for i in range(self.length):
             if inputSet.indices[i]:
-                cleanedTweets.append(preProcessingFcn(retrieveRow(i)[15]))
+                cleanedTweets.append(preProcessingFcn(self.allData.iloc[i].at["Message"])) # might be slow
 
         # create document-word matrix
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
@@ -482,34 +479,18 @@ class Session:
         else:
             raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
 
-        dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters)
+        dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters, 
+        data_frame= inputSet.indices)
         #dimRed_cluster_plot.show()
         # dimRed_cluster_plot.update_layout(clickmode='event+select')
         return dimRed_cluster_plot
-
-# dataSet = None
-# headers = None
-# headerDict = dict()
-
-def retrieveRow(rowNum: int):
-    return dataSet[rowNum]
 
 # def retrieveRow(rowNum: int):
 #     return dataSet.iloc[rowNum].values
 
 def createSession(fileName: str) -> Session:
     data = parse_data("allCensus_sample.csv")
-    global dataSet 
-    global headers
-    global headerDict
-    dataSet = data.values
-    #dataSet = data
-    headers = data.columns
-    headerDict = dict()
-    for i in range(len(headers)):
-        colName = headers[i]
-        headerDict[colName] = i
-    s = Session(dataSet)
+    s = Session(data)
     return s
 
 def test1():
@@ -537,26 +518,26 @@ def test2():
     print(s.currentSet.size)
     s.back()
     print(s.currentSet.size)
-    s.back()
-    s.next()
+    #s.back()
+    #s.next()
     print(s.currentSet.size)
     s.searchKeyword(["the"])
     print(s.currentSet.size)
     s.back()
-    s.back()
+    #s.back()
     s.filterBy("State", "California")
     print(s.currentSet.size)
     s.back()
     s.advancedSearch("'trump' and not 'Trump'")
     print(s.currentSet.size)
     s.back()
-    s.back()
+    #s.back()
     s.printChildren()
     s.next(0)
     print(s.currentSet.size)
-    s.next(0)
+    #s.next(0)
     print(s.currentSet.size)
-    s.next()
+    #s.next()
 
 def test3():
     s = createSession("allCensus_sample.csv")
@@ -627,7 +608,6 @@ def test6():
 
 def test7(): #same as test 1
     s = createSession("allCensus_sample.csv")
-    print(type(dataSet))
     s.advancedSearch("'covid' and ('hospital' or 'vaccine')")
     #s.printCurrSubset()
     print(s.currentSet.size)
@@ -643,7 +623,7 @@ def test7(): #same as test 1
     #s.printCurrSubset()
     s.back()
     s.back()
-    s.back()
+    #s.back()
     s.regexSearch("trump")
     print(s.currentSet.size)
 
@@ -656,7 +636,8 @@ def test8():
     matrix, words = s.make_full_docWordMatrix(min_df= 1)
     #print(words)
     #print(matrix)
-    test = s.dimRed_and_clustering(matrix, 'pca', 2, 'umap', 'after_stage2', 'gmm', 25, 2, 25)
+    test = s.dimRed_and_clustering(matrix, dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
+        clustering_when= 'after_stage2', clustering_method1= 'gmm', min_obs= 25, num_clusters= 2, num_neighbors= 25)
     print(test)
     #print(matrix)
 
@@ -673,7 +654,9 @@ def test10():
     matrix, words = s.make_full_docWordMatrix(3)
     test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
         clustering_method1='leiden', num_clusters=2, min_obs= 2, num_neighbors=2)
-    print(test)
+    #print(test)
+    test.show()
+
 if __name__=='__main__':
     # test = parse_data("allCensus_sample.csv")
     # dataSet = test.values
@@ -681,4 +664,5 @@ if __name__=='__main__':
     # for i in range(len(headers)):
     #     colName = headers[i]
     #     headerDict[colName] = i
+
     test10()

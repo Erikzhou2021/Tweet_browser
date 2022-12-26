@@ -22,8 +22,8 @@ from nltk.stem import PorterStemmer
 #from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import TruncatedSVD
-from scipy.sparse.csc import csc_matrix
-import umap
+from scipy.sparse import csc_matrix
+import umap.umap_ as umap
 from sklearn.mixture import GaussianMixture
 from sklearn.cluster import KMeans
 import hdbscan
@@ -106,7 +106,13 @@ class Session:
     base = None
     currentSet = None
     length = 0
+    #allData = None
     def __init__(self, baseSet):
+        self.allData = baseSet
+        self.headerDict = dict()
+        for i in range(len(baseSet.columns)):
+            colName = baseSet.columns[i]
+            self.headerDict[colName] = i
         self.length = len(baseSet)
         arr = bitarray(self.length)
         arr.setall(1)
@@ -122,29 +128,24 @@ class Session:
         newOp = Operation([input], [newSet], funcName, params)
         newOp.outputs[0].parent = newOp
         #input.children.append(deepcopy(newOp))
-        #can't use append
+        #can't use appendgetCurrentSubset
         newOp.parents[0].children = newOp.parents[0].children + [newOp]
         self.currentSet = newSet
 
     def printColumn(self, column: int):
         for i in range(self.length):
-            if (self.currentSet.indices[i]):
-                print(retrieveRow(i)[column])
+            print(self.allData.iloc[self.currentSet.indices, [column]])
+            # if (self.currentSet.indices[i]):
+            #     print(retrieveRow(i)[column])
 
     def getCurrentSubset(self):
-        s = []
-        for i in range(self.length):
-            if (self.currentSet.indices[i]):
-                s.append(retrieveRow(i))
-        return s
+        return self.allData.iloc[self.currentSet.indices]
 
     def printCurrSubset(self, verbose: bool = False):
-        for i in range(self.length):
-            if (self.currentSet.indices[i]):
-                if verbose:
-                    print(retrieveRow(i))
-                else:
-                    print(i, ": ", retrieveRow(i)[15])
+        if verbose:
+            print(self.allData.iloc[self.currentSet.indices])
+        else:
+            print(self.allData.iloc[self.currentSet.indices, self.headerDict['Message']])
 
     def invert(self, input: bitarray):
         for i in range(len(input)):
@@ -174,8 +175,7 @@ class Session:
         ans = bitarray(self.length)
         ans.setall(0)
         if(inputSet.size < size):
-            # print("Invalid sample size")
-            raise ValueError
+            raise ValueError("Invalid sample size")
         population = []
         for i in range(self.length):
             if inputSet.indices[i]:
@@ -192,15 +192,14 @@ class Session:
         ans = bitarray(self.length)
         ans.setall(0)
         if(inputSet.size < size):
-            # print("Invalid sample size")
-            raise ValueError
+            raise ValueError("Invalid sample size")
         population = []
         weights = []
         sum = 0
         for i in range(self.length):
             if inputSet.indices[i]:
                 population.append(i)
-                value = retrieveRow(i)[headerDict[colName]]
+                value = self.allData.iloc[i].at[colName]
                 if value != value : # still need to check if the colName corresponds with a number that can be weighted
                     value = 0
                 value += 1
@@ -228,13 +227,13 @@ class Session:
                 if (orMode):
                     include = False
                     for j in keywords:
-                        if (retrieveRow(i)[15].find(j) != -1):
+                        if (self.allData.iloc[i].at["Message"].find(j) != -1): # might be slow
                             include = True
                             break
                 else:
                     include = True
                     for j in keywords:
-                        if (retrieveRow(i)[15].find(j) == -1):
+                        if (self.allData.iloc[i].at["Message"].find(j) != -1):
                             include = False
                             break
                 if include:
@@ -257,7 +256,7 @@ class Session:
             if(inputSet.indices[i]):
                 newExpression = expression
                 for j in keywords:
-                    if(retrieveRow(i)[15].find(j[1:-1]) > -1):
+                    if(self.allData.iloc[i].at["Message"].find(j[1:-1]) > -1): # might be slow
                         newExpression = newExpression.replace(j, " True")
                     else:
                         newExpression = newExpression.replace(j, " False")
@@ -275,7 +274,7 @@ class Session:
         count = 0
         for i in range(self.length):
             if(inputSet.indices[i]):
-                if(re.findall(expression, retrieveRow(i)[15], re.M)):
+                if(re.findall(expression, self.allData.iloc[i].at["Message"], re.M)): #might be slow
                     ans[i] = True
                     count += 1
         self.makeOperation(ans, count, "regexSearch", expression)
@@ -287,7 +286,7 @@ class Session:
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if (inputSet.indices[i] and retrieveRow(i)[headerDict[colName]] == value):
+            if (inputSet.indices[i] and self.allData.iloc[i].at[colName]== value): # might be slow
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "filterBy", colName + " = " + value)
@@ -331,14 +330,12 @@ class Session:
     def back(self, index: int = 0):
         if(self.currentSet.size == self.length) or index >= len(self.currentSet.parent.parents):
         # if(self.currentSet == self.base):
-            # print("Can't go back")
-            raise IndexError
+            raise IndexError("Can't go back (Out of bounds)")
         self.currentSet = self.currentSet.parent.parents[index]
     
     def next(self, index = -1):
         if len(self.currentSet.children) == 0 or index >= len(self.currentSet.children):
-            # print("Can't go next")
-            raise IndexError
+            raise IndexError("Can't got next (Out of bounds)")
         self.currentSet = self.currentSet.children[index].outputs[0]
 
     def printChildren(self):
@@ -360,6 +357,7 @@ class Session:
     def dimred_UMAP(self, matrix, ndims=2, n_neighbors=15):
         umap_2d = umap.UMAP(n_components=ndims, random_state=42, n_neighbors=n_neighbors, min_dist=0.0)
         proj_2d = umap_2d.fit_transform(matrix)
+        #proj_2d = umap_2d.fit(matrix)
         return proj_2d
 
     # functions for clustering
@@ -389,7 +387,7 @@ class Session:
         sources, targets = A.nonzero()
         weights = A[sources, targets]
         if isinstance(weights, np.matrix): # ravel data
-                weights = weights.A1
+            weights = weights.A1
 
         g = ig.Graph(directed=False)
         g.add_vertices(A.shape[0])  # each observation is a node
@@ -416,37 +414,44 @@ class Session:
         cleanedTweets = []
         for i in range(self.length):
             if inputSet.indices[i]:
-                cleanedTweets.append(preProcessingFcn(retrieveRow(i)[15]))
+                cleanedTweets.append(preProcessingFcn(self.allData.iloc[i].at["Message"])) # might be slow
 
         # create document-word matrix
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
         return docWordMatrix_orig, vectorizer.get_feature_names()
+        #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
 
 
     def dimRed_and_clustering(self, docWordMatrix_orig, 
-    dimRed1_method, dimRed1_dims, dimRed2_method, 
-    clustering_when, clustering_method1, num_clusters, min_obs, num_neighbors, inputSet = None):
+    dimRed1_method, dimRed1_dims, clustering_when, clustering_method1, 
+    num_clusters, min_obs, num_neighbors, dimRed2_method = None, inputSet = None):
         if (inputSet == None):
             inputSet = self.currentSet
         # read in document-word matrix
-        data = docWordMatrix_orig.data
-        rows, cols = docWordMatrix_orig.nonzero()
-        dims = docWordMatrix_orig.shape   
-        docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
+        # data = docWordMatrix_orig.data
+        # rows, cols = docWordMatrix_orig.nonzero()
+        # dims = docWordMatrix_orig.shape   
+        # docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
+        docWordMatrix = docWordMatrix_orig.tocsc()
 
         # do stage 1 dimension reduction
         if dimRed1_method == 'pca':
             dimRed1 = self.dimred_PCA(docWordMatrix, docWordMatrix_orig.shape[1])
         elif dimRed1_method == 'umap':
-            dimRed1 = self.dimred_UMAP(docWordMatrix, docWordMatrix_orig.shape[1])
+            #dimRed1 = self.dimred_UMAP(docWordMatrix, docWordMatrix_orig.shape[1])
+            dimRed1 = self.dimred_UMAP(docWordMatrix, dimRed1_dims)
+        else:
+            raise ValueError("Dimension reduction method can be either 'pca' or 'umap'")
         # do stage 2 dimension reduction (if any)
         if dimRed1_dims > 2:
             if dimRed2_method == 'pca':
                 dimRed2 = self.dimred_PCA(dimRed1, ndims=2)
             elif dimRed2_method == 'umap':
                 dimRed2 = self.dimred_UMAP(dimRed1, ndims=2)
+            else:
+                raise ValueError("Dimension reduction method can be either 'pca' or 'umap'")
         else:
             dimRed2 = dimRed1
         # Clustering
@@ -457,7 +462,10 @@ class Session:
             clustering_data = dimRed1
         elif clustering_when == 'after_stage2':
             clustering_data = dimRed2
+        else: # also have to check if 'after_stage2' is used only when there is a stage 2
+            raise ValueError("clustering_when should be in [before_stage1, btwn, after_stage2]")
         # perform clustering
+        # rename clustering_method1 later
         if clustering_method1 == 'gmm':
             if clustering_when == 'before_stage1':
                 clustering_data = clustering_data.toarray()
@@ -468,35 +476,21 @@ class Session:
             clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
         elif clustering_method1 == 'leiden':
             clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
+        else:
+            raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
 
-        dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters)
+        dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters, 
+        data_frame= inputSet.indices)
         #dimRed_cluster_plot.show()
         # dimRed_cluster_plot.update_layout(clickmode='event+select')
         return dimRed_cluster_plot
-
-# dataSet = None
-# headers = None
-# headerDict = dict()
-
-def retrieveRow(rowNum: int):
-    return dataSet[rowNum]
 
 # def retrieveRow(rowNum: int):
 #     return dataSet.iloc[rowNum].values
 
 def createSession(fileName: str) -> Session:
     data = parse_data("allCensus_sample.csv")
-    global dataSet 
-    global headers
-    global headerDict
-    dataSet = data.values
-    #dataSet = data
-    headers = data.columns
-    headerDict = dict()
-    for i in range(len(headers)):
-        colName = headers[i]
-        headerDict[colName] = i
-    s = Session(dataSet)
+    s = Session(data)
     return s
 
 if __name__=='__main__':
