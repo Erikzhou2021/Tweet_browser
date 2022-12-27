@@ -30,6 +30,7 @@ import hdbscan
 from sklearn.neighbors import kneighbors_graph
 import leidenalg
 import igraph as ig
+import textwrap # hover text on dimension reduction/clustering plot
 
 # Ignore warnings
 import warnings
@@ -82,6 +83,15 @@ def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, remov
         tweet = ' '.join([ps.stem(word) for word in tweet.split()])
     return tweet
 
+def toBoolArray(arr: bitarray):
+    result = []
+    for i in range(len(arr)):
+        if arr[i]:
+            result.append(True)
+        else:
+            result.append(False)
+    return result
+
 class Operation:
     parents = []
     outputs = []
@@ -133,8 +143,8 @@ class Session:
         self.currentSet = newSet
 
     def printColumn(self, column: int):
-        for i in range(self.length):
-            print(self.allData.iloc[self.currentSet.indices, [column]])
+        print(self.allData.iloc[self.currentSet.indices, [column]])
+        # for i in range(self.length):
             # if (self.currentSet.indices[i]):
             #     print(retrieveRow(i)[column])
 
@@ -143,9 +153,9 @@ class Session:
 
     def printCurrSubset(self, verbose: bool = False):
         if verbose:
-            print(self.allData.iloc[self.currentSet.indices])
+            print(self.allData.iloc[toBoolArray(self.currentSet.indices)])
         else:
-            print(self.allData.iloc[self.currentSet.indices, self.headerDict['Message']])
+            print(self.allData.iloc[toBoolArray(self.currentSet.indices), self.headerDict['Message']].values)
 
     def invert(self, input: bitarray):
         for i in range(len(input)):
@@ -208,12 +218,8 @@ class Session:
         for j in range(len(weights)):
             weights[j] = float(weights[j] / sum)  
         temp = np.random.choice(population, size, replace=False, p=weights)
-        #temp.sort()
-        #print(temp)
         for k in temp:
             ans[k] = True
-            #print(retrieveRow(k)[headerDict[colName]], end=" ")
-        #print()
         self.makeOperation(ans, size, "weightedSample", colName + str(size))
 
     def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
@@ -425,7 +431,7 @@ class Session:
 
 
     def dimRed_and_clustering(self, docWordMatrix_orig, 
-    dimRed1_method, dimRed1_dims, clustering_when, clustering_method1, 
+    dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
     num_clusters, min_obs, num_neighbors, dimRed2_method = None, inputSet = None):
         if (inputSet == None):
             inputSet = self.currentSet
@@ -465,31 +471,34 @@ class Session:
         else: # also have to check if 'after_stage2' is used only when there is a stage 2
             raise ValueError("clustering_when should be in [before_stage1, btwn, after_stage2]")
         # perform clustering
-        # rename clustering_method1 later
-        if clustering_method1 == 'gmm':
+        if clustering_method == 'gmm':
             if clustering_when == 'before_stage1':
                 clustering_data = clustering_data.toarray()
             clusters = self.cluster_gmm(clustering_data, num_clusters=num_clusters)
-        elif clustering_method1 == 'k-means':
+        elif clustering_method == 'k-means':
             clusters = self.cluster_kmeans(clustering_data, num_clusters=num_clusters)
-        elif clustering_method1 == 'hdbscan':
+        elif clustering_method == 'hdbscan':
             clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
-        elif clustering_method1 == 'leiden':
+        elif clustering_method == 'leiden':
             clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
         else:
             raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
-
-        dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters, 
-        data_frame= inputSet.indices)
-        #dimRed_cluster_plot.show()
+        
+        allMessages_plot = self.allData.iloc[toBoolArray(inputSet.indices)]
+        allMessages_plot['Cluster'] = clusters # color by cluster
+        allMessages_plot['Text'] = allMessages_plot['Message'].apply(lambda t: "<br>".join(textwrap.wrap(t))) # make tweet text display cleanly
+        allMessages_plot['coord1'] = dimRed2[:,0] # x-coordinate
+        allMessages_plot['coord2'] = dimRed2[:,1] # y-coordinate
+        dimRed_cluster_plot = px.scatter(allMessages_plot, x='coord1', y='coord2', color='Cluster',
+            hover_data=['Text'], category_orders={"Cluster": [str(int) for int in list(range(50))]})
+        # dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters, 
+        # data_frame= inputSet.indices)
+        # dimRed_cluster_plot.show()
         # dimRed_cluster_plot.update_layout(clickmode='event+select')
         return dimRed_cluster_plot
 
-# def retrieveRow(rowNum: int):
-#     return dataSet.iloc[rowNum].values
-
 def createSession(fileName: str) -> Session:
-    data = parse_data("allCensus_sample.csv")
+    data = parse_data(fileName)
     s = Session(data)
     return s
 
@@ -635,9 +644,8 @@ def test8():
     #s.printCurrSubset()
     matrix, words = s.make_full_docWordMatrix(min_df= 1)
     #print(words)
-    #print(matrix)
     test = s.dimRed_and_clustering(matrix, dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
-        clustering_when= 'after_stage2', clustering_method1= 'gmm', min_obs= 25, num_clusters= 2, num_neighbors= 25)
+        clustering_when= 'after_stage2', clustering_method= 'gmm', min_obs= 25, num_clusters= 2, num_neighbors= 25)
     print(test)
     #print(matrix)
 
@@ -651,9 +659,10 @@ def test9():
 def test10():
     s = createSession("allCensus_sample.csv")
     s.simpleRandomSample(30)
+    #s.printCurrSubset()
     matrix, words = s.make_full_docWordMatrix(3)
     test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
-        clustering_method1='leiden', num_clusters=2, min_obs= 2, num_neighbors=2)
+        clustering_method='leiden', num_clusters=2, min_obs= 2, num_neighbors=2)
     #print(test)
     test.show()
 

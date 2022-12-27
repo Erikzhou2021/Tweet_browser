@@ -30,6 +30,7 @@ import hdbscan
 from sklearn.neighbors import kneighbors_graph
 import leidenalg
 import igraph as ig
+import textwrap # hover text on dimension reduction/clustering plot
 
 # Ignore warnings
 import warnings
@@ -82,6 +83,15 @@ def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, remov
         tweet = ' '.join([ps.stem(word) for word in tweet.split()])
     return tweet
 
+def toBoolArray(arr: bitarray):
+    result = []
+    for i in range(len(arr)):
+        if arr[i]:
+            result.append(True)
+        else:
+            result.append(False)
+    return result
+
 class Operation:
     parents = []
     outputs = []
@@ -133,8 +143,8 @@ class Session:
         self.currentSet = newSet
 
     def printColumn(self, column: int):
-        for i in range(self.length):
-            print(self.allData.iloc[self.currentSet.indices, [column]])
+        print(self.allData.iloc[self.currentSet.indices, [column]])
+        # for i in range(self.length):
             # if (self.currentSet.indices[i]):
             #     print(retrieveRow(i)[column])
 
@@ -143,9 +153,9 @@ class Session:
 
     def printCurrSubset(self, verbose: bool = False):
         if verbose:
-            print(self.allData.iloc[self.currentSet.indices])
+            print(self.allData.iloc[toBoolArray(self.currentSet.indices)])
         else:
-            print(self.allData.iloc[self.currentSet.indices, self.headerDict['Message']])
+            print(self.allData.iloc[toBoolArray(self.currentSet.indices), self.headerDict['Message']].values)
 
     def invert(self, input: bitarray):
         for i in range(len(input)):
@@ -208,12 +218,8 @@ class Session:
         for j in range(len(weights)):
             weights[j] = float(weights[j] / sum)  
         temp = np.random.choice(population, size, replace=False, p=weights)
-        #temp.sort()
-        #print(temp)
         for k in temp:
             ans[k] = True
-            #print(retrieveRow(k)[headerDict[colName]], end=" ")
-        #print()
         self.makeOperation(ans, size, "weightedSample", colName + str(size))
 
     def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
@@ -357,10 +363,8 @@ class Session:
     def dimred_UMAP(self, matrix, ndims=2, n_neighbors=15):
         umap_2d = umap.UMAP(n_components=ndims, random_state=42, n_neighbors=n_neighbors, min_dist=0.0)
         proj_2d = umap_2d.fit_transform(matrix)
-        #proj_2d = umap_2d.fit(matrix)
         return proj_2d
 
-    # functions for clustering
     # HDBSCAN
     def cluster_hdbscan(self, points, min_obs):
         hdbscan_fcn = hdbscan.HDBSCAN(min_samples=10, min_cluster_size=min_obs)
@@ -421,19 +425,12 @@ class Session:
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
         return docWordMatrix_orig, vectorizer.get_feature_names()
-        #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
-
 
     def dimRed_and_clustering(self, docWordMatrix_orig, 
-    dimRed1_method, dimRed1_dims, clustering_when, clustering_method1, 
+    dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
     num_clusters, min_obs, num_neighbors, dimRed2_method = None, inputSet = None):
         if (inputSet == None):
             inputSet = self.currentSet
-        # read in document-word matrix
-        # data = docWordMatrix_orig.data
-        # rows, cols = docWordMatrix_orig.nonzero()
-        # dims = docWordMatrix_orig.shape   
-        # docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
         docWordMatrix = docWordMatrix_orig.tocsc()
 
         # do stage 1 dimension reduction
@@ -465,31 +462,30 @@ class Session:
         else: # also have to check if 'after_stage2' is used only when there is a stage 2
             raise ValueError("clustering_when should be in [before_stage1, btwn, after_stage2]")
         # perform clustering
-        # rename clustering_method1 later
-        if clustering_method1 == 'gmm':
+        if clustering_method == 'gmm':
             if clustering_when == 'before_stage1':
                 clustering_data = clustering_data.toarray()
             clusters = self.cluster_gmm(clustering_data, num_clusters=num_clusters)
-        elif clustering_method1 == 'k-means':
+        elif clustering_method == 'k-means':
             clusters = self.cluster_kmeans(clustering_data, num_clusters=num_clusters)
-        elif clustering_method1 == 'hdbscan':
+        elif clustering_method == 'hdbscan':
             clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
-        elif clustering_method1 == 'leiden':
+        elif clustering_method == 'leiden':
             clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
         else:
             raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
-
-        dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters, 
-        data_frame= inputSet.indices)
-        #dimRed_cluster_plot.show()
-        # dimRed_cluster_plot.update_layout(clickmode='event+select')
+        
+        allMessages_plot = self.allData.iloc[toBoolArray(inputSet.indices)]
+        allMessages_plot['Cluster'] = clusters # color by cluster
+        allMessages_plot['Text'] = allMessages_plot['Message'].apply(lambda t: "<br>".join(textwrap.wrap(t))) # make tweet text display cleanly
+        allMessages_plot['coord1'] = dimRed2[:,0] # x-coordinate
+        allMessages_plot['coord2'] = dimRed2[:,1] # y-coordinate
+        dimRed_cluster_plot = px.scatter(allMessages_plot, x='coord1', y='coord2', color='Cluster',
+            hover_data=['Text'], category_orders={"Cluster": [str(int) for int in list(range(50))]})
         return dimRed_cluster_plot
 
-# def retrieveRow(rowNum: int):
-#     return dataSet.iloc[rowNum].values
-
 def createSession(fileName: str) -> Session:
-    data = parse_data("allCensus_sample.csv")
+    data = parse_data(fileName)
     s = Session(data)
     return s
 
