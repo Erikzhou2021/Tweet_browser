@@ -662,6 +662,7 @@ def test10(s):
 
 def test11(s):
     s.filterBy("SenderGender", "FEMALE")
+    print(s.currentSet.size)
     s.weightedSample(10, "Sender Followers Count")
     s.simpleRandomSample(5)
     s.printCurrSubset(True)
