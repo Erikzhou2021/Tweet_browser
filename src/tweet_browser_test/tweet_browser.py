@@ -113,16 +113,11 @@ class Subset:
         self.indices = ind
 
 class Session:
-    base = None
-    currentSet = None
-    length = 0
-    #allData = None
     def __init__(self, baseSet):
         self.allData = baseSet
         self.headerDict = dict()
-        for i in range(len(baseSet.columns)):
-            colName = baseSet.columns[i]
-            self.headerDict[colName] = i
+        for i in range(len(baseSet.columns)): # put <header, columnNum> into a dictionary for faster access
+            self.headerDict[baseSet.columns[i]] = i
         self.length = len(baseSet)
         arr = bitarray(self.length)
         arr.setall(1)
@@ -130,30 +125,27 @@ class Session:
         self.base.size = self.length
         self.currentSet = self.base
 
-    def makeOperation(self, outPut, count: int, funcName, params, input = None):
-        if input == None:
+    def makeOperation(self, outPut, count: int, funcName, params, input: Subset = None):
+        if input == None or type(input) != Subset:
             input = self.currentSet
         newSet = Subset(outPut)
         newSet.size = count
         newOp = Operation([input], [newSet], funcName, params)
         newOp.outputs[0].parent = newOp
         #input.children.append(deepcopy(newOp))
-        #can't use appendgetCurrentSubset
+        #can't use append
         newOp.parents[0].children = newOp.parents[0].children + [newOp]
         self.currentSet = newSet
 
     def printColumn(self, column: int):
-        print(self.allData.iloc[self.currentSet.indices, [column]])
-        # for i in range(self.length):
-            # if (self.currentSet.indices[i]):
-            #     print(retrieveRow(i)[column])
+        print(self.allData.iloc[toBoolArray(self.currentSet.indices), [column]])
 
     def getCurrentSubset(self):
-        return self.allData.iloc[self.currentSet.indices]
+        return self.allData.iloc[toBoolArray(self.currentSet.indices)]
 
     def printCurrSubset(self, verbose: bool = False):
         if verbose:
-            print(self.allData.iloc[toBoolArray(self.currentSet.indices)])
+            print(self.allData.iloc[toBoolArray(self.currentSet.indices)].values)
         else:
             print(self.allData.iloc[toBoolArray(self.currentSet.indices), self.headerDict['Message']].values)
 
@@ -166,26 +158,28 @@ class Session:
         return input
 
     def randomSubset(self, probability, inputSet: Subset = None):
-        if (inputSet == None):
+        if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        if probability > 1 or probability < 0:
+            raise ValueError("Invalid probability")
         random.seed()
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if (inputSet.indices[i] and random.random() < probability):
+            if inputSet.indices[i] and random.random() < probability:
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "randomSubset", "None")
 
     def simpleRandomSample(self, size: int, inputSet: Subset = None):
-        if (inputSet == None):
+        if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        if inputSet.size < size:
+            raise ValueError("Invalid sample size")
         random.seed()
         ans = bitarray(self.length)
         ans.setall(0)
-        if(inputSet.size < size):
-            raise ValueError("Invalid sample size")
         population = []
         for i in range(self.length):
             if inputSet.indices[i]:
@@ -196,13 +190,13 @@ class Session:
         self.makeOperation(ans, size, "simpleRandomSample", size)
 
     def weightedSample(self, size: int, colName: str, inputSet: Subset = None):
-        if (inputSet == None):
+        if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        if inputSet.size < size:
+            raise ValueError("Invalid sample size")
         random.seed()
         ans = bitarray(self.length)
         ans.setall(0)
-        if(inputSet.size < size):
-            raise ValueError("Invalid sample size")
         population = []
         weights = []
         sum = 0
@@ -210,8 +204,10 @@ class Session:
             if inputSet.indices[i]:
                 population.append(i)
                 value = self.allData.iloc[i].at[colName]
-                if value != value : # still need to check if the colName corresponds with a number that can be weighted
+                if value != value: 
                     value = 0
+                if type(value) == str: # must be inside the loop to avoid NANs
+                    raise ValueError("Column name does not correspond to a column that can be weighted")
                 value += 1
                 sum += value
                 weights.append(int(value))
@@ -223,23 +219,23 @@ class Session:
         self.makeOperation(ans, size, "weightedSample", colName + str(size))
 
     def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
-        if (inputSet == None):
+        if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if(inputSet.indices[i]):
-                if (orMode):
+            if inputSet.indices[i]:
+                if orMode:
                     include = False
                     for j in keywords:
-                        if (self.allData.iloc[i].at["Message"].find(j) != -1): # might be slow
+                        if self.allData.iloc[i].at["Message"].find(j) != -1: # might be slow
                             include = True
                             break
                 else:
                     include = True
                     for j in keywords:
-                        if (self.allData.iloc[i].at["Message"].find(j) != -1):
+                        if self.allData.iloc[i].at["Message"].find(j) != -1:
                             include = False
                             break
                 if include:
@@ -248,7 +244,7 @@ class Session:
         self.makeOperation(ans, count, "searchKeyword", keywords)
 
     def advancedSearch(self, expression: str, inputSet: Subset = None):
-        if (inputSet == None):
+        if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         ans = bitarray(self.length)
         ans.setall(0)
@@ -273,7 +269,7 @@ class Session:
         
 
     def regexSearch(self, expression: str, inputSet: Subset = None):
-        if (inputSet == None):
+        if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         ans = bitarray(self.length)
         ans.setall(0)
@@ -286,49 +282,55 @@ class Session:
         self.makeOperation(ans, count, "regexSearch", expression)
     
     def filterBy(self, colName: str, value, inputSet: Subset = None):
-        if (inputSet == None):
+        if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if (inputSet.indices[i] and self.allData.iloc[i].at[colName]== value): # might be slow
+            if inputSet.indices[i] and self.allData.iloc[i].at[colName]== value: # might be slow
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "filterBy", colName + " = " + value)
 
     def setDiff(self, setOne: Subset, setZero: Subset = None):
-        if (setZero == None):
+        if setZero == None or type(setZero) != Subset:
             setZero = self.currentSet
+        if type(setOne) != Subset:
+            raise TypeError("Set operators require two subset objects")
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if (setZero.indices[i] and not setOne.indices[i]):
+            if setZero.indices[i] and not setOne.indices[i]:
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "setDiff", setOne)
 
     def setUnion(self, setOne: Subset, setZero: Subset = None):
-        if (setZero == None):
+        if setZero == None or type(setZero) != Subset:
             setZero = self.currentSet
+        if type(setOne) != Subset:
+            raise TypeError("Set operators require two subset objects")
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if (setZero.indices[i] or setOne.indices[i]):
+            if setZero.indices[i] or setOne.indices[i]:
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "setUnion", setOne)
 
     def setIntersect(self, setOne: Subset, setZero: Subset = None):
-        if (setZero == None):
+        if setZero == None or type(setZero) != Subset:
             setZero = self.currentSet
+        if type(setOne) != Subset:
+            raise TypeError("Set operators require two subset objects")
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if (setZero.indices[i] and setOne.indices[i]):
+            if setZero.indices[i] and setOne.indices[i]:
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "setintersect", setOne)
@@ -363,8 +365,10 @@ class Session:
     def dimred_UMAP(self, matrix, ndims=2, n_neighbors=15):
         umap_2d = umap.UMAP(n_components=ndims, random_state=42, n_neighbors=n_neighbors, min_dist=0.0)
         proj_2d = umap_2d.fit_transform(matrix)
+        #proj_2d = umap_2d.fit(matrix)
         return proj_2d
 
+    # functions for clustering
     # HDBSCAN
     def cluster_hdbscan(self, points, min_obs):
         hdbscan_fcn = hdbscan.HDBSCAN(min_samples=10, min_cluster_size=min_obs)
@@ -411,7 +415,7 @@ class Session:
         return leidenClusters
 
     def make_full_docWordMatrix(self, min_df = 5, inputSet: Subset = None):
-        if (inputSet == None):
+        if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if inputSet.size == 0:
             return
@@ -425,12 +429,19 @@ class Session:
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
         return docWordMatrix_orig, vectorizer.get_feature_names()
+        #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
+
 
     def dimRed_and_clustering(self, docWordMatrix_orig, 
     dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
     num_clusters, min_obs, num_neighbors, dimRed2_method = None, inputSet = None):
-        if (inputSet == None):
+        if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        # read in document-word matrix
+        # data = docWordMatrix_orig.data
+        # rows, cols = docWordMatrix_orig.nonzero()
+        # dims = docWordMatrix_orig.shape   
+        # docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
         docWordMatrix = docWordMatrix_orig.tocsc()
 
         # do stage 1 dimension reduction
@@ -458,6 +469,8 @@ class Session:
         elif clustering_when == 'btwn':
             clustering_data = dimRed1
         elif clustering_when == 'after_stage2':
+            if dimRed1_dims < 2:
+                raise ValueError("Can't cluster after stage 2 if stage 2 is unecessary (dimRed1_dims < 2)")
             clustering_data = dimRed2
         else: # also have to check if 'after_stage2' is used only when there is a stage 2
             raise ValueError("clustering_when should be in [before_stage1, btwn, after_stage2]")
@@ -482,6 +495,10 @@ class Session:
         allMessages_plot['coord2'] = dimRed2[:,1] # y-coordinate
         dimRed_cluster_plot = px.scatter(allMessages_plot, x='coord1', y='coord2', color='Cluster',
             hover_data=['Text'], category_orders={"Cluster": [str(int) for int in list(range(50))]})
+        # dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters, 
+        # data_frame= inputSet.indices)
+        # dimRed_cluster_plot.show()
+        # dimRed_cluster_plot.update_layout(clickmode='event+select')
         return dimRed_cluster_plot
 
 def createSession(fileName: str) -> Session:
