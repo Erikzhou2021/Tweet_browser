@@ -109,6 +109,7 @@ class Subset:
     size = 0
     parent = None
     children = []
+    doc_word_matrices = dict()
     def __init__(self, ind: bitarray):
         self.indices = ind
 
@@ -415,12 +416,17 @@ class Session:
         return leidenClusters
 
     def make_full_docWordMatrix(self, min_df = 5, inputSet: Subset = None):
+        begin = time.perf_counter()
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if inputSet.size == 0:
             return
+        if min_df in inputSet.doc_word_matrices:
+            end = time.perf_counter()
+            print("time = ", end-begin)
+            return inputSet.doc_word_matrices[min_df][0], inputSet.doc_word_matrices[min_df][1]
         cleanedTweets = []
-        begin = time.perf_counter()
+        
         for i in range(self.length):
             if inputSet.indices[i]:
                 cleanedTweets.append(preProcessingFcn(self.allData.iloc[i].at["Message"])) # might be slow
@@ -431,7 +437,9 @@ class Session:
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
         end = time.perf_counter()
         print("time = ", end-begin)
-        return docWordMatrix_orig, vectorizer.get_feature_names()
+        names = vectorizer.get_feature_names()
+        inputSet.doc_word_matrices[min_df] = [docWordMatrix_orig, names]
+        return docWordMatrix_orig, names
         #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
 
 
@@ -684,11 +692,16 @@ def test12(s):
     
 def test13(s):
     s.simpleRandomSample(100)
-    matrix, words = s.make_full_docWordMatrix(10)
+    matrix, words = s.make_full_docWordMatrix(5)
     test = s.dimRed_and_clustering(matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='before_stage1', 
         clustering_method='hdbscan', num_clusters=4, min_obs= 2, num_neighbors=8)
+    matrix2, words2 = s.make_full_docWordMatrix(5)
+    # print("---------------------------------------")
+    # print(words)
+    # print("---------------------------------------")
+    # print(words2)
 
 if __name__=='__main__':
     s = createSession("allCensus_sample.csv")
 
-    test10(s)
+    test13(s)
