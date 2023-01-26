@@ -31,7 +31,7 @@ from sklearn.neighbors import kneighbors_graph
 import leidenalg
 import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
-
+import time
 # Ignore warnings
 import warnings
 
@@ -420,6 +420,7 @@ class Session:
         if inputSet.size == 0:
             return
         cleanedTweets = []
+        begin = time.perf_counter()
         for i in range(self.length):
             if inputSet.indices[i]:
                 cleanedTweets.append(preProcessingFcn(self.allData.iloc[i].at["Message"])) # might be slow
@@ -428,6 +429,8 @@ class Session:
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
+        end = time.perf_counter()
+        print("time = ", end-begin)
         return docWordMatrix_orig, vectorizer.get_feature_names()
         #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
 
@@ -442,6 +445,7 @@ class Session:
         # rows, cols = docWordMatrix_orig.nonzero()
         # dims = docWordMatrix_orig.shape   
         # docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
+        begin = time.perf_counter()
         docWordMatrix = docWordMatrix_orig.tocsc()
 
         # do stage 1 dimension reduction
@@ -499,6 +503,8 @@ class Session:
         # data_frame= inputSet.indices)
         # dimRed_cluster_plot.show()
         # dimRed_cluster_plot.update_layout(clickmode='event+select')
+        end = time.perf_counter()
+        print("cluster time =", end-begin)
         return dimRed_cluster_plot
 
 def createSession(fileName: str) -> Session:
@@ -652,13 +658,13 @@ def test9(s):
     print(s.currentSet.size)
 
 def test10(s):
-    s.simpleRandomSample(30)
+    s.simpleRandomSample(300)
     #s.printCurrSubset()
-    matrix, words = s.make_full_docWordMatrix(3)
+    matrix, words = s.make_full_docWordMatrix(50)
     test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
-        clustering_method='leiden', num_clusters=2, min_obs= 2, num_neighbors=2)
+        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
     #print(test)
-    test.show()
+    #test.show()
 
 def test11(s):
     s.filterBy("SenderGender", "FEMALE")
@@ -675,8 +681,14 @@ def test12(s):
         s.weightedSample(100, "SenderScreenName")
     except (ValueError):
         print("exeption caught")
+    
+def test13(s):
+    s.simpleRandomSample(100)
+    matrix, words = s.make_full_docWordMatrix(10)
+    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='before_stage1', 
+        clustering_method='hdbscan', num_clusters=4, min_obs= 2, num_neighbors=8)
 
 if __name__=='__main__':
     s = createSession("allCensus_sample.csv")
 
-    test12(s)
+    test10(s)
