@@ -44,6 +44,7 @@ warnings.filterwarnings("ignore")
 # this function reads in the data (copied from online)
 def parse_data(filename):
     path = './' + filename
+    begin = time.perf_counter()
     try:
         if "csv" in filename:
             # Assume that the user uploaded a CSV or TXT file
@@ -53,10 +54,13 @@ def parse_data(filename):
             df = pd.read_excel(path, index_col=[0])
         elif "txt" or "tsv" in filename:
             # Assume that the user uploaded an excel file
+            
             df = pd.read_csv(path, delimiter = "\t",encoding = "ISO-8859-1",  index_col=[0])
     except Exception as e:
         print(e)
         return
+    end = time.perf_counter()
+    print("time = ", end-begin)
     return df
 
 def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, removeStopwords=True, 
@@ -125,6 +129,13 @@ class Session:
         self.base = Subset(arr)
         self.base.size = self.length
         self.currentSet = self.base
+        self.weightable = dict()
+        i = 0
+        for col in self.allData.dtypes:
+            if col == int or col == float:
+                self.weightable[self.allData.columns[i]] = i
+            i += 1
+        #print(self.weightable)
 
     def makeOperation(self, outPut, count: int, funcName, params, input: Subset = None):
         if input == None or type(input) != Subset:
@@ -195,6 +206,8 @@ class Session:
             inputSet = self.currentSet
         if inputSet.size < size:
             raise ValueError("Invalid sample size")
+        if self.headerDict[colName] not in self.weightable:
+            raise ValueError("Column name does not correspond to a column that can be weighted")
         random.seed()
         ans = bitarray(self.length)
         ans.setall(0)
@@ -207,8 +220,6 @@ class Session:
                 value = self.allData.iloc[i].at[colName]
                 if value != value: 
                     value = 0
-                if type(value) == str: # must be inside the loop to avoid NANs
-                    raise ValueError("Column name does not correspond to a column that can be weighted")
                 value += 1
                 sum += value
                 weights.append(int(value))
@@ -416,14 +427,11 @@ class Session:
         return leidenClusters
 
     def make_full_docWordMatrix(self, min_df = 5, inputSet: Subset = None):
-        begin = time.perf_counter()
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if inputSet.size == 0:
             return
         if min_df in inputSet.doc_word_matrices:
-            end = time.perf_counter()
-            print("time = ", end-begin)
             return inputSet.doc_word_matrices[min_df][0], inputSet.doc_word_matrices[min_df][1]
         cleanedTweets = []
         
@@ -435,8 +443,6 @@ class Session:
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
-        end = time.perf_counter()
-        print("time = ", end-begin)
         names = vectorizer.get_feature_names()
         inputSet.doc_word_matrices[min_df] = [docWordMatrix_orig, names]
         return docWordMatrix_orig, names
@@ -675,7 +681,10 @@ def test10(s):
     #test.show()
 
 def test11(s):
+    #begin = time.perf_counter()
     s.filterBy("SenderGender", "FEMALE")
+    #end = time.perf_counter()
+    #print("time = ", end-begin)
     print(s.currentSet.size)
     s.weightedSample(10, "Sender Followers Count")
     s.simpleRandomSample(5)
