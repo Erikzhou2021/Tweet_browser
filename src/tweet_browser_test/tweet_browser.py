@@ -109,6 +109,7 @@ class Subset:
     size = 0
     parent = None
     children = []
+    doc_word_matrices = dict()
     def __init__(self, ind: bitarray):
         self.indices = ind
 
@@ -124,6 +125,13 @@ class Session:
         self.base = Subset(arr)
         self.base.size = self.length
         self.currentSet = self.base
+        self.weightable = dict()
+        i = 0
+        for col in self.allData.dtypes:
+            if col == int or col == float:
+                self.weightable[self.allData.columns[i]] = i
+            i += 1
+        #print(self.weightable)
 
     def makeOperation(self, outPut, count: int, funcName, params, input: Subset = None):
         if input == None or type(input) != Subset:
@@ -194,6 +202,8 @@ class Session:
             inputSet = self.currentSet
         if inputSet.size < size:
             raise ValueError("Invalid sample size")
+        if self.headerDict[colName] not in self.weightable:
+            raise ValueError("Column name does not correspond to a column that can be weighted")
         random.seed()
         ans = bitarray(self.length)
         ans.setall(0)
@@ -206,8 +216,6 @@ class Session:
                 value = self.allData.iloc[i].at[colName]
                 if value != value: 
                     value = 0
-                if type(value) == str: # must be inside the loop to avoid NANs
-                    raise ValueError("Column name does not correspond to a column that can be weighted")
                 value += 1
                 sum += value
                 weights.append(int(value))
@@ -419,7 +427,10 @@ class Session:
             inputSet = self.currentSet
         if inputSet.size == 0:
             return
+        if min_df in inputSet.doc_word_matrices:
+            return inputSet.doc_word_matrices[min_df][0], inputSet.doc_word_matrices[min_df][1]
         cleanedTweets = []
+        
         for i in range(self.length):
             if inputSet.indices[i]:
                 cleanedTweets.append(preProcessingFcn(self.allData.iloc[i].at["Message"])) # might be slow
@@ -428,7 +439,9 @@ class Session:
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
-        return docWordMatrix_orig, vectorizer.get_feature_names()
+        names = vectorizer.get_feature_names()
+        inputSet.doc_word_matrices[min_df] = [docWordMatrix_orig, names]
+        return docWordMatrix_orig, names
         #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
 
 
