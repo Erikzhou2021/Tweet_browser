@@ -247,7 +247,7 @@ class Session:
                 else:
                     include = True
                     for j in keywords:
-                        if self.allData.iloc[i].at["Message"].find(j) != -1:
+                        if self.allData.iloc[i].at["Message"].find(j) == -1:
                             include = False
                             break
                 if include:
@@ -710,7 +710,8 @@ def test13(s):
     # print("---------------------------------------")
     # print(words2)
 
+
 if __name__=='__main__':
     s = createSession("allCensus_sample.csv")
 
-    test13(s)
+    test3(s)

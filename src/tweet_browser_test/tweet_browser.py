@@ -243,7 +243,7 @@ class Session:
                 else:
                     include = True
                     for j in keywords:
-                        if self.allData.iloc[i].at["Message"].find(j) != -1:
+                        if self.allData.iloc[i].at["Message"].find(j) == -1:
                             include = False
                             break
                 if include:
