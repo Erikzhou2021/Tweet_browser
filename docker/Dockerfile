@@ -1,10 +1,15 @@
 FROM jupyter/scipy-notebook
 
 #RUN apt update
+#ENV DEBIAN_FRONTEND noninteractive
 
 EXPOSE 8866/tcp
 
 WORKDIR /home/jovyan
+
+# USER root
+# RUN apt-get update && apt-get install -y curl
+# USER 1000
 
 #RUN /usr/bin/python3 -m pip3 install --upgrade pip
 RUN pip install -i https://test.pypi.org/simple/ tweet-browser-test --upgrade
@@ -15,4 +20,9 @@ COPY allCensus_sample.csv allCensus_sample.csv
 COPY simple_tweet_browser.ipynb simple_tweet_browser.ipynb
 COPY tweet_browser_with_search.ipynb tweet_browser_with_search.ipynb
 
+WORKDIR /home/jovyan/.jupyter
+COPY jupyter_notebook_config.py jupyter_notebook_config.py 
+
 #CMD ["voila", "simple_tweet_browser.ipynb"]
+
+#ENV NOTEBOOK_ARGS = " --no-browser --ServerApp.token='' "

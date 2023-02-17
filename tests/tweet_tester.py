@@ -241,13 +241,17 @@ class Session:
                 if orMode:
                     include = False
                     for j in keywords:
-                        if self.allData.iloc[i].at["Message"].find(j) != -1: # might be slow
+                        #if self.allData.iloc[i].at["Message"].find(j) != -1: # might be slow
+                        pattern = r"\b" + re.escape(j) + r"\b"
+                        if re.search(pattern, self.allData.iloc[i].at["Message"]):
                             include = True
                             break
                 else:
                     include = True
                     for j in keywords:
-                        if self.allData.iloc[i].at["Message"].find(j) == -1:
+                        #if self.allData.iloc[i].at["Message"].find(j) == -1:
+                        pattern = r"\b" + re.escape(j) + r"\b"
+                        if not (re.search(pattern, self.allData.iloc[i].at["Message"])):
                             include = False
                             break
                 if include:
@@ -270,7 +274,9 @@ class Session:
             if(inputSet.indices[i]):
                 newExpression = expression
                 for j in keywords:
-                    if(self.allData.iloc[i].at["Message"].find(j[1:-1]) > -1): # might be slow
+                    #if(self.allData.iloc[i].at["Message"].find(j[1:-1]) > -1): # might be slow
+                    pattern = r"\b" + re.escape(j[1:-1]) + r"\b"
+                    if re.search(pattern, self.allData.iloc[i].at["Message"]):
                         newExpression = newExpression.replace(j, " True")
                     else:
                         newExpression = newExpression.replace(j, " False")
@@ -700,11 +706,7 @@ def test12(s):
         print("exeption caught")
     
 def test13(s):
-    s.simpleRandomSample(100)
-    matrix, words = s.make_full_docWordMatrix(5)
-    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='before_stage1', 
-        clustering_method='hdbscan', num_clusters=4, min_obs= 2, num_neighbors=8)
-    matrix2, words2 = s.make_full_docWordMatrix(5)
+    print(re.findall("'[^']+'", "'bruh' and \"bruz\""))
     # print("---------------------------------------")
     # print(words)
     # print("---------------------------------------")
@@ -714,4 +716,5 @@ def test13(s):
 if __name__=='__main__':
     s = createSession("allCensus_sample.csv")
 
-    test3(s)
+    test13(s)
+

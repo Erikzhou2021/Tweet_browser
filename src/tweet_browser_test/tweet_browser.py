@@ -237,13 +237,15 @@ class Session:
                 if orMode:
                     include = False
                     for j in keywords:
-                        if self.allData.iloc[i].at["Message"].find(j) != -1: # might be slow
+                        pattern = r"\b" + re.escape(j) + r"\b"
+                        if re.search(pattern, self.allData.iloc[i].at["Message"]):
                             include = True
                             break
                 else:
                     include = True
                     for j in keywords:
-                        if self.allData.iloc[i].at["Message"].find(j) == -1:
+                        pattern = r"\b" + re.escape(j) + r"\b"
+                        if not (re.search(pattern, self.allData.iloc[i].at["Message"])):
                             include = False
                             break
                 if include:
@@ -266,7 +268,8 @@ class Session:
             if(inputSet.indices[i]):
                 newExpression = expression
                 for j in keywords:
-                    if(self.allData.iloc[i].at["Message"].find(j[1:-1]) > -1): # might be slow
+                    pattern = r"\b" + re.escape(j[1:-1]) + r"\b"
+                    if re.search(pattern, self.allData.iloc[i].at["Message"]):
                         newExpression = newExpression.replace(j, " True")
                     else:
                         newExpression = newExpression.replace(j, " False")
