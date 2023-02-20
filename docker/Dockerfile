@@ -3,7 +3,7 @@ FROM jupyter/scipy-notebook
 #RUN apt update
 #ENV DEBIAN_FRONTEND noninteractive
 
-EXPOSE 8866/tcp
+#EXPOSE 8866/tcp
 
 WORKDIR /home/jovyan
 
@@ -15,14 +15,15 @@ WORKDIR /home/jovyan
 RUN pip install -i https://test.pypi.org/simple/ tweet-browser-test --upgrade
 RUN pip install voila bitarray regex plotly nltk umap-learn hdbscan leidenalg igraph
 
+WORKDIR /home/jovyan/.jupyter
+COPY jupyter_notebook_config.py jupyter_notebook_config.py 
+
 WORKDIR /home/jovyan
 COPY allCensus_sample.csv allCensus_sample.csv
 COPY simple_tweet_browser.ipynb simple_tweet_browser.ipynb
 COPY tweet_browser_with_search.ipynb tweet_browser_with_search.ipynb
 
-WORKDIR /home/jovyan/.jupyter
-COPY jupyter_notebook_config.py jupyter_notebook_config.py 
 
-#CMD ["voila", "simple_tweet_browser.ipynb"]
+CMD ["voila", "--Voila.ip=0.0.0.0", "tweet_browser_with_search.ipynb"]
 
 #ENV NOTEBOOK_ARGS = " --no-browser --ServerApp.token='' "
