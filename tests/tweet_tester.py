@@ -206,7 +206,7 @@ class Session:
             inputSet = self.currentSet
         if inputSet.size < size:
             raise ValueError("Invalid sample size")
-        if self.headerDict[colName] not in self.weightable:
+        if colName not in self.weightable:
             raise ValueError("Column name does not correspond to a column that can be weighted")
         random.seed()
         ans = bitarray(self.length)
@@ -706,15 +706,12 @@ def test12(s):
         print("exeption caught")
     
 def test13(s):
-    print(re.findall("'[^']+'", "'bruh' and \"bruz\""))
-    # print("---------------------------------------")
-    # print(words)
-    # print("---------------------------------------")
-    # print(words2)
+    s.weightedSample(100, "Retweets")
+    print(s.currentSet.size)
 
 
 if __name__=='__main__':
     s = createSession("allCensus_sample.csv")
 
-    test13(s)
+    test12(s)
 

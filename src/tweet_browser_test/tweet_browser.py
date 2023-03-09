@@ -202,7 +202,7 @@ class Session:
             inputSet = self.currentSet
         if inputSet.size < size:
             raise ValueError("Invalid sample size")
-        if self.headerDict[colName] not in self.weightable:
+        if colName not in self.weightable:
             raise ValueError("Column name does not correspond to a column that can be weighted")
         random.seed()
         ans = bitarray(self.length)
