@@ -442,7 +442,7 @@ class Session:
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
-        names = vectorizer.get_feature_names()
+        names = vectorizer.get_feature_names_out()
         inputSet.doc_word_matrices[min_df] = [docWordMatrix_orig, names]
         return docWordMatrix_orig, names
         #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()

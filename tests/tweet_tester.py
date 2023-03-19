@@ -449,7 +449,7 @@ class Session:
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
         docWordMatrix_orig = vectorizer.fit_transform(cleanedTweets)
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
-        names = vectorizer.get_feature_names()
+        names = vectorizer.get_feature_names_out()
         inputSet.doc_word_matrices[min_df] = [docWordMatrix_orig, names]
         return docWordMatrix_orig, names
         #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
@@ -684,7 +684,7 @@ def test10(s):
     test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
         clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
     #print(test)
-    #test.show()
+    test.show()
 
 def test11(s):
     #begin = time.perf_counter()
@@ -713,5 +713,5 @@ def test13(s):
 if __name__=='__main__':
     s = createSession("allCensus_sample.csv")
 
-    test12(s)
+    test10(s)
 
