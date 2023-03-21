@@ -137,17 +137,28 @@ class Session:
             i += 1
         #print(self.weightable)
 
-    def makeOperation(self, outPut, count: int, funcName, params, input: Subset = None):
-        if input == None or type(input) != Subset:
-            input = self.currentSet
-        newSet = Subset(outPut)
-        newSet.size = count
-        newOp = Operation([input], [newSet], funcName, params)
-        newOp.outputs[0].parent = newOp
-        #input.children.append(deepcopy(newOp))
-        #can't use append
-        newOp.parents[0].children = newOp.parents[0].children + [newOp]
-        self.currentSet = newSet
+    def makeOperation(self, outputs, counts, funcName, params, inputs: Subset = None):
+        if inputs == None or type(inputs) != Subset:
+            inputs = self.currentSet
+        if not isinstance(inputs, list):
+            inputs = [inputs]
+        if not isinstance(outputs, list):
+            outputs = [outputs]
+        if not isinstance(counts, list):
+            counts = [counts]
+        newSets = list()
+        for i in range(len(outputs)):
+            newSet = Subset(outputs[i])
+            newSet.size = counts[i]
+            newSets.append(newSet)
+        newOp = Operation(inputs, newSets, funcName, params)
+        for i in range(len(outputs)):
+            newOp.outputs[i].parent = newOp
+        for i in range(len(inputs)):
+            #input.children.append(deepcopy(newOp))
+            #can't use append
+            newOp.parents[i].children = newOp.parents[i].children + [newOp]
+        self.currentSet = newSets[0]
 
     def printColumn(self, column: int):
         print(self.allData.iloc[toBoolArray(self.currentSet.indices), [column]])
@@ -359,10 +370,10 @@ class Session:
             raise IndexError("Can't go back (Out of bounds)")
         self.currentSet = self.currentSet.parent.parents[index]
     
-    def next(self, index = -1):
-        if len(self.currentSet.children) == 0 or index >= len(self.currentSet.children):
+    def next(self, setIndex = -1, opIndex = 0):
+        if len(self.currentSet.children) == 0 or setIndex >= len(self.currentSet.children):
             raise IndexError("Can't got next (Out of bounds)")
-        self.currentSet = self.currentSet.children[index].outputs[0]
+        self.currentSet = self.currentSet.children[setIndex].outputs[opIndex]
 
     def printChildren(self):
         if len(self.currentSet.children) == 0:
@@ -511,7 +522,24 @@ class Session:
             clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
         else:
             raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
-        
+
+        outputs = list()
+        counts = list()
+        for i in range(num_clusters):
+            ans = bitarray(self.length)
+            ans.setall(0)
+            outputs.append(ans)
+            counts.append(0)
+        counter = 0
+        for i in range(self.length):
+            if inputSet.indices[i]:
+                outputs[int(clusters[counter])][i] = True
+                counts[int(clusters[counter])] += 1
+                counter += 1
+        self.makeOperation(outputs, counts, "Clustering", [dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
+    num_clusters, min_obs, num_neighbors, dimRed2_method]) # change to json later
+        self.currentSet = inputSet
+
         allMessages_plot = self.allData.iloc[toBoolArray(inputSet.indices)]
         allMessages_plot['Cluster'] = clusters # color by cluster
         allMessages_plot['Text'] = allMessages_plot['Message'].apply(lambda t: "<br>".join(textwrap.wrap(t))) # make tweet text display cleanly
@@ -668,14 +696,36 @@ def test8(s):
     #print(words)
     test = s.dimRed_and_clustering(matrix, dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
         clustering_when= 'after_stage2', clustering_method= 'gmm', min_obs= 25, num_clusters= 2, num_neighbors= 25)
-    print(test)
+    #print(test)
     #print(matrix)
+    print(s.currentSet.size)
+    s.next()
+    print(s.currentSet.size)
+    #s.printCurrSubset()
+    s.back()
+    print(s.currentSet.size)
 
 def test9(s):
-    s.simpleRandomSample(10)
+    s.simpleRandomSample(30)
     print(s.currentSet.size)
-    s.simpleRandomSample(4)
+    matrix, words = s.make_full_docWordMatrix(min_df= 1)
+    test = s.dimRed_and_clustering(matrix, dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
+        clustering_when= 'after_stage2', clustering_method= 'gmm', min_obs= 5, num_clusters= 5, num_neighbors= 5)
+    s.next(opIndex=4)
     print(s.currentSet.size)
+    s.back()
+    s.next(opIndex=3)
+    print(s.currentSet.size)
+    s.back()
+    s.next(opIndex=2)
+    print(s.currentSet.size)
+    s.back()
+    s.next(opIndex=1)
+    print(s.currentSet.size)
+    s.back()
+    s.next(opIndex=0)
+    print(s.currentSet.size)
+
 
 def test10(s):
     s.simpleRandomSample(300)
@@ -713,5 +763,5 @@ def test13(s):
 if __name__=='__main__':
     s = createSession("allCensus_sample.csv")
 
-    test10(s)
+    test9(s)
 
