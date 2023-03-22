@@ -60,7 +60,7 @@ def parse_data(filename):
         print(e)
         return
     end = time.perf_counter()
-    print("time = ", end-begin)
+    print("parse time = ", end-begin)
     return df
 
 def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, removeStopwords=True, 
@@ -380,7 +380,7 @@ class Session:
             print("No children searches")
             return
         for i in self.currentSet.children:
-            print("Type = ", i.operationType, " parameters = ", i.parameters)
+            print("Type = ", i.operationType, " parameters = ", i.parameters, " number of children = ", len(i.outputs))
     
     ##### Clustering ######
     
@@ -448,8 +448,9 @@ class Session:
             inputSet = self.currentSet
         if inputSet.size == 0:
             return
-        if min_df in inputSet.doc_word_matrices:
-            return inputSet.doc_word_matrices[min_df][0], inputSet.doc_word_matrices[min_df][1]
+        begin = time.perf_counter()
+        #if min_df in inputSet.doc_word_matrices:
+            #return inputSet.doc_word_matrices[min_df][0], inputSet.doc_word_matrices[min_df][1]
         cleanedTweets = []
         
         for i in range(self.length):
@@ -462,6 +463,8 @@ class Session:
         docWordMatrix_orig = docWordMatrix_orig.astype(dtype='float64')
         names = vectorizer.get_feature_names_out()
         inputSet.doc_word_matrices[min_df] = [docWordMatrix_orig, names]
+        end = time.perf_counter()
+        print("matrix time =", end-begin)
         return docWordMatrix_orig, names
         #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
 
@@ -516,12 +519,17 @@ class Session:
             clusters = self.cluster_gmm(clustering_data, num_clusters=num_clusters)
         elif clustering_method == 'k-means':
             clusters = self.cluster_kmeans(clustering_data, num_clusters=num_clusters)
-        elif clustering_method == 'hdbscan':
-            clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
-        elif clustering_method == 'leiden':
-            clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
-        else:
-            raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
+        else: 
+            if clustering_method == 'hdbscan':
+                clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
+            elif clustering_method == 'leiden':
+                clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
+            else:
+                raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
+            temp = set()
+            for i in range(len(clusters)):
+                temp.add(clusters[i])
+            num_clusters = len(temp)
 
         outputs = list()
         counts = list()
@@ -533,11 +541,12 @@ class Session:
         counter = 0
         for i in range(self.length):
             if inputSet.indices[i]:
-                outputs[int(clusters[counter])][i] = True
-                counts[int(clusters[counter])] += 1
+                clusterInd = int(clusters[counter])
+                outputs[clusterInd][i] = True
+                counts[clusterInd] += 1
                 counter += 1
         self.makeOperation(outputs, counts, "Clustering", [dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
-    num_clusters, min_obs, num_neighbors, dimRed2_method]) # change to json later
+    num_clusters, min_obs, num_neighbors, dimRed2_method]) # change to json format later
         self.currentSet = inputSet
 
         allMessages_plot = self.allData.iloc[toBoolArray(inputSet.indices)]
@@ -734,7 +743,19 @@ def test10(s):
     test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
         clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
     #print(test)
-    test.show()
+    #test.show()
+    test2 = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
+        clustering_method='leiden', num_clusters=4, min_obs= 2, num_neighbors=2)
+    test3 = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
+        clustering_method='hdbscan', num_clusters=5, min_obs= 2, num_neighbors=2)
+    s.next(0, 1)
+    print(s.currentSet.size)
+    s.back()
+    s.next(1, 3)
+    print(s.currentSet.size)
+    s.back()
+    s.next(2,4)
+    print(s.currentSet.size)
 
 def test11(s):
     #begin = time.perf_counter()
@@ -756,12 +777,37 @@ def test12(s):
         print("exeption caught")
     
 def test13(s):
-    s.weightedSample(100, "Retweets")
+    s.simpleRandomSample(300)
+    #s.printCurrSubset()
+    matrix, words = s.make_full_docWordMatrix(5)
+    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
+        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
+    s.printChildren()
+    s.next()
     print(s.currentSet.size)
+    matrix, words = s.make_full_docWordMatrix(5)
+    test2 = s.dimRed_and_clustering(matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='btwn', 
+        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
+    s.next()
+    print(s.currentSet.size)
+    s.back()
+    s.back()
+    matrix, words = s.make_full_docWordMatrix(1)
+    test3 = s.dimRed_and_clustering(matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='btwn', 
+        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
+    test4 = s.dimRed_and_clustering(matrix, dimRed1_method='pca', dimRed1_dims= 3, dimRed2_method='umap', 
+        clustering_when= 'after_stage2', clustering_method= 'hdbscan', min_obs= 25, num_clusters= 2, num_neighbors= 25)
+    test5 = s.dimRed_and_clustering(matrix, dimRed1_method='umap', dimRed1_dims= 5, dimRed2_method='umap', 
+        clustering_when= 'btwn', clustering_method= 'k-means', min_obs= 25, num_clusters= 2, num_neighbors= 25)
 
+def test14(s):
+    matrix, words = s.make_full_docWordMatrix(5)
+    s.simpleRandomSample(300)
+    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
+        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
 
 if __name__=='__main__':
     s = createSession("allCensus_sample.csv")
 
-    test9(s)
+    test14(s)
 
