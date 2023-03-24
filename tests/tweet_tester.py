@@ -1,3 +1,5 @@
+import time
+import_time = time.perf_counter()
 from ast import keyword
 from cmath import exp
 import numpy as np
@@ -31,7 +33,6 @@ from sklearn.neighbors import kneighbors_graph
 import leidenalg
 import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
-import time
 # Ignore warnings
 import warnings
 
@@ -40,6 +41,9 @@ import warnings
 #from formatter import NullFormatter
 warnings.filterwarnings("ignore")
 
+
+end_import = time.perf_counter()
+print("import time = ", end_import - import_time)
 
 # this function reads in the data (copied from online)
 def parse_data(filename):
@@ -480,7 +484,10 @@ class Session:
         # dims = docWordMatrix_orig.shape   
         # docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
         begin = time.perf_counter()
-        docWordMatrix = docWordMatrix_orig.tocsc()
+        if docWordMatrix_orig.shape[0] == self.length:
+            docWordMatrix = scipy.sparse.vstack([docWordMatrix_orig.getrow(i) for i in range(self.length) if inputSet.indices[i]], "csc")
+        else:
+            docWordMatrix = docWordMatrix_orig.tocsc()
 
         # do stage 1 dimension reduction
         if dimRed1_method == 'pca':
@@ -802,7 +809,8 @@ def test13(s):
 
 def test14(s):
     matrix, words = s.make_full_docWordMatrix(5)
-    s.simpleRandomSample(300)
+    s.simpleRandomSample(30)
+    
     test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
         clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
 
