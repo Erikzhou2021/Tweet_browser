@@ -2,14 +2,8 @@ from ast import keyword
 from cmath import exp
 import numpy as np
 from bitarray import bitarray
-from copy import deepcopy
-import math
-import base64
-import io
-import json
 import pandas as pd
 import random
-import tracemalloc
 import re
 from enum import Enum
 import string
@@ -114,12 +108,13 @@ class Subset:
         self.indices = ind
 
 class Session:
-    def __init__(self, baseSet):
-        self.allData = baseSet
+    def __init__(self, dataBase, makeMatrix = True):
+        self.dataBase = dataBase
         self.headerDict = dict()
-        for i in range(len(baseSet.columns)): # put <header, columnNum> into a dictionary for faster access
-            self.headerDict[baseSet.columns[i]] = i
-        self.length = len(baseSet)
+        headers = self.dataBase.getColHeaders()
+        for i in range(len(headers)): # put <header, columnNum> into a dictionary for faster access
+            self.headerDict[headers[i]] = i
+        self.length = self.dataBase.shape()[0]
         arr = bitarray(self.length)
         arr.setall(1)
         self.base = Subset(arr)
@@ -127,43 +122,62 @@ class Session:
         self.currentSet = self.base
         self.weightable = dict()
         i = 0
-        for col in self.allData.dtypes:
+        for col in self.dataBase.dtypes():
             if col == int or col == float:
-                self.weightable[self.allData.columns[i]] = i
+                self.weightable[headers[i]] = i
             i += 1
-        #print(self.weightable)
+        self.matrix = None
+        if makeMatrix:
+            self.matrix, self.words = self.make_full_docWordMatrix(5)
 
-    def makeOperation(self, outPut, count: int, funcName, params, input: Subset = None):
-        if input == None or type(input) != Subset:
-            input = self.currentSet
-        newSet = Subset(outPut)
-        newSet.size = count
-        newOp = Operation([input], [newSet], funcName, params)
-        newOp.outputs[0].parent = newOp
-        #input.children.append(deepcopy(newOp))
-        #can't use append
-        newOp.parents[0].children = newOp.parents[0].children + [newOp]
-        self.currentSet = newSet
+    def makeOperation(self, outputs, counts, funcName, params, inputs: Subset = None):
+        if inputs == None or type(inputs) != Subset:
+            inputs = self.currentSet
+        if not isinstance(inputs, list):
+            inputs = [inputs]
+        if not isinstance(outputs, list):
+            outputs = [outputs]
+        if not isinstance(counts, list):
+            counts = [counts]
+        newSets = list()
+        for i in range(len(outputs)):
+            newSet = Subset(outputs[i])
+            newSet.size = counts[i]
+            newSets.append(newSet)
+        newOp = Operation(inputs, newSets, funcName, params)
+        for i in range(len(outputs)):
+            newOp.outputs[i].parent = newOp
+        for i in range(len(inputs)):
+            #input.children.append(deepcopy(newOp))
+            #can't use append
+            newOp.parents[i].children = newOp.parents[i].children + [newOp]
+        self.currentSet = newSets[0]
 
     def printColumn(self, column: int):
-        print(self.allData.iloc[toBoolArray(self.currentSet.indices), [column]])
+        print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iloc[:, column])
 
     def getCurrentSubset(self):
-        return self.allData.iloc[toBoolArray(self.currentSet.indices)]
+        return self.dataBase.selectRows(toBoolArray(self.currentSet.indices))
 
     def printCurrSubset(self, verbose: bool = False):
         if verbose:
-            print(self.allData.iloc[toBoolArray(self.currentSet.indices)].values)
+            print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).values)
         else:
-            print(self.allData.iloc[toBoolArray(self.currentSet.indices), self.headerDict['Message']].values)
+            for i in range(self.length):
+                if self.currentSet.indices[i]:
+                    print(self.dataBase.getRow(i).at["Message"])
+            #print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iat[self.headerDict['Message']].values)
 
-    def invert(self, input: bitarray):
-        for i in range(len(input)):
-            if input[i]:
-                input[i] = False
+    def invert(self, inputSet: Subset = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        count = self.length - inputSet.size
+        for i in range(self.length):
+            if inputSet.indices[i]:
+                inputSet.indices[i] = False
             else:
-                input[i] = True
-        return input
+                inputSet.indices[i] = True
+        self.makeOperation(inputSet.indices, count, "Invert", "None")
 
     def randomSubset(self, probability, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -213,7 +227,7 @@ class Session:
         for i in range(self.length):
             if inputSet.indices[i]:
                 population.append(i)
-                value = self.allData.iloc[i].at[colName]
+                value = self.dataBase.getRow(i).at[colName]
                 if value != value: 
                     value = 0
                 value += 1
@@ -238,14 +252,14 @@ class Session:
                     include = False
                     for j in keywords:
                         pattern = r"\b" + re.escape(j) + r"\b"
-                        if re.search(pattern, self.allData.iloc[i].at["Message"]):
+                        if re.search(pattern, self.dataBase.getRow(i).at["Message"]):
                             include = True
                             break
                 else:
                     include = True
                     for j in keywords:
                         pattern = r"\b" + re.escape(j) + r"\b"
-                        if not (re.search(pattern, self.allData.iloc[i].at["Message"])):
+                        if not (re.search(pattern, self.dataBase.getRow(i).at["Message"])):
                             include = False
                             break
                 if include:
@@ -269,7 +283,7 @@ class Session:
                 newExpression = expression
                 for j in keywords:
                     pattern = r"\b" + re.escape(j[1:-1]) + r"\b"
-                    if re.search(pattern, self.allData.iloc[i].at["Message"]):
+                    if re.search(pattern, self.dataBase.getRow(i).at["Message"]):
                         newExpression = newExpression.replace(j, " True")
                     else:
                         newExpression = newExpression.replace(j, " False")
@@ -287,7 +301,7 @@ class Session:
         count = 0
         for i in range(self.length):
             if(inputSet.indices[i]):
-                if(re.findall(expression, self.allData.iloc[i].at["Message"], re.M)): #might be slow
+                if(re.findall(expression, self.dataBase.getRow(i).at["Message"], re.M)): #might be slow
                     ans[i] = True
                     count += 1
         self.makeOperation(ans, count, "regexSearch", expression)
@@ -299,7 +313,7 @@ class Session:
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if inputSet.indices[i] and self.allData.iloc[i].at[colName]== value: # might be slow
+            if inputSet.indices[i] and self.dataBase.getRow(i).at[colName]== value: # might be slow
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "filterBy", colName + " = " + value)
@@ -352,17 +366,17 @@ class Session:
             raise IndexError("Can't go back (Out of bounds)")
         self.currentSet = self.currentSet.parent.parents[index]
     
-    def next(self, index = -1):
-        if len(self.currentSet.children) == 0 or index >= len(self.currentSet.children):
-            raise IndexError("Can't got next (Out of bounds)")
-        self.currentSet = self.currentSet.children[index].outputs[0]
+    def next(self, setIndex = -1, opIndex = 0):
+        if len(self.currentSet.children) == 0 or setIndex >= len(self.currentSet.children):
+            raise IndexError("Can't go to next (Out of bounds)")
+        self.currentSet = self.currentSet.children[setIndex].outputs[opIndex]
 
     def printChildren(self):
         if len(self.currentSet.children) == 0:
             print("No children searches")
             return
         for i in self.currentSet.children:
-            print("Type = ", i.operationType, " parameters = ", i.parameters)
+            print("Type = ", i.operationType, " parameters = ", i.parameters, " number of children = ", len(i.outputs))
     
     ##### Clustering ######
     
@@ -430,13 +444,13 @@ class Session:
             inputSet = self.currentSet
         if inputSet.size == 0:
             return
-        if min_df in inputSet.doc_word_matrices:
-            return inputSet.doc_word_matrices[min_df][0], inputSet.doc_word_matrices[min_df][1]
+        #if min_df in inputSet.doc_word_matrices:
+            #return inputSet.doc_word_matrices[min_df][0], inputSet.doc_word_matrices[min_df][1]
         cleanedTweets = []
         
         for i in range(self.length):
             if inputSet.indices[i]:
-                cleanedTweets.append(preProcessingFcn(self.allData.iloc[i].at["Message"])) # might be slow
+                cleanedTweets.append(preProcessingFcn(self.dataBase.getRow(i).at["Message"])) # might be slow
 
         # create document-word matrix
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
@@ -448,24 +462,25 @@ class Session:
         #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
 
 
-    def dimRed_and_clustering(self, docWordMatrix_orig, 
-    dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
-    num_clusters, min_obs, num_neighbors, dimRed2_method = None, inputSet = None):
+    def dimRed_and_clustering(self, dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
+    num_clusters, min_obs, num_neighbors, dimRed2_method = None, docWordMatrix = None, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        # read in document-word matrix
-        # data = docWordMatrix_orig.data
-        # rows, cols = docWordMatrix_orig.nonzero()
-        # dims = docWordMatrix_orig.shape   
-        # docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
-        docWordMatrix = docWordMatrix_orig.tocsc()
+        if docWordMatrix == None:
+                if self.matrix == None:
+                    return
+                docWordMatrix = self.matrix
+        if docWordMatrix.shape[0] > inputSet.size:
+            processedMatrix = scipy.sparse.vstack([docWordMatrix.getrow(i) for i in range(self.length) if inputSet.indices[i]], "csc")
+        else:
+            processedMatrix = docWordMatrix.tocsc()
 
         # do stage 1 dimension reduction
         if dimRed1_method == 'pca':
-            dimRed1 = self.dimred_PCA(docWordMatrix, docWordMatrix_orig.shape[1])
+            dimRed1 = self.dimred_PCA(processedMatrix, docWordMatrix.shape[1])
         elif dimRed1_method == 'umap':
             #dimRed1 = self.dimred_UMAP(docWordMatrix, docWordMatrix_orig.shape[1])
-            dimRed1 = self.dimred_UMAP(docWordMatrix, dimRed1_dims)
+            dimRed1 = self.dimred_UMAP(processedMatrix, dimRed1_dims)
         else:
             raise ValueError("Dimension reduction method can be either 'pca' or 'umap'")
         # do stage 2 dimension reduction (if any)
@@ -481,7 +496,7 @@ class Session:
         # Clustering
         # get matrix at proper stage
         if clustering_when == 'before_stage1':
-            clustering_data = docWordMatrix
+            clustering_data = processedMatrix
         elif clustering_when == 'btwn':
             clustering_data = dimRed1
         elif clustering_when == 'after_stage2':
@@ -497,29 +512,63 @@ class Session:
             clusters = self.cluster_gmm(clustering_data, num_clusters=num_clusters)
         elif clustering_method == 'k-means':
             clusters = self.cluster_kmeans(clustering_data, num_clusters=num_clusters)
-        elif clustering_method == 'hdbscan':
-            clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
-        elif clustering_method == 'leiden':
-            clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
-        else:
-            raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
-        
-        allMessages_plot = self.allData.iloc[toBoolArray(inputSet.indices)]
+        else: 
+            if clustering_method == 'hdbscan':
+                clusters = self.cluster_hdbscan(clustering_data, min_obs=min_obs)
+            elif clustering_method == 'leiden':
+                clusters = self.cluster_polis_leiden(clustering_data, num_neighbors=num_neighbors)
+            else:
+                raise ValueError("Clustering method must be in the list [gmm, k-means, hdbscan, leiden]")
+            temp = set()
+            for i in range(len(clusters)):
+                temp.add(clusters[i])
+            num_clusters = len(temp)
+
+        outputs = list()
+        counts = list()
+        for i in range(num_clusters):
+            ans = bitarray(self.length)
+            ans.setall(0)
+            outputs.append(ans)
+            counts.append(0)
+        counter = 0
+        for i in range(self.length):
+            if inputSet.indices[i]:
+                clusterInd = int(clusters[counter])
+                outputs[clusterInd][i] = True
+                counts[clusterInd] += 1
+                counter += 1
+        self.makeOperation(outputs, counts, "Clustering", [dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
+    num_clusters, min_obs, num_neighbors, dimRed2_method]) # change to json format later
+        self.currentSet = inputSet
+
+        allMessages_plot = self.dataBase.selectRows(toBoolArray(inputSet.indices))
         allMessages_plot['Cluster'] = clusters # color by cluster
         allMessages_plot['Text'] = allMessages_plot['Message'].apply(lambda t: "<br>".join(textwrap.wrap(t))) # make tweet text display cleanly
         allMessages_plot['coord1'] = dimRed2[:,0] # x-coordinate
         allMessages_plot['coord2'] = dimRed2[:,1] # y-coordinate
         dimRed_cluster_plot = px.scatter(allMessages_plot, x='coord1', y='coord2', color='Cluster',
             hover_data=['Text'], category_orders={"Cluster": [str(int) for int in list(range(50))]})
-        # dimRed_cluster_plot = px.scatter(x= dimRed2[:,0], y= dimRed2[:,1], color= clusters, 
-        # data_frame= inputSet.indices)
-        # dimRed_cluster_plot.show()
-        # dimRed_cluster_plot.update_layout(clickmode='event+select')
         return dimRed_cluster_plot
 
-def createSession(fileName: str) -> Session:
+class DataBaseSim:
+    def __init__(self, data):
+        self.allData = data
+    def getRow(self, i):
+        return self.allData.iloc[i]
+    def getColHeaders(self):
+        return self.allData.columns
+    def selectRows(self, rows: list):
+        return self.allData.iloc[rows]
+    def dtypes(self):
+        return self.allData.dtypes
+    def shape(self):
+        return self.allData.shape
+
+def createSession(fileName: str, makeMatrix = True) -> Session:
     data = parse_data(fileName)
-    s = Session(data)
+    db = DataBaseSim(data)
+    s = Session(db, makeMatrix)
     return s
 
 if __name__=='__main__':

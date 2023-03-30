@@ -4,14 +4,8 @@ from ast import keyword
 from cmath import exp
 import numpy as np
 from bitarray import bitarray
-from copy import deepcopy
-import math
-import base64
-import io
-import json
 import pandas as pd
 import random
-import tracemalloc
 import re
 from enum import Enum
 import string
@@ -122,7 +116,7 @@ class Subset:
         self.indices = ind
 
 class Session:
-    def __init__(self, dataBase):
+    def __init__(self, dataBase, makeMatrix = True):
         self.dataBase = dataBase
         self.headerDict = dict()
         headers = self.dataBase.getColHeaders()
@@ -140,7 +134,9 @@ class Session:
             if col == int or col == float:
                 self.weightable[headers[i]] = i
             i += 1
-        #print(self.weightable)
+        self.matrix = None
+        if makeMatrix:
+            self.matrix, self.words = self.make_full_docWordMatrix(5)
 
     def makeOperation(self, outputs, counts, funcName, params, inputs: Subset = None):
         if inputs == None or type(inputs) != Subset:
@@ -166,7 +162,7 @@ class Session:
         self.currentSet = newSets[0]
 
     def printColumn(self, column: int):
-        print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iat[column])
+        print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iloc[:, column])
 
     def getCurrentSubset(self):
         return self.dataBase.selectRows(toBoolArray(self.currentSet.indices))
@@ -180,13 +176,16 @@ class Session:
                     print(self.dataBase.getRow(i).at["Message"])
             #print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iat[self.headerDict['Message']].values)
 
-    def invert(self, input: bitarray):
-        for i in range(len(input)):
-            if input[i]:
-                input[i] = False
+    def invert(self, inputSet: Subset = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        count = self.length - inputSet.size
+        for i in range(self.length):
+            if inputSet.indices[i]:
+                inputSet.indices[i] = False
             else:
-                input[i] = True
-        return input
+                inputSet.indices[i] = True
+        self.makeOperation(inputSet.indices, count, "Invert", "None")
 
     def randomSubset(self, probability, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -377,7 +376,7 @@ class Session:
     
     def next(self, setIndex = -1, opIndex = 0):
         if len(self.currentSet.children) == 0 or setIndex >= len(self.currentSet.children):
-            raise IndexError("Can't got next (Out of bounds)")
+            raise IndexError("Can't go to next (Out of bounds)")
         self.currentSet = self.currentSet.children[setIndex].outputs[opIndex]
 
     def printChildren(self):
@@ -474,28 +473,26 @@ class Session:
         #return docWordMatrix_orig.tolil(), vectorizer.get_feature_names()
 
 
-    def dimRed_and_clustering(self, docWordMatrix_orig, 
-    dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
-    num_clusters, min_obs, num_neighbors, dimRed2_method = None, inputSet = None):
+    def dimRed_and_clustering(self, dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
+    num_clusters, min_obs, num_neighbors, dimRed2_method = None, docWordMatrix = None, inputSet = None):
+        begin = time.perf_counter()
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        # read in document-word matrix
-        # data = docWordMatrix_orig.data
-        # rows, cols = docWordMatrix_orig.nonzero()
-        # dims = docWordMatrix_orig.shape   
-        # docWordMatrix = csc_matrix((data, (rows, cols)), shape=(dims[0], dims[1]))
-        begin = time.perf_counter()
-        if docWordMatrix_orig.shape[0] == self.length:
-            docWordMatrix = scipy.sparse.vstack([docWordMatrix_orig.getrow(i) for i in range(self.length) if inputSet.indices[i]], "csc")
+        if docWordMatrix == None:
+                if self.matrix == None:
+                    return
+                docWordMatrix = self.matrix
+        if docWordMatrix.shape[0] > inputSet.size:
+            processedMatrix = scipy.sparse.vstack([docWordMatrix.getrow(i) for i in range(self.length) if inputSet.indices[i]], "csc")
         else:
-            docWordMatrix = docWordMatrix_orig.tocsc()
+            processedMatrix = docWordMatrix.tocsc()
 
         # do stage 1 dimension reduction
         if dimRed1_method == 'pca':
-            dimRed1 = self.dimred_PCA(docWordMatrix, docWordMatrix_orig.shape[1])
+            dimRed1 = self.dimred_PCA(processedMatrix, docWordMatrix.shape[1])
         elif dimRed1_method == 'umap':
             #dimRed1 = self.dimred_UMAP(docWordMatrix, docWordMatrix_orig.shape[1])
-            dimRed1 = self.dimred_UMAP(docWordMatrix, dimRed1_dims)
+            dimRed1 = self.dimred_UMAP(processedMatrix, dimRed1_dims)
         else:
             raise ValueError("Dimension reduction method can be either 'pca' or 'umap'")
         # do stage 2 dimension reduction (if any)
@@ -511,7 +508,7 @@ class Session:
         # Clustering
         # get matrix at proper stage
         if clustering_when == 'before_stage1':
-            clustering_data = docWordMatrix
+            clustering_data = processedMatrix
         elif clustering_when == 'btwn':
             clustering_data = dimRed1
         elif clustering_when == 'after_stage2':
@@ -586,10 +583,10 @@ class DataBaseSim:
     def shape(self):
         return self.allData.shape
 
-def createSession(fileName: str) -> Session:
+def createSession(fileName: str, makeMatrix = True) -> Session:
     data = parse_data(fileName)
     db = DataBaseSim(data)
-    s = Session(db)
+    s = Session(db, makeMatrix)
     return s
 
 def test1(s):
@@ -698,6 +695,7 @@ def test6(s):
     print("\n\n ---------------------------------------------------------- \n")
     temp = s.getCurrentSubset()
     print(temp)
+    s.printColumn(15)
 
 def test7(s): #same as test 1
     s.advancedSearch("'covid' and ('hospital' or 'vaccine')")
@@ -724,9 +722,8 @@ def test8(s):
     s.regexSearch("Trump")
     print(s.currentSet.size)
     #s.printCurrSubset()
-    matrix, words = s.make_full_docWordMatrix(min_df= 1)
     #print(words)
-    test = s.dimRed_and_clustering(matrix, dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
+    test = s.dimRed_and_clustering(dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
         clustering_when= 'after_stage2', clustering_method= 'gmm', min_obs= 25, num_clusters= 2, num_neighbors= 25)
     #print(test)
     #print(matrix)
@@ -740,8 +737,8 @@ def test8(s):
 def test9(s):
     s.simpleRandomSample(30)
     print(s.currentSet.size)
-    matrix, words = s.make_full_docWordMatrix(min_df= 1)
-    test = s.dimRed_and_clustering(matrix, dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
+    matrix, words = s.make_full_docWordMatrix(5)
+    test = s.dimRed_and_clustering(docWordMatrix = matrix, dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
         clustering_when= 'after_stage2', clustering_method= 'gmm', min_obs= 5, num_clusters= 5, num_neighbors= 5)
     s.next(opIndex=4)
     print(s.currentSet.size)
@@ -758,18 +755,17 @@ def test9(s):
     s.next(opIndex=0)
     print(s.currentSet.size)
 
-
 def test10(s):
     s.simpleRandomSample(300)
     #s.printCurrSubset()
     matrix, words = s.make_full_docWordMatrix(50)
-    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
+    test = s.dimRed_and_clustering(docWordMatrix = matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
         clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
     #print(test)
     #test.show()
-    test2 = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
+    test2 = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
         clustering_method='leiden', num_clusters=4, min_obs= 2, num_neighbors=2)
-    test3 = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
+    test3 = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
         clustering_method='hdbscan', num_clusters=5, min_obs= 2, num_neighbors=2)
     s.next(0, 1)
     print(s.currentSet.size)
@@ -802,36 +798,68 @@ def test12(s):
 def test13(s):
     s.simpleRandomSample(300)
     #s.printCurrSubset()
-    matrix, words = s.make_full_docWordMatrix(5)
-    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
+    test = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
         clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
     s.printChildren()
     s.next()
     print(s.currentSet.size)
     matrix, words = s.make_full_docWordMatrix(5)
-    test2 = s.dimRed_and_clustering(matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='btwn', 
+    test2 = s.dimRed_and_clustering(docWordMatrix= matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='btwn', 
         clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
     s.next()
     print(s.currentSet.size)
     s.back()
     s.back()
     matrix, words = s.make_full_docWordMatrix(1)
-    test3 = s.dimRed_and_clustering(matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='btwn', 
+    test3 = s.dimRed_and_clustering(docWordMatrix = matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='btwn', 
         clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
-    test4 = s.dimRed_and_clustering(matrix, dimRed1_method='pca', dimRed1_dims= 3, dimRed2_method='umap', 
+    test4 = s.dimRed_and_clustering(docWordMatrix = matrix, dimRed1_method='pca', dimRed1_dims= 3, dimRed2_method='umap', 
         clustering_when= 'after_stage2', clustering_method= 'hdbscan', min_obs= 25, num_clusters= 2, num_neighbors= 25)
-    test5 = s.dimRed_and_clustering(matrix, dimRed1_method='umap', dimRed1_dims= 5, dimRed2_method='umap', 
+    test5 = s.dimRed_and_clustering(dimRed1_method='umap', dimRed1_dims= 5, dimRed2_method='umap', 
         clustering_when= 'btwn', clustering_method= 'k-means', min_obs= 25, num_clusters= 2, num_neighbors= 25)
 
 def test14(s):
-    matrix, words = s.make_full_docWordMatrix(5)
     s.simpleRandomSample(30)
     
-    test = s.dimRed_and_clustering(matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
+    test = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
         clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
+
+def test15(s):
+    s.simpleRandomSample(50)
+    t1 = s.getCurrentSubset()
+    s.invert()
+    print(s.currentSet.size)
+    s.invert()
+    t2 = s.getCurrentSubset()
+    print(t1 == t2)
+    print(s.currentSet.size)
+    s.back()
+    s.invert()
+    print(s.currentSet.size)
+
+def test16(s):
+    s.simpleRandomSample(50)
+    s1 = s.currentSet
+    s.back()
+    s.searchKeyword(["covid", "vaccine"], True)
+    print(s.currentSet.size)
+    s2 = s.currentSet
+    s.back()
+    s.searchKeyword(["covid", "hospital"], True)
+    print(s.currentSet.size)
+    s3 = s.currentSet
+    s.setIntersect(s2)
+    print(s.currentSet.size)
+    s.back()
+    s.setUnion(s2)
+    print(s.currentSet.size)
+    s.back()
+    s.setDiff(s2)
+    print(s.currentSet.size)
 
 if __name__=='__main__':
     s = createSession("allCensus_sample.csv")
+    #s = createSession("allCensus_sample.csv", False)
 
-    test14(s)
+    test16(s)
 
