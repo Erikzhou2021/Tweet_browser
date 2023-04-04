@@ -26,6 +26,7 @@ import hdbscan
 from sklearn.neighbors import kneighbors_graph
 import leidenalg
 import igraph as ig
+import copy
 import textwrap # hover text on dimension reduction/clustering plot
 # Ignore warnings
 import warnings
@@ -134,9 +135,9 @@ class Session:
             if col == int or col == float:
                 self.weightable[headers[i]] = i
             i += 1
-        self.matrix = None
         if makeMatrix:
-            self.matrix, self.words = self.make_full_docWordMatrix(5)
+            matrix, self.words = self.make_full_docWordMatrix(5)
+            self.dataBase.setMatrix(matrix)
 
     def makeOperation(self, outputs, counts, funcName, params, inputs: Subset = None):
         if inputs == None or type(inputs) != Subset:
@@ -479,9 +480,9 @@ class Session:
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if docWordMatrix == None:
-                if self.matrix == None:
-                    return
-                docWordMatrix = self.matrix
+                docWordMatrix = self.dataBase.getMatrix() 
+                if docWordMatrix == None:
+                    docWordMatrix = self.make_full_docWordMatrix()[0]
         if docWordMatrix.shape[0] > inputSet.size:
             processedMatrix = scipy.sparse.vstack([docWordMatrix.getrow(i) for i in range(self.length) if inputSet.indices[i]], "csc")
         else:
@@ -572,6 +573,7 @@ class Session:
 class DataBaseSim:
     def __init__(self, data):
         self.allData = data
+        self.matrix = None
     def getRow(self, i):
         return self.allData.iloc[i]
     def getColHeaders(self):
@@ -582,6 +584,10 @@ class DataBaseSim:
         return self.allData.dtypes
     def shape(self):
         return self.allData.shape
+    def setMatrix(self, input):
+        self.matrix = input
+    def getMatrix(self):
+        return self.matrix
 
 def createSession(fileName: str, makeMatrix = True) -> Session:
     data = parse_data(fileName)
@@ -857,9 +863,19 @@ def test16(s):
     s.setDiff(s2)
     print(s.currentSet.size)
 
-if __name__=='__main__':
-    s = createSession("allCensus_sample.csv")
-    #s = createSession("allCensus_sample.csv", False)
+def allTests(s1):
+    current_module = __import__(__name__)
+    for i in range(1,16):
+        s = copy.deepcopy(s1)
+        print("---------------------------")
+        print("test ", i)
+        print("---------------------------")
+        func = getattr(current_module, "test{}".format(i))
+        func(s) 
 
-    test16(s)
+if __name__=='__main__':
+    #s = createSession("allCensus_sample.csv")
+    s = createSession("allCensus_sample.csv", False)
+
+    allTests(s)
 
