@@ -30,6 +30,7 @@ import copy
 import textwrap # hover text on dimension reduction/clustering plot
 # Ignore warnings
 import warnings
+import pickle
 
 #from pyparsing import null_debug_action
 
@@ -39,6 +40,8 @@ warnings.filterwarnings("ignore")
 
 end_import = time.perf_counter()
 print("import time = ", end_import - import_time)
+
+fileName = "Data/Session.pkl"
 
 # this function reads in the data (copied from online)
 def parse_data(filename):
@@ -161,6 +164,8 @@ class Session:
             #can't use append
             newOp.parents[i].children = newOp.parents[i].children + [newOp]
         self.currentSet = newSets[0]
+        with open(fileName,"wb") as ouput:
+            pickle.dump(self, ouput, pickle.HIGHEST_PROTOCOL)
 
     def printColumn(self, column: int):
         print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iloc[:, column])
@@ -551,8 +556,17 @@ class Session:
                 outputs[clusterInd][i] = True
                 counts[clusterInd] += 1
                 counter += 1
-        self.makeOperation(outputs, counts, "Clustering", [dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
-    num_clusters, min_obs, num_neighbors, dimRed2_method]) # change to json format later
+        params = ["dimRed1_method=" + dimRed1_method, "dimRed1_dims=" + str(dimRed1_dims), 
+            "clustering_when=" + clustering_when, "clustering_method=" + clustering_method]
+        if num_clusters is not None:
+            params.append("num_clusters=" + str(num_clusters))
+        if min_obs is not None:
+            params.append("min_obs=" + str(min_obs))
+        if num_neighbors is not None:
+            params.append("num_neighbors=" + str(num_neighbors))
+        if dimRed2_method is not None:
+            params.append("dimRed2_method=" + dimRed2_method)
+        self.makeOperation(outputs, counts, "Clustering", params) 
         self.currentSet = inputSet
 
         allMessages_plot = self.dataBase.selectRows(toBoolArray(inputSet.indices))
@@ -876,6 +890,7 @@ def allTests(s1):
 if __name__=='__main__':
     #s = createSession("allCensus_sample.csv")
     s = createSession("allCensus_sample.csv", False)
-
+    #with open(fileName, "rb") as input:
+        #s = pickle.load(input) 
     allTests(s)
-
+    #test13(s)
