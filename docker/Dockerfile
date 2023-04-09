@@ -24,8 +24,8 @@ COPY allCensus_sample.csv allCensus_sample.csv
 COPY simple_tweet_browser.ipynb simple_tweet_browser.ipynb
 COPY tweet_browser_with_search.ipynb tweet_browser_with_search.ipynb
 COPY tweet_browser_simple_search.ipynb tweet_browser_simple_search.ipynb
+RUN mkdir Data
 
-
-#CMD ["voila", "--Voila.ip=0.0.0.0", "tweet_browser_simple_search.ipynb"]
+CMD ["voila", "--Voila.ip=0.0.0.0", "simple_tweet_browser.ipynb"]
 
 #ENV NOTEBOOK_ARGS = " --no-browser --ServerApp.token='' "

@@ -31,6 +31,7 @@ import textwrap # hover text on dimension reduction/clustering plot
 # Ignore warnings
 import warnings
 import pickle
+import datetime
 
 #from pyparsing import null_debug_action
 
@@ -103,12 +104,14 @@ class Operation:
     outputs = []
     operationType = ""
     parmeters = ""
+    times = []
 
-    def __init__(self, inputArr, outputArr, searchType, parameter):
+    def __init__(self, inputArr, outputArr, searchType, parameter, times):
         self.parents = inputArr
         self.outputs = outputArr
         self.operationType = searchType
         self.parameters = parameter
+        self.times = times
 
 class Subset:
     indices = bitarray()
@@ -156,7 +159,8 @@ class Session:
             newSet = Subset(outputs[i])
             newSet.size = counts[i]
             newSets.append(newSet)
-        newOp = Operation(inputs, newSets, funcName, params)
+        times = [datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")]
+        newOp = Operation(inputs, newSets, funcName, params, times)
         for i in range(len(outputs)):
             newOp.outputs[i].parent = newOp
         for i in range(len(inputs)):
@@ -390,7 +394,8 @@ class Session:
             print("No children searches")
             return
         for i in self.currentSet.children:
-            print("Type = ", i.operationType, " parameters = ", i.parameters, " number of children = ", len(i.outputs))
+            print("Type = ", i.operationType, ", parameters = ", i.parameters,
+                  ", time = ", i.times, ", number of children = ", len(i.outputs))
     
     ##### Clustering ######
     
@@ -877,6 +882,18 @@ def test16(s):
     s.setDiff(s2)
     print(s.currentSet.size)
 
+def test17(s):
+    s.simpleRandomSample(25)
+    s.back()
+    s.simpleRandomSample(25)
+    s.back()
+    time.sleep(1)
+    s.simpleRandomSample(25)
+    s.back()
+    s.simpleRandomSample(25)
+    s.back()
+    s.printChildren()
+
 def allTests(s1):
     current_module = __import__(__name__)
     for i in range(1,16):
@@ -892,5 +909,5 @@ if __name__=='__main__':
     s = createSession("allCensus_sample.csv", False)
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
-    allTests(s)
-    #test13(s)
+    #allTests(s)
+    test17(s)
