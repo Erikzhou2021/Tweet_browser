@@ -186,6 +186,14 @@ class Session:
                     print(self.dataBase.getRow(i).at["Message"])
             #print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iat[self.headerDict['Message']].values)
 
+    def checkOperation(self, funcName, params):
+        for op in self.currentSet.children:
+            if funcName == op.operationType and params == op.parameters:
+                op.times.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+                self.currentSet = op.outputs[0]
+                return True
+        return False
+
     def invert(self, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
@@ -261,6 +269,9 @@ class Session:
     def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        params = keywords + ["orMode = " + str(orMode)]
+        if self.checkOperation("searchKeyword", params):
+            return
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
@@ -283,11 +294,13 @@ class Session:
                 if include:
                     ans[i] = True
                     count += 1
-        self.makeOperation(ans, count, "searchKeyword", keywords)
+        self.makeOperation(ans, count, "searchKeyword", params)
 
     def advancedSearch(self, expression: str, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        if self.checkOperation("advancedSearch", expression):
+            return
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
@@ -314,6 +327,8 @@ class Session:
     def regexSearch(self, expression: str, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        if self.checkOperation("regexSearch", expression):
+            return
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
@@ -327,6 +342,8 @@ class Session:
     def filterBy(self, colName: str, value, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        if self.checkOperation("filterBy", colName + " = " + value):
+            return
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
@@ -487,6 +504,10 @@ class Session:
     def dimRed_and_clustering(self, dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
     num_clusters, min_obs, num_neighbors, dimRed2_method = None, docWordMatrix = None, inputSet = None):
         begin = time.perf_counter()
+        params = ["dimRed1_method=" + dimRed1_method, "dimRed1_dims=" + str(dimRed1_dims), 
+            "clustering_when=" + clustering_when, "clustering_method=" + clustering_method]
+        #if self.checkOperation("Clustering", params):
+            #return
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if docWordMatrix == None:
@@ -561,8 +582,6 @@ class Session:
                 outputs[clusterInd][i] = True
                 counts[clusterInd] += 1
                 counter += 1
-        params = ["dimRed1_method=" + dimRed1_method, "dimRed1_dims=" + str(dimRed1_dims), 
-            "clustering_when=" + clustering_when, "clustering_method=" + clustering_method]
         if num_clusters is not None:
             params.append("num_clusters=" + str(num_clusters))
         if min_obs is not None:
@@ -892,11 +911,40 @@ def test17(s):
     s.back()
     s.simpleRandomSample(25)
     s.back()
+    #s.printChildren()
+    begin = time.perf_counter()
+    s.searchKeyword(["trump"])
+    end = time.perf_counter()
+    print("first time = ", end-begin)
+    s.back()
+    begin = time.perf_counter()
+    s.searchKeyword(["trump"], True)
+    end = time.perf_counter()
+    print("second time = ", end-begin)
+    s.back()
+    s.advancedSearch("'trump' and not 'Trump'")
+    s.back()
+    s.advancedSearch("'trump' and not 'Trump'")
+    s.back()
+    s.regexSearch("covid")
+    s.back()
+    s.regexSearch("covids")
+    s.back()
+    s.filterBy("State", "California")
+    s.back()
+    s.filterBy("State", "California")
+    s.back()
     s.printChildren()
+    s.simpleRandomSample(30)
+    test = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
+        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
+    test = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
+        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
+
 
 def allTests(s1):
     current_module = __import__(__name__)
-    for i in range(1,16):
+    for i in range(1,17):
         s = copy.deepcopy(s1)
         print("---------------------------")
         print("test ", i)

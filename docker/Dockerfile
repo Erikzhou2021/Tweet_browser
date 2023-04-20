@@ -25,7 +25,8 @@ COPY simple_tweet_browser.ipynb simple_tweet_browser.ipynb
 COPY tweet_browser_with_search.ipynb tweet_browser_with_search.ipynb
 COPY tweet_browser_simple_search.ipynb tweet_browser_simple_search.ipynb
 RUN mkdir Data
+WORKDIR /home/jovyan
 
-CMD ["voila", "--Voila.ip=0.0.0.0", "simple_tweet_browser.ipynb"]
+CMD ["voila", "--Voila.ip=0.0.0.0", "tweet_browser_simple_search.ipynb"]
 
 #ENV NOTEBOOK_ARGS = " --no-browser --ServerApp.token='' "
