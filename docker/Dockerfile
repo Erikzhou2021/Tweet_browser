@@ -25,6 +25,8 @@ COPY simple_tweet_browser.ipynb simple_tweet_browser.ipynb
 COPY tweet_browser_with_search.ipynb tweet_browser_with_search.ipynb
 COPY tweet_browser_simple_search.ipynb tweet_browser_simple_search.ipynb
 RUN mkdir Data
+WORKDIR /home/jovyan/Data
+COPY viewHistory.py viewHistory.py
 WORKDIR /home/jovyan
 
 CMD ["voila", "--Voila.ip=0.0.0.0", "tweet_browser_simple_search.ipynb"]

@@ -175,6 +175,14 @@ class Session:
                     print(self.dataBase.getRow(i).at["Message"])
             #print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iat[self.headerDict['Message']].values)
 
+    def checkOperation(self, funcName, params):
+        for op in self.currentSet.children:
+            if funcName == op.operationType and params == op.parameters:
+                op.times.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+                self.currentSet = op.outputs[0]
+                return True
+        return False
+
     def invert(self, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
@@ -250,6 +258,9 @@ class Session:
     def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        params = keywords + ["orMode = " + str(orMode)]
+        if self.checkOperation("searchKeyword", params):
+            return
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
@@ -272,11 +283,13 @@ class Session:
                 if include:
                     ans[i] = True
                     count += 1
-        self.makeOperation(ans, count, "searchKeyword", keywords)
+        self.makeOperation(ans, count, "searchKeyword", params)
 
     def advancedSearch(self, expression: str, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        if self.checkOperation("advancedSearch", expression):
+            return
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
@@ -303,6 +316,8 @@ class Session:
     def regexSearch(self, expression: str, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        if self.checkOperation("regexSearch", expression):
+            return
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
@@ -316,6 +331,8 @@ class Session:
     def filterBy(self, colName: str, value, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        if self.checkOperation("filterBy", colName + " = " + value):
+            return
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
@@ -474,6 +491,10 @@ class Session:
     num_clusters, min_obs, num_neighbors, dimRed2_method = None, docWordMatrix = None, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
+        params = ["dimRed1_method=" + dimRed1_method, "dimRed1_dims=" + str(dimRed1_dims), 
+            "clustering_when=" + clustering_when, "clustering_method=" + clustering_method]
+        #if self.checkOperation("Clustering", params):
+            #return
         if docWordMatrix == None:
                 docWordMatrix = self.dataBase.getMatrix() 
                 if docWordMatrix == None:
@@ -546,8 +567,6 @@ class Session:
                 outputs[clusterInd][i] = True
                 counts[clusterInd] += 1
                 counter += 1
-        params = ["dimRed1_method=" + dimRed1_method, "dimRed1_dims=" + str(dimRed1_dims), 
-            "clustering_when=" + clustering_when, "clustering_method=" + clustering_method]
         if num_clusters is not None:
             params.append("num_clusters=" + str(num_clusters))
         if min_obs is not None:

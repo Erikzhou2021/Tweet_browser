@@ -504,12 +504,12 @@ class Session:
     def dimRed_and_clustering(self, dimRed1_method, dimRed1_dims, clustering_when, clustering_method, 
     num_clusters, min_obs, num_neighbors, dimRed2_method = None, docWordMatrix = None, inputSet = None):
         begin = time.perf_counter()
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
         params = ["dimRed1_method=" + dimRed1_method, "dimRed1_dims=" + str(dimRed1_dims), 
             "clustering_when=" + clustering_when, "clustering_method=" + clustering_method]
         #if self.checkOperation("Clustering", params):
             #return
-        if inputSet == None or type(inputSet) != Subset:
-            inputSet = self.currentSet
         if docWordMatrix == None:
                 docWordMatrix = self.dataBase.getMatrix() 
                 if docWordMatrix == None:
@@ -918,7 +918,7 @@ def test17(s):
     print("first time = ", end-begin)
     s.back()
     begin = time.perf_counter()
-    s.searchKeyword(["trump"], True)
+    s.searchKeyword(["trump"])
     end = time.perf_counter()
     print("second time = ", end-begin)
     s.back()
