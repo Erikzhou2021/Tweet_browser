@@ -1,0 +1,35 @@
+.custom-widget {
+    background-color: rgba(0,0,0,0.0);
+    padding: 0px 2px;
+}
+.search{
+    width: 95%;
+    outline: 0;
+    border: 0;
+    border-bottom: 3px solid black;
+    display: inline-block;
+    vertical-align: bottom;
+}
+.plusButton{
+    width: 5%;
+    outline: 0;
+    border: 0;
+    font-size: 20px;
+    font-weight: bold;
+    border-bottom: 3px solid black;
+    display: inline-block;
+    vertical-align: bottom;
+    text-align: center;
+    cursor: pointer;
+}
+.searchedValue {
+    background-color: lightgreen;
+    padding: 2px 10px;
+    margin: 5px 5px;
+    border-radius: 25px;
+    width: fit-content;
+    display: inline-block;
+}
+.close {
+  cursor: pointer;
+}

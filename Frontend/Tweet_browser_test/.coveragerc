@@ -1,0 +1,2 @@
+[run]
+omit = Tweet_browser_frontend/tests/*
