@@ -1,6 +1,7 @@
 from ast import keyword
 from cmath import exp
 import numpy as np
+import os.path
 from bitarray import bitarray
 import pandas as pd
 import random
@@ -157,8 +158,9 @@ class Session:
             #can't use append
             newOp.parents[i].children = newOp.parents[i].children + [newOp]
         self.currentSet = newSets[0]
-        with open(fileName,"wb") as ouput:
-            pickle.dump(self, ouput, pickle.HIGHEST_PROTOCOL)
+        if os.path.isfile(fileName):
+            with open(fileName,"wb") as ouput:
+                pickle.dump(self, ouput, pickle.HIGHEST_PROTOCOL)
 
     def printColumn(self, column: int):
         print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iloc[:, column])
@@ -341,6 +343,26 @@ class Session:
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "filterBy", colName + " = " + value)
+
+    def filterDate(self, startDate: str, endDate: str, inputSet = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        if self.checkOperation("filterTime", startDate + " to " + endDate):
+            return
+        startDate = datetime.datetime.strptime(startDate, '%Y-%m-%d %H:%M:%S.%f')
+        endDate = datetime.datetime.strptime(endDate, '%Y-%m-%d %H:%M:%S.%f')
+        ans = bitarray(self.length)
+        ans.setall(0)
+        count = 0
+        for i in range(self.length):
+            if inputSet.indices[i]: # might be slow
+                tempDate = self.dataBase.getRow(i).at['CreatedTime']
+                dateObj = datetime.datetime.strptime(tempDate, '%Y-%m-%d %H:%M:%S.%f')
+                if dateObj >= startDate and dateObj <= endDate:
+                    ans[i] = True
+                    count += 1
+        self.makeOperation(ans, count, "filterTime", str(startDate) + " to " + str(endDate))
+        
 
     def setDiff(self, setOne: Subset, setZero: Subset = None):
         if setZero == None or type(setZero) != Subset:
