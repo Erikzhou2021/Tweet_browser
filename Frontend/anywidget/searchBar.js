@@ -1,5 +1,5 @@
 export function render({ model, el }) {        
-    el.classList.add("custom-widget");
+    el.classList.add("search-bar");
     let input = document.createElement('input');
     input.value = 'test';
     input.classList.add("search");
@@ -38,9 +38,7 @@ export function render({ model, el }) {
         }
     }
     
-    let widget = document.createElement('div');
-    widget.appendChild(input);
-    widget.appendChild(plusButton);
-    widget.appendChild(list);
-    el.appendChild(widget);
+    el.appendChild(input);
+    el.appendChild(plusButton);
+    el.appendChild(list);
 }
