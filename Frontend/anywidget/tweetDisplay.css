@@ -1,0 +1,42 @@
+.custom-widget {
+    background-color: rgba(0,0,0,0.0);
+    padding: 0px 2px;
+    overflow: auto;
+    max-height: 400px;
+}
+.tweet-data{
+    border-radius: 15px;
+    border: 2px solid black;
+    padding: 5px 10px;
+}
+.userName{
+    width: 20%;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: bottom;
+    padding: 5px 0px;
+}
+.date{
+    width: 55%;
+    display: inline-block;
+    vertical-align: bottom;
+    padding: 5px 0px;
+}
+.retweets{
+    width: 7%;
+    display: inline-block;
+    vertical-align: bottom;
+    padding: 5px 0px;
+}
+.likes{
+    width: 8%;
+    display: inline-block;
+    vertical-align: bottom;
+    padding: 5px 0px;
+}
+.message{
+    padding: 5px 0px;
+}
+.icon{
+    max-height: 20px;
+}
