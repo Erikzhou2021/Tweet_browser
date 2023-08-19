@@ -8,33 +8,33 @@
     border-radius: 15px;
     border: 2px solid black;
     padding: 5px 10px;
+    display: flex;
+    flex-wrap: wrap;
 }
 .userName{
-    width: 20%;
+    flex-basis: 25%;
     font-weight: bold;
-    display: inline-block;
+
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .date{
-    width: 55%;
-    display: inline-block;
+    flex-basis: 55%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .retweets{
-    width: 7%;
-    display: inline-block;
+    flex-basis: 7%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .likes{
-    width: 8%;
-    display: inline-block;
+    flex-basis: 8%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .message{
+    flex-basis: 100%;
     padding: 5px 0px;
 }
 .icon{
