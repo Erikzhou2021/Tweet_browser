@@ -3,6 +3,7 @@ export function render({ model, el }) {
     model.on("change:value", displayVals);
 
     function displayVals(){
+        el.textContent = "";
         let value = model.get("value");
         for(let i = 0; i < value.length; i++){
             let row = JSON.parse(value[i]);
