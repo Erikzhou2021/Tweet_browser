@@ -2,7 +2,7 @@ export function render({ model, el }) {
     let inputBar = document.createElement("div");
     inputBar.classList.add("search-bar");
     let input = document.createElement('input');
-    input.value = 'test';
+    input.value = '';
     input.classList.add("search");
     input.addEventListener("keypress", function(event){ if (event.key === "Enter") {addValue(input.value);} });
     let plusButton = document.createElement('span');
@@ -35,21 +35,36 @@ export function render({ model, el }) {
         var closebtns = document.getElementsByClassName("close");
 
         for (let i = 0; i < closebtns.length; i++) {
-          closebtns[i].addEventListener("click", function() {
-            let deletedVal = this.parentElement.innerHTML;
+          closebtns[i].addEventListener("click", removeValue);
+        }
+    }
+
+    function removeValue(){
+        let deletedVal = this.parentElement.innerHTML;
             deletedVal = deletedVal.substring(0, deletedVal.length - closeTag.length);
             let oldVal = model.get("value");
             for(let i = 0; i < oldVal.length; i++){
                 if(oldVal[i] == deletedVal){
                     oldVal[i] = oldVal[oldVal.length -1];
                     oldVal.pop();
-                    model.set("value", oldVal);
+                    //model.set("value", [...oldVal]);
+                    // need to do this weird stuff, might be a bug in backbone.js or anywidget
+                    // still doesn't even work properly when deleting the last element
+                    model.set("value", []);
                     model.save_changes();
+                    setOldVal(oldVal);
                     break;
                 }
             }
-            this.parentElement.remove();
-          });
+        this.parentElement.remove();
+        alert("final value = " + model.get("value"));
+    }
+
+    function setOldVal(oldVal){
+        if(oldVal.length > 0){
+            alert("whattatjsdlfjaldgsfldj");
+            model.set("value", oldVal);
+            model.save_changes();
         }
     }
     
