@@ -1,4 +1,6 @@
 export function render({ model, el }) {   
+    let total = 0
+
     let inputBar = document.createElement("div");
     inputBar.classList.add("search-bar");
     let input = document.createElement('input');
@@ -24,8 +26,11 @@ export function render({ model, el }) {
             }
         }
         let currVal = model.get("value");
+        total++;
         model.set("value", currVal.concat(value));
+        model.set("totalItems", total);
         model.save_changes();
+
 
         let tempText = document.createElement('div');
         tempText.innerHTML = value;
@@ -47,27 +52,21 @@ export function render({ model, el }) {
                 if(oldVal[i] == deletedVal){
                     oldVal[i] = oldVal[oldVal.length -1];
                     oldVal.pop();
+                    total--;
                     //model.set("value", [...oldVal]);
                     // need to do this weird stuff, might be a bug in backbone.js or anywidget
                     // still doesn't even work properly when deleting the last element
                     model.set("value", []);
+                    model.set("value", oldVal);
+                    model.set("totalItems", total);
                     model.save_changes();
-                    setOldVal(oldVal);
                     break;
                 }
             }
         this.parentElement.remove();
-        alert("final value = " + model.get("value"));
+        model.save_changes();
     }
 
-    function setOldVal(oldVal){
-        if(oldVal.length > 0){
-            alert("whattatjsdlfjaldgsfldj");
-            model.set("value", oldVal);
-            model.save_changes();
-        }
-    }
-    
     inputBar.appendChild(input);
     inputBar.appendChild(plusButton);
     el.appendChild(inputBar);

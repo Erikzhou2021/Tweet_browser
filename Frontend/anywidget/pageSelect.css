@@ -1,0 +1,31 @@
+.page-select{
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+.arrow{
+    max-height: 15px;
+    cursor: pointer;
+}
+.page-num{
+    border: 1px solid black;
+    border-radius: 5px;
+    max-width: 30px;
+    height: 100%;
+    text-align: center;
+    align-self: center;
+}
+.page-input{
+    display: flex;
+    padding: 0px 10px;
+    font-size: 0.85em;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
