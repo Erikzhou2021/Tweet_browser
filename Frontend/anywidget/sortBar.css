@@ -1,0 +1,42 @@
+.sort-bar{
+    background-color: lightgray;
+    border-radius: 5px;
+    display: flex;
+    padding: 3px 7px;
+    align-items:center;
+    justify-content: space-between;
+}
+.box-container{
+    display: flex;
+    align-items: center;
+}
+.dropdowns{
+    padding: 0px 10px;
+}
+.checkbox-round {
+    width: 1.6em;
+    height: 1.6em;
+    background-color: transparent;
+    border-radius: 50%;
+    border: 1px solid black;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    cursor: pointer;
+}
+.checkbox-round:checked {
+    background-color: gray;
+}
+.sort-bar select{
+    border: none;
+    background-color: transparent;
+    /* text-align: center; */
+    text-decoration: underline;
+    font-size: 0.8em;
+}
+.sort-bar strong{
+    font-size: 0.9em;
+}
+.sort-bar img{
+    cursor: pointer;
+}

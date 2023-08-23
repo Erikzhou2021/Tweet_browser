@@ -29,7 +29,6 @@ export function render({ model, el }) {
     container.appendChild(input);
     container.appendChild(text2);
 
-
     let right = document.createElement("img");
     right.src = "images/right.svg";
     right.classList.add("arrow");
@@ -83,13 +82,12 @@ export function render({ model, el }) {
             model.save_changes();
             input.value = 1;
         }
-        else if(model.get("value") > maxPage){
-            model.set("value", maxPage);
-            model.save_changes();
-            input.value = String(maxPage);
-        }
+        // else if(model.get("value") > maxPage){
+        //     model.set("value", maxPage);
+        //     model.save_changes();
+        //     input.value = String(maxPage);
+        // }
         text2.innerHTML = "&nbsp; out of " + maxPage;
-        alert(input.value);
     }
 
     function getMaxPage(){
