@@ -2,20 +2,7 @@ export function render({ model, el }) {
     el.classList.add("sort-bar");
     let sort = document.createElement("div");
     let temp = document.createElement("div");
-    let sorted = document.createElement("input");
-    sorted.addEventListener("change", updateSorted);
-    sorted.setAttribute("type", "checkbox");
-    sorted.classList.add("checkbox-round");
-    temp.appendChild(sorted);
 
-    function updateSorted(){
-        let sortEnabled = 0;
-        if (sorted.checked){
-            sortEnabled = 1;
-        }
-        model.set("sortEnabled", sortEnabled);
-        model.save_changes();
-    }
     
 
     let dropDowns = document.createElement("div");
@@ -41,6 +28,7 @@ export function render({ model, el }) {
     byText.innerHTML = "&nbsp; By &nbsp;";
 
     let dropDown2 = document.createElement("select");
+    addOption(dropDown2, "None");
     addOption(dropDown2, "Date");
     addOption(dropDown2, "Geography");
     addOption(dropDown2, "Retweets");
