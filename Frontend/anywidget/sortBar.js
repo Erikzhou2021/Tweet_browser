@@ -72,7 +72,7 @@ export function render({ model, el }) {
     dsc.addEventListener("click", updateDsc);
 
     function updateDsc(){
-        model.set("sortOrder", "DSC");
+        model.set("sortOrder", "DESC");
         model.save_changes();
     }
 
