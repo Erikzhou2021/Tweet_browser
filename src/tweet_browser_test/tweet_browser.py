@@ -313,7 +313,6 @@ class Session:
                     ans[i] = True
                     count += 1
         self.makeOperation(ans, count, "advancedSearch", expression)
-        
 
     def regexSearch(self, expression: str, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -330,6 +329,27 @@ class Session:
                     count += 1
         self.makeOperation(ans, count, "regexSearch", expression)
     
+    def exclude(self, keywords: list, inputSet: Subset = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        if self.checkOperation("exclude", keywords):
+            return
+        ans = bitarray(self.length)
+        ans.setall(0)
+        count = 0
+        for i in range(self.length):
+            if inputSet.indices[i]:
+                include = True
+                for j in keywords:
+                    pattern = r"\b" + re.escape(j) + r"\b"
+                    if re.search(pattern, self.dataBase.getRow(i).at["Message"]):
+                        include = False
+                        break
+                if include:
+                    ans[i] = True
+                    count += 1
+        self.makeOperation(ans, count, "searchKeyword", keywords)
+
     def filterBy(self, colName: str, value, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
@@ -363,7 +383,6 @@ class Session:
                     count += 1
         self.makeOperation(ans, count, "filterTime", str(startDate) + " to " + str(endDate))
         
-
     def setDiff(self, setOne: Subset, setZero: Subset = None):
         if setZero == None or type(setZero) != Subset:
             setZero = self.currentSet

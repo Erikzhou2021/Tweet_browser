@@ -1,9 +1,17 @@
 export function render({ model, el }) {   
-    let total = 0
-
+    let headerText = model.get("header");
+    if(headerText != null && headerText != ""){
+        let header = document.createElement("h4");
+        header.innerHTML = headerText;
+        el.appendChild(header);
+    }
     let inputBar = document.createElement("div");
     inputBar.classList.add("search-bar");
     let input = document.createElement('input');
+    let placeholder = model.get("placeholder");
+    if(placeholder != null && placeholder != ""){
+        input.placeholder = placeholder;
+    }
     input.value = '';
     input.classList.add("search");
     input.addEventListener("keypress", function(event){ if (event.key === "Enter") {addValue(input.value);} });
@@ -14,55 +22,58 @@ export function render({ model, el }) {
     
     let list = document.createElement('div');
     list.classList.add("value-list");
-    let closeTag = '<span class="close">x</span>';
+
+    let currVal = model.get("value");
+    for(let i = 0; i < currVal.length; i++){
+        createSearchedValue(currVal[i]);
+    }
 
     function addValue(value){
         if(value == ""){
             return;
         }
-        for(let index = 0; index < list.children.length; index++){
-            if(list.children.item(index).innerHTML == value + closeTag){
+        let currVal = model.get("value");
+        for(let index = 0; index < currVal.length; index++){
+            if(currVal[index] == value){
                 return;
             }
         }
-        let currVal = model.get("value");
-        total++;
+        
         model.set("value", currVal.concat(value));
-        model.set("totalItems", total);
         model.save_changes();
 
+        createSearchedValue(value);        
+    }
 
+    function createSearchedValue(value){
         let tempText = document.createElement('div');
+        let closeTag = document.createElement('span');
+        closeTag.innerHTML = "x";
+        closeTag.addEventListener("click", removeValue);
         tempText.innerHTML = value;
         tempText.classList.add("searched-value");
-        tempText.innerHTML = tempText.innerHTML + closeTag;
+        tempText.appendChild(closeTag);
         list.appendChild(tempText);
-        var closebtns = document.getElementsByClassName("close");
-
-        for (let i = 0; i < closebtns.length; i++) {
-          closebtns[i].addEventListener("click", removeValue);
-        }
     }
 
     function removeValue(){
+        let closeHTML = "<span>x</span>";
         let deletedVal = this.parentElement.innerHTML;
-            deletedVal = deletedVal.substring(0, deletedVal.length - closeTag.length);
-            let oldVal = model.get("value");
-            for(let i = 0; i < oldVal.length; i++){
-                if(oldVal[i] == deletedVal){
-                    oldVal[i] = oldVal[oldVal.length -1];
-                    oldVal.pop();
-                    total--;
-                    //model.set("value", [...oldVal]);
-                    // need to do this weird stuff, might be a bug in backbone.js or anywidget
-                    // still doesn't even work properly when deleting the last element
-                    model.set("value", []);
-                    model.set("value", oldVal);
-                    model.set("totalItems", total);
-                    model.save_changes();
-                    break;
-                }
+        deletedVal = deletedVal.substring(0, deletedVal.length - closeHTML.length);
+        let oldVal = model.get("value");
+        for(let i = 0; i < oldVal.length; i++){
+            if(oldVal[i] == deletedVal){
+                oldVal[i] = oldVal[oldVal.length -1];
+                oldVal.pop();
+                //model.set("value", [...oldVal]);
+                // need to do this weird stuff, might be a bug in backbone.js or anywidget
+                // still doesn't even work properly when deleting the last element
+                model.set("value", []);
+                model.set("value", oldVal);
+                model.save_changes();
+                break;
             }
+        }
         this.parentElement.remove();
         model.save_changes();
     }

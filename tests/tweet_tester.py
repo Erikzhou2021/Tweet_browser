@@ -454,6 +454,11 @@ def test18(s):
     print(s.currentSet.size)
     assert s.currentSet.size == 18
 
+#exclude function
+def test19(s):
+    s.exclude(["a", "the"])
+    print(s.currentSet.size)
+
 def allTests(s1):
     current_module = __import__(__name__)
     for i in range(1,17):
@@ -470,4 +475,4 @@ if __name__=='__main__':
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
     # allTests(s)
-    test18(s)
+    test19(s)

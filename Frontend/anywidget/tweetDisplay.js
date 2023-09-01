@@ -2,6 +2,8 @@ export function render({ model, el }) {
     el.classList.add("tweet-display");
     model.on("change:value", displayVals);
 
+    displayVals();
+
     function displayVals(){
         el.textContent = "";
         let value = model.get("value");

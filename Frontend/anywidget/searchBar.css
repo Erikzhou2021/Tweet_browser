@@ -25,6 +25,7 @@
     border-radius: 25px;
     width: fit-content;
     display: flex;
+    flex-grow: 0 !important;
 }
 .value-list{
     display: flex;
@@ -33,4 +34,8 @@
 .close {
   cursor: pointer;
   margin-left: 7px;
+}
+.searched-value span{
+    cursor: pointer;
+    margin-left: 7px;
 }

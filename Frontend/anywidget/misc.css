@@ -1,3 +1,4 @@
+/* Dataset display */
 .dataset-display {
     background-color: lightgray;
     /* width: 20%; */
@@ -22,15 +23,6 @@
     cursor: pointer;
     font-size: 0.65em;
 }
-/* for the ai summary button */
-.generic-button{
-    color: white;
-    background-color: black;
-    width: auto;
-    font-size: 0.9em;
-    border-radius: 10px;
-    text-align: center;
-}
 .small-font{
     font-size: 0.6em;
     padding: 0px 0px;
@@ -39,6 +31,36 @@
     font-size: 0.75em;
     padding: 0px 0px;
 }
-/* input[type=file]{
-    display: none;
-} */
+
+/* AI summary button */
+.generic-button{
+    color: white;
+    background-color: black;
+    width: auto;
+    font-size: 0.9em;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Search Box */
+.search-box{
+    border: 2px solid black;
+    border-radius: 2px;
+    padding: 10px 10px;
+    min-height: 400px;
+    background-color: white;
+    display: flex;
+    /* justify-content: space-between; */
+}
+.search-box div{
+    flex-grow: 1;
+}
+.search-box .keyword-search{
+    flex-grow: 0;
+}
+.search-box h4{
+    font-weight: bold;
+}
+.search-box b{
+    font-size: 1.3em;
+}
