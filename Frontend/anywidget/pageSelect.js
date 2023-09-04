@@ -52,8 +52,8 @@ export function render({ model, el }) {
         model.save_changes();
     }
 
-    function resetPage(){
-        if(input.value == null || input.value == ""){
+    function resetPage(hardReset = false){
+        if(input.value == null || input.value == "" || hardReset){
             input.value = model.get("value");
         }
     }
@@ -93,7 +93,7 @@ export function render({ model, el }) {
     function getMaxPage(){
         return Math.floor(model.get("totalTweets") / model.get("tweetsPerPage")) + 1;
     }
-
+    resetPage(true);
     el.appendChild(left);
     el.appendChild(container);
     el.appendChild(right);

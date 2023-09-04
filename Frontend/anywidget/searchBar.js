@@ -38,10 +38,11 @@ export function render({ model, el }) {
                 return;
             }
         }
-        
+        let currCount = model.get("count");
+        model.set("count", currCount+1);
         model.set("value", currVal.concat(value));
         model.save_changes();
-
+        
         createSearchedValue(value);        
     }
 
@@ -68,6 +69,8 @@ export function render({ model, el }) {
                 //model.set("value", [...oldVal]);
                 // need to do this weird stuff, might be a bug in backbone.js or anywidget
                 // still doesn't even work properly when deleting the last element
+                let currCount = model.get("count");
+                model.set("count", currCount-1);
                 model.set("value", []);
                 model.set("value", oldVal);
                 model.save_changes();
