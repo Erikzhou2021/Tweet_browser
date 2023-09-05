@@ -36,3 +36,4 @@ CMD ["voila", "--Voila.ip=0.0.0.0 --Voila.tornado_settings=\"{'websocket_max_mes
 
 #ENV NOTEBOOK_ARGS = " --no-browser --ServerApp.token='' "
 # New CMD was not tested yet
+# https://github.com/voila-dashboards/voila/issues/807

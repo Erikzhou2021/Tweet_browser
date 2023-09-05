@@ -50,7 +50,7 @@
     min-height: 400px;
     background-color: white;
     display: flex;
-    /* justify-content: space-between; */
+    width: 60%;
 }
 .search-box div{
     flex-grow: 1;
@@ -62,5 +62,15 @@
     font-weight: bold;
 }
 .search-box b{
-    font-size: 1.3em;
+    font-size: 1.5em;
+}
+
+.filter-box{
+    border: none;
+}
+.filter-box b{
+    font-size: 1.5em;
+}
+.filter-box h5{
+    font-size: 1.17em;
 }

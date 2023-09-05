@@ -450,7 +450,7 @@ def test17(s):
 
 def test18(s):
     print(s.currentSet.size)
-    s.filterDate("2020-09-15 00:00:00.000", "2021-09-15 00:00:00.000")
+    s.filterDate("2020-09-15", "2021-09-15")
     print(s.currentSet.size)
     assert s.currentSet.size == 18
 
@@ -461,7 +461,7 @@ def test19(s):
 
 def allTests(s1):
     current_module = __import__(__name__)
-    for i in range(1,17):
+    for i in range(1,19):
         s = copy.deepcopy(s1)
         print("---------------------------")
         print("test ", i)
@@ -474,5 +474,5 @@ if __name__=='__main__':
     s = createSession("allCensus_sample.csv", False)
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
-    # allTests(s)
-    test19(s)
+    #allTests(s)
+    test18(s)

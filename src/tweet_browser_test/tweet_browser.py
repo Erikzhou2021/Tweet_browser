@@ -364,13 +364,13 @@ class Session:
                 count += 1
         self.makeOperation(ans, count, "filterBy", colName + " = " + value)
 
-    def filterDate(self, startDate: str, endDate: str, inputSet = None):
+    def filterDate(self, startDate: str, endDate: str, format: str = '%Y-%m-%d', inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if self.checkOperation("filterTime", startDate + " to " + endDate):
             return
-        startDate = datetime.datetime.strptime(startDate, '%Y-%m-%d %H:%M:%S.%f')
-        endDate = datetime.datetime.strptime(endDate, '%Y-%m-%d %H:%M:%S.%f')
+        startDate = datetime.datetime.strptime(startDate, format)
+        endDate = datetime.datetime.strptime(endDate, format)
         ans = bitarray(self.length)
         ans.setall(0)
         count = 0
