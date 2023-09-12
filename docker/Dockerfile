@@ -13,7 +13,7 @@ WORKDIR /home/jovyan
 
 #RUN /usr/bin/python3 -m pip3 install --upgrade pip
 RUN pip install -i https://test.pypi.org/simple/ tweet-browser-test --upgrade
-RUN pip install bitarray regex plotly nltk umap-learn hdbscan leidenalg igraph
+RUN pip install bitarray regex plotly nltk umap-learn hdbscan leidenalg igraph pandas matplotlib
 
 # Need to roll back versions (Not tested on docker yet)
 RUN pip install --upgrade "pyzmq<25" "jupyter_client<8"

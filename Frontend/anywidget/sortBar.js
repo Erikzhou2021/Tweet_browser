@@ -59,7 +59,7 @@ export function render({ model, el }) {
 
     let orderBy = document.createElement("div");
     let asc = document.createElement("img");
-    asc.src = "images/ascending.svg";
+    asc.src = "../tree/images/ascending.svg";
     asc.addEventListener("click", updateAsc);
 
     function updateAsc(){
@@ -68,7 +68,7 @@ export function render({ model, el }) {
     }
 
     let dsc = document.createElement("img");
-    dsc.src = "images/descending.svg";
+    dsc.src = "../tree/images/descending.svg";
     dsc.addEventListener("click", updateDsc);
 
     function updateDsc(){
