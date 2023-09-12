@@ -68,9 +68,22 @@
 .filter-box{
     border: none;
 }
+.filter-box div{
+    flex-grow: 1;
+}
 .filter-box b{
     font-size: 1.5em;
 }
-.filter-box h5{
-    font-size: 1.17em;
+.filter-box .widget-datepicker{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: max-content;
+}
+.filter-box .widget-label{
+    text-align: start;
+}
+.filter-box input[type="date"]{
+    border-radius: 20px;
+    background-color: lightgray;
 }
