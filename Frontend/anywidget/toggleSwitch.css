@@ -1,5 +1,6 @@
 .toggle-switch{
     display: flex;
+    align-items: center;
 }
 /* The switch - the box around the slider */
 .switch {

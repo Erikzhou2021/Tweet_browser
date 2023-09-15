@@ -51,6 +51,7 @@
     background-color: white;
     display: flex;
     width: 60%;
+    flex-grow: 1;
 }
 .search-box div{
     flex-grow: 1;
@@ -67,12 +68,17 @@
 
 .filter-box{
     border: none;
+    flex-grow: 1;
+    margin: 0% 3%;
 }
 .filter-box div{
     flex-grow: 1;
 }
 .filter-box b{
     font-size: 1.5em;
+}
+.filter-box h4{
+    font-weight: bold;
 }
 .filter-box .widget-datepicker{
     display: flex;
