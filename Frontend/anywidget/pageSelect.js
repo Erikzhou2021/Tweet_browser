@@ -40,7 +40,7 @@ export function render({ model, el }) {
         if(newVal == null || newVal == ""){
             return;
         }
-        let maxPage = getMaxPage;
+        let maxPage = getMaxPage();
         if(newVal < 1){
             newVal = 1;
         }
@@ -82,11 +82,11 @@ export function render({ model, el }) {
             model.save_changes();
             input.value = 1;
         }
-        // else if(model.get("value") > maxPage){
-        //     model.set("value", maxPage);
-        //     model.save_changes();
-        //     input.value = String(maxPage);
-        // }
+        else if(model.get("value") > maxPage){
+            model.set("value", maxPage);
+            model.save_changes();
+            input.value = String(maxPage);
+        }
         text2.innerHTML = "&nbsp; out of " + maxPage;
     }
 
