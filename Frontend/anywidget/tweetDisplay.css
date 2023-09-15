@@ -12,13 +12,18 @@
     flex-wrap: wrap;
 }
 .userName{
-    flex-basis: 25%;
+    flex-basis: 20%;
     font-weight: bold;
 
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .date{
+    flex-basis: 10%;
+    vertical-align: bottom;
+    padding: 5px 0px;
+}
+.state{
     flex-basis: 55%;
     vertical-align: bottom;
     padding: 5px 0px;

@@ -12,15 +12,16 @@ export function render({ model, el }) {
             let tweetBox = createAndAdd(el, "", "tweet-data");
             createAndAdd(tweetBox, "@" + row.SenderScreenName, "userName");
             createAndAdd(tweetBox, row.CreatedTime.substring(0, row.CreatedTime.indexOf(' ')), "date");
+            createAndAdd(tweetBox, makeNotNull(row.State, "Unknown"), "state");
             createAndAdd(tweetBox, '<img src="images/retweet.svg" class="icon"> ' + makeNotNull(row.Retweets), "retweets");
             createAndAdd(tweetBox, '<img src="images/like.svg" class="icon"> ' + makeNotNull(row.Favorites), "likes");
             createAndAdd(tweetBox, row.Message, "message");
             el.appendChild(tweetBox);
         }
     }
-    function makeNotNull(val){
+    function makeNotNull(val, replace = 0){
         if (val == null){
-            return 0;
+            return replace;
         }
         return val;
     }
