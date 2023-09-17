@@ -1,8 +1,9 @@
 export function render({ model, el }) {       
+    let filePath = model.get("filePath");
     el.classList.add("page-select");     
 
     let left = document.createElement("img");
-    left.src = "../tree/images/left.svg";
+    left.src = filePath + "left.svg";
     left.classList.add("arrow");
     left.addEventListener("click", decrement);
 
@@ -30,7 +31,7 @@ export function render({ model, el }) {
     container.appendChild(text2);
 
     let right = document.createElement("img");
-    right.src = "../tree/images/right.svg";
+    right.src = filePath + "right.svg";
     right.classList.add("arrow");
     right.addEventListener("click", increment);
 

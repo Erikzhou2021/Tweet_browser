@@ -1,4 +1,5 @@
-export function render({ model, el }) {    
+export function render({ model, el }) { 
+    let filePath = model.get("filePath");   
     el.classList.add("sort-bar");
     let sort = document.createElement("div");
     let temp = document.createElement("div");
@@ -47,7 +48,7 @@ export function render({ model, el }) {
 
     let orderBy = document.createElement("div");
     let asc = document.createElement("img");
-    asc.src = "../tree/images/ascending.svg";
+    asc.src = filePath + "ascending.svg";
     asc.addEventListener("click", updateAsc);
 
     function updateAsc(){
@@ -56,7 +57,7 @@ export function render({ model, el }) {
     }
 
     let dsc = document.createElement("img");
-    dsc.src = "../tree/images/descending.svg";
+    dsc.src = filePath + "descending.svg";
     dsc.addEventListener("click", updateDsc);
 
     function updateDsc(){
