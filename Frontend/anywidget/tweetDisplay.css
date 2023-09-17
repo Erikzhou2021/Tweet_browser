@@ -8,13 +8,18 @@
     border-radius: 15px;
     border: 2px solid black;
     padding: 5px 10px;
+    margin: 6px 0px;
     display: flex;
     flex-wrap: wrap;
+}
+.tweet-data img{
+    max-height: 1em;
+    vertical-align: bottom;
 }
 .userName{
     flex-basis: 20%;
     font-weight: bold;
-
+    font-size: 1.1em;
     vertical-align: bottom;
     padding: 5px 0px;
 }
