@@ -47,9 +47,9 @@ class Summarizer:
             pad_token_id=self.tokenizer.eos_token_id
         )
         decoded_sequence = self.tokenizer.decode(sequences[0])
-        output = re.search(r'\n \[/INST\] \n(.*?)', decoded_sequence, re.DOTALL)
+        output = re.search(r'\n \[/INST\] \n(.*?) </s>', decoded_sequence, re.DOTALL)
     
         if output:
-            return output.group(1)
+            return output.group(1).strip()
         else:
             return "No summary generated."
