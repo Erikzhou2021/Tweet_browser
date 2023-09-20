@@ -1,6 +1,6 @@
 .parameter-display{
     border: none;
-    width: 40%;
+    flex-basis: 40%;
 }
 .parameter-display .title{
     font-size: 1.5em;
@@ -10,4 +10,6 @@
     border-radius: 5px;
     padding: 5px;
     font-weight: bold;
+    height: 4.5em;
+    width: 90%;
 }

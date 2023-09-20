@@ -5,21 +5,26 @@ export function render({ model, el }) {
     title.classList.add("title");
     let container = document.createElement("div");
     container.classList.add("container");
-    if(model.get("mustInclude") == "" && model.get("containOneOf") == "" && model.get("exclude") == ""){
+    let headers = model.get("headers");
+    let data = model.get("value");
+    let empty = data.length == 0;
+    for(let i = 0; i < data.length; i++){
+        if(data[i] != ""){
+            empty = false;
+            break;
+        }
+    }
+    if (empty){
         let notFound = document.createElement("div");
         notFound.innerHTML = model.get("notFound");
         container.appendChild(notFound);
     }
     else{
-        let mustInclude = document.createElement("div");
-        mustInclude.innerHTML = "Must include: " + model.get("mustInclude");
-        let containOneOf = document.createElement("div");
-        containOneOf.innerHTML = "Contains one of: "  + model.get("containOneOf");
-        let exclude = document.createElement("div");
-        exclude.innerHTML = "Exclude: " + model.get("exclude");
-        container.appendChild(mustInclude);
-        container.appendChild(containOneOf);
-        container.appendChild(exclude);
+        for(let i = 0; i < data.length; i++){
+            let temp = document.createElement("div");
+            temp.innerHTML = headers[i] + ": " + data[i];
+            container.appendChild(temp);
+        }
     }
     el.appendChild(title);
     el.appendChild(container);
