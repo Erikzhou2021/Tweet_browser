@@ -7,7 +7,7 @@ export function render({ model, el }) {
     container.classList.add("container");
     let headers = model.get("headers");
     let data = model.get("value");
-    let empty = data.length == 0;
+    let empty = true;
     for(let i = 0; i < data.length; i++){
         if(data[i] != ""){
             empty = false;
