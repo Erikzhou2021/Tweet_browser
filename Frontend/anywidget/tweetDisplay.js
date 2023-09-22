@@ -2,19 +2,23 @@ export function render({ model, el }) {
     let filePath = model.get("filePath");    
     el.classList.add("tweet-display");
     model.on("change:value", displayVals);
-    let val = model.get("value");
-    // if(val == null || val.length < 1){
-    //     let box = document.createElement("div");
-    //     box.classList.add("no-results");
-    //     el.appendChild(box);
-    // }
-    // else{
-        displayVals();
-    // }
+    displayVals();
 
     function displayVals(){
         el.textContent = "";
         let value = model.get("value");
+        if(value == undefined || value.length < 1){
+            let box = document.createElement("div");
+            box.classList.add("no-results");
+            let title = document.createElement("h1");
+            title.innerHTML = "No Results Fond";
+            let text = document.createElement("div");
+            text.innerHTML = "Click <b>MODIFY SEARCH</b> to change keywords or filters";
+            box.appendChild(title);
+            box.appendChild(text);
+            el.appendChild(box);
+            return;
+        }
         for(let i = 0; i < value.length; i++){
             let row = JSON.parse(value[i]);
             let tweetBox = createAndAdd(el, "", "tweet-data");

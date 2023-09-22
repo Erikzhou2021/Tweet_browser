@@ -41,6 +41,11 @@
     border-radius: 10px;
     text-align: center;
 }
+.modify-search{
+    flex-grow: 1;
+    height: 50px;
+    font-size: 1em;
+}
 
 /* Search Box */
 .search-box{
