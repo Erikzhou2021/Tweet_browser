@@ -2,7 +2,7 @@
     background-color: rgba(0,0,0,0.0);
     padding: 0px 2px;
     overflow: auto;
-    max-height: 400px;
+    height: 40vh;
 }
 .tweet-data{
     border-radius: 15px;
@@ -49,4 +49,11 @@
 }
 .icon{
     max-height: 20px;
+}
+
+.tweet-display .no-results{
+    border: 2px solid black;
+    border-radius: 5px;
+    width:inherit;
+    height: inherit;
 }

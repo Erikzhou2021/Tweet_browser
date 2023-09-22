@@ -2,8 +2,15 @@ export function render({ model, el }) {
     let filePath = model.get("filePath");    
     el.classList.add("tweet-display");
     model.on("change:value", displayVals);
-
-    displayVals();
+    let val = model.get("value");
+    // if(val == null || val.length < 1){
+    //     let box = document.createElement("div");
+    //     box.classList.add("no-results");
+    //     el.appendChild(box);
+    // }
+    // else{
+        displayVals();
+    // }
 
     function displayVals(){
         el.textContent = "";
