@@ -49,9 +49,8 @@
 
 /* Search Box */
 .search-box{
-    border: 2px solid black;
-    border-radius: 2px;
-    padding: 10px 10px;
+    border-right: 2px solid black;
+    padding-right: 20px;
     min-height: 400px;
     background-color: white;
     display: flex;
@@ -71,6 +70,7 @@
     font-size: 1.5em;
 }
 
+/* Filter box */
 .filter-box{
     border: none;
     flex-grow: 1;
@@ -97,4 +97,18 @@
 .filter-box input[type="date"]{
     border-radius: 20px;
     background-color: lightgray;
+}
+
+.close-button{
+    background-color: white;
+    float: right;
+    width: 2em;
+    font-size: 2em;
+    /* pointer-events: none; */
+    border:0px !important;
+    box-shadow: none !important;
+}
+
+.search-button{
+    float: right;
 }
