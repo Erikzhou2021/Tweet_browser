@@ -45,7 +45,12 @@
     flex-grow: 1;
     height: 50px;
     font-size: 1em;
+    align-self: center;
 }
+.generic-button img{
+    color: white;
+}
+
 
 /* Search Box */
 .search-box{
@@ -102,7 +107,7 @@
 .close-button{
     background-color: white;
     float: right;
-    width: 2em;
+    width: 1.5em;
     font-size: 2em;
     /* pointer-events: none; */
     border:0px !important;
@@ -111,4 +116,13 @@
 
 .search-button{
     float: right;
+    font-size: 1.1em;
+}
+
+/* Advanced page main box */
+.advanced-box{
+    border: 2px solid black;
+    margin: 10px 0px;
+    padding: 10px;
+    padding-bottom: 25px;
 }
