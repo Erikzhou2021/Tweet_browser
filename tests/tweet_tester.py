@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore")
+
 import time
 import_time = time.perf_counter()
 from ast import keyword
@@ -29,7 +32,7 @@ import igraph as ig
 import copy
 import textwrap # hover text on dimension reduction/clustering plot
 # Ignore warnings
-import warnings
+
 import pickle
 import datetime
 
@@ -38,7 +41,6 @@ sys.path.insert(0, '/mnt/c/Users/erikz/Documents/Tweet_browser/Tweet_browser/src
 from tweet_browser import Session
 
 
-warnings.filterwarnings("ignore")
 
 
 end_import = time.perf_counter()
@@ -459,6 +461,10 @@ def test19(s):
     s.exclude(["a", "the"])
     print(s.currentSet.size)
 
+def test20(s):
+    s.simpleRandomSample(30)
+    s.summarize()
+
 def allTests(s1):
     current_module = __import__(__name__)
     for i in range(1,19):
@@ -475,4 +481,4 @@ if __name__=='__main__':
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
     #allTests(s)
-    test18(s)
+    test20(s)

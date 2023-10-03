@@ -26,6 +26,7 @@ from sklearn.neighbors import kneighbors_graph
 import leidenalg
 import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
+from ai_summary import Summarizer
 
 # Ignore warnings
 import warnings
@@ -627,6 +628,15 @@ class Session:
         dimRed_cluster_plot = px.scatter(allMessages_plot, x='coord1', y='coord2', color='Cluster',
             hover_data=['Text'], category_orders={"Cluster": [str(int) for int in list(range(50))]})
         return dimRed_cluster_plot
+    
+    def summarize(self, inputSet: Subset = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        summarizer = Summarizer()
+        result = summarizer.llm_summarize(self.dataBase.selectRows(inputSet.indices))
+        print(result)
+        return result
+
 
 class DataBaseSim:
     def __init__(self, data):
