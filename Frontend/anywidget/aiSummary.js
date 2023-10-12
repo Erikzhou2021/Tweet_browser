@@ -10,6 +10,8 @@ export function render({ model, el }) {
 
     function showcontributing(){
         model.set("selected", this.dataset.num);
+        let temp = model.get("changeSignal");
+        model.set("changeSignal", temp+1);
         model.save_changes();
     }
 
