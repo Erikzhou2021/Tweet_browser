@@ -3,6 +3,7 @@
     padding: 0px 2px;
     overflow: auto;
     height: 40vh;
+    min-width: 70%;
 }
 .tweet-data{
     border-radius: 15px;

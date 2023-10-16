@@ -12,3 +12,25 @@
 .ai-summary h3{
     font-weight: lighter;
 }
+
+.summary-bar{
+    justify-content: space-between;
+}
+
+.left-bar{
+    justify-content: space-between;
+    background-color: #F5F5F5;
+    flex-grow: 1;
+    flex-shrink: 0;
+    margin: 3px;
+    align-items: center;
+    padding: 10px 5px;
+}
+
+.back-button{
+    margin-right: auto;
+    width: 2em;
+    background-color: #F5F5F5;
+    border:0px !important;
+    box-shadow: none !important;
+}
