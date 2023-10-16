@@ -13,15 +13,10 @@
     font-weight: lighter;
 }
 
-.summary-bar{
-    justify-content: space-between;
-}
-
 .left-bar{
     justify-content: space-between;
     background-color: #F5F5F5;
-    flex-grow: 1;
-    flex-shrink: 0;
+    flex-basis: 40%;
     margin: 3px;
     align-items: center;
     padding: 10px 5px;
@@ -33,4 +28,9 @@
     background-color: #F5F5F5;
     border:0px !important;
     box-shadow: none !important;
+}
+
+.selected-sentence{
+    width: auto;
+    text-wrap: wrap;
 }
