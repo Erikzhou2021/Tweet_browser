@@ -16,14 +16,20 @@ export function render({ model, el }) {
     // toggleSwitch.innerHTML = "<input type='checkbox'> <span class='slider round'></span>";
     el.appendChild(text);
     el.appendChild(toggleSwitch);
-   
+    
+    if(model.get("value") == 1){
+        invisibleBox.checked = true;
+    }else{
+        invisibleBox.checked = false;
+    }
+
     function checkHandler(){
-        if(box.checked){
-            model.set("label", 1);
+        if(invisibleBox.checked){
+            model.set("value", 1);
             model.save_changes();
         }
         else{
-            model.set("label", 0);
+            model.set("value", 0);
             model.save_changes();
         }
     }
