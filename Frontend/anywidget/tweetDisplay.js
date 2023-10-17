@@ -1,6 +1,8 @@
 export function render({ model, el }) {    
     let filePath = model.get("filePath");    
     el.classList.add("tweet-display");
+    let height = model.get("height")
+    el.style.setProperty('--height', height);
     model.on("change:value", displayVals);
     displayVals();
 

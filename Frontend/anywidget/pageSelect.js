@@ -11,7 +11,7 @@ export function render({ model, el }) {
     container.classList.add("page-input");
 
 
-    let text1 = document.createElement("div");
+    let text1 = document.createElement("p");
     text1.innerHTML = "Page &nbsp;";
     
     let input = document.createElement("input");
@@ -23,7 +23,7 @@ export function render({ model, el }) {
     });
     input.addEventListener("blur", resetPage);
 
-    let text2 = document.createElement("div");
+    let text2 = document.createElement("p");
     text2.innerHTML = "&nbsp; out of " + getMaxPage();
 
     container.appendChild(text1);

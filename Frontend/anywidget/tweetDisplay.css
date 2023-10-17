@@ -2,7 +2,7 @@
     background-color: rgba(0,0,0,0.0);
     padding: 0px 2px;
     overflow: auto;
-    height: 40vh;
+    height: var(--height);
     /* min-width: 70%; */
 }
 .tweet-data{

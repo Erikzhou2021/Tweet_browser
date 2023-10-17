@@ -10,10 +10,11 @@
 .page-num{
     border: 1px solid black;
     border-radius: 5px;
-    max-width: 30px;
+    max-width: 1.5em;
     height: 100%;
     text-align: center;
     align-self: center;
+    font-size: 1em;
 }
 .page-input{
     display: flex;
