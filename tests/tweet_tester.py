@@ -37,7 +37,8 @@ import pickle
 import datetime
 
 import sys
-sys.path.insert(0, '/mnt/c/Users/erikz/Documents/Tweet_browser/Tweet_browser/src/tweet_browser_test')
+# sys.path.insert(0, '/mnt/c/Users/erikz/Documents/Tweet_browser/Tweet_browser/src/tweet_browser_test')
+sys.path.insert(0, '/mnt/c/Users/erikz/Documents/Tweet_browser/Tweet_browser/Frontend')
 from tweet_browser import Session
 
 
@@ -465,6 +466,11 @@ def test20(s):
     s.simpleRandomSample(30)
     s.summarize()
 
+def test21(s):
+    print(s.dataBase.allData[s.dataBase.allData["MessageType"] != "Twitter Retweet"].shape[0])
+    s.removeRetweets()
+    print(s.currentSet.size)
+
 def allTests(s1):
     current_module = __import__(__name__)
     for i in range(1,19):
@@ -481,4 +487,4 @@ if __name__=='__main__':
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
     #allTests(s)
-    test20(s)
+    test21(s)
