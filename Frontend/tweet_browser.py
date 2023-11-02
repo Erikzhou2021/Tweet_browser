@@ -186,12 +186,7 @@ class Session:
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         count = self.length - inputSet.size
-        for i in range(self.length):
-            if inputSet.indices[i]:
-                inputSet.indices[i] = False
-            else:
-                inputSet.indices[i] = True
-        self.makeOperation(inputSet.indices, count, "Invert", "None")
+        self.makeOperation(~inputSet.indices, count, "Invert", "None")
 
     def randomSubset(self, probability, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
