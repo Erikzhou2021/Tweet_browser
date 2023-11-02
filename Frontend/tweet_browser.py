@@ -114,27 +114,24 @@ class Subset:
         self.indices = ind
 
 class Session:
-    def __init__(self, dataBase, makeMatrix = True):
-        self.dataBase = dataBase
+    def __init__(self, data, makeMatrix = True):
+        self.allData = data
         self.headerDict = dict()
-        headers = self.dataBase.getColHeaders()
+        headers = self.allData.columns
         for i in range(len(headers)): # put <header, columnNum> into a dictionary for faster access
             self.headerDict[headers[i]] = i
-        self.length = self.dataBase.shape()[0]
+        self.length = self.allData.shape[0]
         arr = bitarray(self.length)
         arr.setall(1)
         self.base = Subset(arr)
         self.base.size = self.length
         self.currentSet = self.base
         self.weightable = dict()
-        i = 0
-        for col in self.dataBase.dtypes():
-            if col == int or col == float:
+        for i in range(len(self.allData.dtypes)):
+            if self.allData.dtypes[i] == int or self.allData.dtypes[i] == float:
                 self.weightable[headers[i]] = i
-            i += 1
         if makeMatrix:
-            matrix, self.words = self.make_full_docWordMatrix(5)
-            self.dataBase.setMatrix(matrix)
+            self.matrix, self.words = self.make_full_docWordMatrix(5)
 
     def makeOperation(self, outputs, counts, funcName, params, inputs: Subset = None):
         if inputs == None or type(inputs) != Subset:
@@ -164,18 +161,17 @@ class Session:
                 pickle.dump(self, ouput, pickle.HIGHEST_PROTOCOL)
 
     def printColumn(self, column: int):
-        print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iloc[:, column])
+        # print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iloc[:, column])
+        print(self.allData.iloc[(toBoolArray(self.currentSet.indices), column)])
 
     def getCurrentSubset(self):
-        return self.dataBase.selectRows(toBoolArray(self.currentSet.indices))
+        return self.allData.iloc[toBoolArray(self.currentSet.indices)]
 
     def printCurrSubset(self, verbose: bool = False):
         if verbose:
-            print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).values)
+            print(self.allData.iloc[toBoolArray(self.currentSet.indices)])
         else:
-            for i in range(self.length):
-                if self.currentSet.indices[i]:
-                    print(self.dataBase.getRow(i).at["Message"])
+            print(self.allData.iloc[(toBoolArray(self.currentSet.indices), self.headerDict['Message'])])
             #print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iat[self.headerDict['Message']].values)
 
     def checkOperation(self, funcName, params):
@@ -245,7 +241,7 @@ class Session:
         for i in range(self.length):
             if inputSet.indices[i]:
                 population.append(i)
-                value = self.dataBase.getRow(i).at[colName]
+                value = self.allData.iloc[i].at[colName]
                 if value != value: 
                     value = 0
                 value += 1
@@ -273,14 +269,14 @@ class Session:
                     include = False
                     for j in keywords:
                         pattern = r"\b" + re.escape(j) + r"\b"
-                        if re.search(pattern, self.dataBase.getRow(i).at["Message"]):
+                        if re.search(pattern, self.allData.iloc[i].at["Message"]):
                             include = True
                             break
                 else:
                     include = True
                     for j in keywords:
                         pattern = r"\b" + re.escape(j) + r"\b"
-                        if not (re.search(pattern, self.dataBase.getRow(i).at["Message"])):
+                        if not (re.search(pattern, self.allData.iloc[i].at["Message"])):
                             include = False
                             break
                 if include:
@@ -306,7 +302,7 @@ class Session:
                 newExpression = expression
                 for j in keywords:
                     pattern = r"\b" + re.escape(j[1:-1]) + r"\b"
-                    if re.search(pattern, self.dataBase.getRow(i).at["Message"]):
+                    if re.search(pattern, self.allData.iloc[i].at["Message"]):
                         newExpression = newExpression.replace(j, " True")
                     else:
                         newExpression = newExpression.replace(j, " False")
@@ -325,7 +321,7 @@ class Session:
         count = 0
         for i in range(self.length):
             if(inputSet.indices[i]):
-                if(re.findall(expression, self.dataBase.getRow(i).at["Message"], re.M)): #might be slow
+                if(re.findall(expression, self.allData.iloc[i].at["Message"], re.M)): #might be slow
                     ans[i] = True
                     count += 1
         self.makeOperation(ans, count, "regexSearch", expression)
@@ -343,7 +339,7 @@ class Session:
                 include = True
                 for j in keywords:
                     pattern = r"\b" + re.escape(j) + r"\b"
-                    if re.search(pattern, self.dataBase.getRow(i).at["Message"]):
+                    if re.search(pattern, self.allData.iloc[i].at["Message"]):
                         include = False
                         break
                 if include:
@@ -360,7 +356,7 @@ class Session:
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if inputSet.indices[i] and self.dataBase.getRow(i).at[colName]== value: # might be slow
+            if inputSet.indices[i] and self.allData.iloc[i].at[colName] == value: # might be slow
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "filterBy", colName + " = " + value)
@@ -377,7 +373,7 @@ class Session:
         count = 0
         for i in range(self.length):
             if inputSet.indices[i]: # might be slow
-                tempDate = self.dataBase.getRow(i).at['CreatedTime']
+                tempDate = self.allData.iloc[i].at['CreatedTime']
                 dateObj = datetime.datetime.strptime(tempDate, '%Y-%m-%d %H:%M:%S.%f')
                 if dateObj >= startDate and dateObj <= endDate:
                     ans[i] = True
@@ -391,7 +387,7 @@ class Session:
         ans.setall(0)
         count = 0
         for i in range(self.length):
-            if inputSet.indices[i] and self.dataBase.getRow(i).at['MessageType'] != "Twitter Retweet": # might be slow
+            if inputSet.indices[i] and self.allData.iloc[i].at['MessageType'] != "Twitter Retweet": # might be slow
                 ans[i] = True
                 count += 1
         self.makeOperation(ans, count, "removeRetweets", "None")
@@ -529,7 +525,7 @@ class Session:
         
         for i in range(self.length):
             if inputSet.indices[i]:
-                cleanedTweets.append(preProcessingFcn(self.dataBase.getRow(i).at["Message"])) # might be slow
+                cleanedTweets.append(preProcessingFcn(self.allData.iloc[i].at["Message"])) # might be slow
 
         # create document-word matrix
         vectorizer = CountVectorizer(strip_accents='unicode', min_df= min_df, binary=False)
@@ -550,7 +546,7 @@ class Session:
         #if self.checkOperation("Clustering", params):
             #return
         if docWordMatrix == None:
-                docWordMatrix = self.dataBase.getMatrix() 
+                docWordMatrix = self.matrix
                 if docWordMatrix == None:
                     docWordMatrix = self.make_full_docWordMatrix()[0]
         if docWordMatrix.shape[0] > inputSet.size:
@@ -632,7 +628,7 @@ class Session:
         self.makeOperation(outputs, counts, "Clustering", params) 
         self.currentSet = inputSet
 
-        allMessages_plot = self.dataBase.selectRows(toBoolArray(inputSet.indices))
+        allMessages_plot = self.allData.iloc[toBoolArray(inputSet.indices)]
         allMessages_plot['Cluster'] = clusters # color by cluster
         allMessages_plot['Text'] = allMessages_plot['Message'].apply(lambda t: "<br>".join(textwrap.wrap(t))) # make tweet text display cleanly
         allMessages_plot['coord1'] = dimRed2[:,0] # x-coordinate
@@ -645,7 +641,7 @@ class Session:
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         summarizer = Summarizer()
-        result = summarizer.llm_summarize(self.dataBase.selectRows(inputSet.indices))
+        result = summarizer.llm_summarize(self.allData.iloc[toBoolArray(inputSet.indices)])
         print(result)
         return result
 

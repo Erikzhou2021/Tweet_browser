@@ -139,8 +139,8 @@ class DataBaseSim:
 
 def createSession(fileName: str, makeMatrix = True) -> Session:
     data = parse_data(fileName)
-    db = DataBaseSim(data)
-    s = Session(db, makeMatrix)
+    # db = DataBaseSim(data)
+    s = Session(data, makeMatrix)
     return s
 
 def test1(s):
@@ -464,7 +464,7 @@ def test19(s):
 
 def test20(s):
     s.simpleRandomSample(30)
-    s.summarize()
+    # s.summarize()
 
 def test21(s):
     print(s.dataBase.allData[s.dataBase.allData["MessageType"] != "Twitter Retweet"].shape[0])
@@ -473,7 +473,7 @@ def test21(s):
 
 def allTests(s1):
     current_module = __import__(__name__)
-    for i in range(1,19):
+    for i in range(1,21):
         s = copy.deepcopy(s1)
         print("---------------------------")
         print("test ", i)
@@ -482,9 +482,8 @@ def allTests(s1):
         func(s) 
 
 if __name__=='__main__':
-    #s = createSession("allCensus_sample.csv")
-    s = createSession("allCensus_sample.csv", False)
+    s = createSession("allCensus_sample.csv")
+    #s = createSession("allCensus_sample.csv", False)
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
-    #allTests(s)
-    test21(s)
+    allTests(s)
