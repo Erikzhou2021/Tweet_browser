@@ -137,10 +137,9 @@ class DataBaseSim:
     def getMatrix(self):
         return self.matrix
 
-def createSession(fileName: str, makeMatrix = True) -> Session:
+def createSession(fileName: str, makeMatrix = True, logSearches = False) -> Session:
     data = parse_data(fileName)
-    # db = DataBaseSim(data)
-    s = Session(data, makeMatrix)
+    s = Session(data, makeMatrix, logSearches)
     return s
 
 def test1(s):
@@ -482,8 +481,8 @@ def allTests(s1):
         func(s) 
 
 if __name__=='__main__':
-    s = createSession("allCensus_sample.csv")
-    #s = createSession("allCensus_sample.csv", False)
+    #s = createSession("allCensus_sample.csv")
+    s = createSession("allCensus_sample.csv", False)
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
     allTests(s)

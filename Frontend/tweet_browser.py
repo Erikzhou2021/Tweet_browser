@@ -37,8 +37,6 @@ import datetime
 #from formatter import NullFormatter
 warnings.filterwarnings("ignore")
 
-fileName = "Data/Session.pkl"
-
 # this function reads in the data (copied from online)
 def parse_data(filename):
     path = './' + filename
@@ -114,7 +112,11 @@ class Subset:
         self.indices = ind
 
 class Session:
-    def __init__(self, data, makeMatrix = True):
+    def __init__(self, data, makeMatrix = True, logSearches = False):
+        self.logSearches = logSearches
+        if logSearches:
+            self.createSessionDump()
+
         self.allData = data
         self.headerDict = dict()
         headers = self.allData.columns
@@ -156,9 +158,16 @@ class Session:
             #can't use append
             newOp.parents[i].children = newOp.parents[i].children + [newOp]
         self.currentSet = newSets[0]
-        if os.path.isfile(fileName):
-            with open(fileName,"wb") as ouput:
+        if self.logSearches:
+            with open(self.fileName, "wb+") as ouput:
                 pickle.dump(self, ouput, pickle.HIGHEST_PROTOCOL)
+
+    def createSessionDump(self):
+        name = "Data/Session"
+        i = 0
+        while os.path.isfile(name + str(i) + ".pkl"):
+            i += 1
+        self.fileName = name + str(i) + ".pkl"
 
     def printColumn(self, column: int):
         # print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iloc[:, column])
