@@ -351,19 +351,30 @@ class Session:
                     count += 1
         self.makeOperation(ans, count, "searchKeyword", keywords)
 
+    # def filterBy(self, colName: str, value, inputSet: Subset = None):
+    #     if inputSet == None or type(inputSet) != Subset:
+    #         inputSet = self.currentSet
+    #     if self.checkOperation("filterBy", colName + " = " + value):
+    #         return
+    #     ans = bitarray(self.length)
+    #     ans.setall(0)
+    #     count = 0
+    #     for i in range(self.length):
+    #         if inputSet.indices[i] and self.allData.iloc[i].at[colName] == value: # might be slow
+    #             ans[i] = True
+    #             count += 1
+    #     self.makeOperation(ans, count, "filterBy", colName + " = " + value)
+
     def filterBy(self, colName: str, value, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if self.checkOperation("filterBy", colName + " = " + value):
             return
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if inputSet.indices[i] and self.allData.iloc[i].at[colName] == value: # might be slow
-                ans[i] = True
-                count += 1
-        self.makeOperation(ans, count, "filterBy", colName + " = " + value)
+        tempInd = toBoolArray(inputSet.indices)
+        temp = self.allData.loc[tempInd]
+        ans = temp.loc[temp[colName] == value]
+        # ans = scipy.sparse.csc_matrix((self.allData, [], ans));
+        self.makeOperation(ans, ans.shape[0], "filterBy", colName + " = " + value)
 
     def filterDate(self, startDate: str, endDate: str, format: str = '%Y-%m-%d', inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
