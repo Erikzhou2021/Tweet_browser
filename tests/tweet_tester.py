@@ -56,7 +56,7 @@ def parse_data(filename):
     try:
         if "csv" in filename:
             # Assume that the user uploaded a CSV or TXT file
-            df = pd.read_csv(path, encoding = "utf-8", index_col=[0])
+            df = pd.read_csv(path, encoding = "utf-8", index_col=False)
         elif "xls" in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(path, index_col=[0])
@@ -465,6 +465,10 @@ def test20(s):
     s.simpleRandomSample(30)
     # s.summarize()
 
+def test99(s):
+    s.removeRetweets()
+    print(s.currentSet.size)
+
 def test21(s):
     print(s.dataBase.allData[s.dataBase.allData["MessageType"] != "Twitter Retweet"].shape[0])
     s.removeRetweets()
@@ -485,4 +489,5 @@ if __name__=='__main__':
     s = createSession("allCensus_sample.csv", False)
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
-    allTests(s)
+    # allTests(s)
+    test99(s)

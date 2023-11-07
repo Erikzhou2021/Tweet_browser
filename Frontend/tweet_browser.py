@@ -43,7 +43,7 @@ def parse_data(filename):
     try:
         if "csv" in filename:
             # Assume that the user uploaded a CSV or TXT file
-            df = pd.read_csv(path, encoding = "utf-8", index_col=[0])
+            df = pd.read_csv(path, encoding = "utf-8", index_col=False)
         elif "xls" in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(path, index_col=[0])
@@ -370,10 +370,11 @@ class Session:
             inputSet = self.currentSet
         if self.checkOperation("filterBy", colName + " = " + value):
             return
-        tempInd = toBoolArray(inputSet.indices)
+        tempInd = toBoolArray(inputSet.indices) # remove later
         temp = self.allData.loc[tempInd]
         ans = temp.loc[temp[colName] == value]
         # ans = scipy.sparse.csc_matrix((self.allData, [], ans));
+        print(ans.index)
         self.makeOperation(ans, ans.shape[0], "filterBy", colName + " = " + value)
 
     def filterDate(self, startDate: str, endDate: str, format: str = '%Y-%m-%d', inputSet = None):
@@ -395,17 +396,25 @@ class Session:
                     count += 1
         self.makeOperation(ans, count, "filterTime", str(startDate) + " to " + str(endDate))
 
+    # def removeRetweets(self, inputSet = None):
+    #     if inputSet == None or type(inputSet) != Subset:
+    #         inputSet = self.currentSet
+    #     ans = bitarray(self.length)
+    #     ans.setall(0)
+    #     count = 0
+    #     for i in range(self.length):
+    #         if inputSet.indices[i] and self.allData.iloc[i].at['MessageType'] != "Twitter Retweet": # might be slow
+    #             ans[i] = True
+    #             count += 1
+    #     self.makeOperation(ans, count, "removeRetweets", "None")
+
     def removeRetweets(self, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if inputSet.indices[i] and self.allData.iloc[i].at['MessageType'] != "Twitter Retweet": # might be slow
-                ans[i] = True
-                count += 1
-        self.makeOperation(ans, count, "removeRetweets", "None")
+        tempInd = toBoolArray(inputSet.indices)
+        temp = self.allData.loc[tempInd]
+        ans = self.allData.loc[self.allData['MessageType'] != "Twitter Retweet"]
+        self.makeOperation(ans, ans.shape[0], "removeRetweets", "None")
 
     def setDiff(self, setOne: Subset, setZero: Subset = None):
         if setZero == None or type(setZero) != Subset:
