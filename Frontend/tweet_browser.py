@@ -118,6 +118,7 @@ class Session:
             self.createSessionDump()
 
         self.allData = data
+        self.allData['CreatedTime'] = pd.to_datetime(self.allData['CreatedTime'])
         self.headerDict = dict()
         headers = self.allData.columns
         for i in range(len(headers)): # put <header, columnNum> into a dictionary for faster access
@@ -371,30 +372,39 @@ class Session:
         if self.checkOperation("filterBy", colName + " = " + value):
             return
         tempInd = toBoolArray(inputSet.indices) # remove later
-        temp = self.allData.loc[tempInd]
-        ans = temp.loc[temp[colName] == value]
-        # ans = scipy.sparse.csc_matrix((self.allData, [], ans));
-        print(ans.index)
+        ans = self.allData.loc[(tempInd) & (self.allData[colName] == value)]
         self.makeOperation(ans, ans.shape[0], "filterBy", colName + " = " + value)
 
-    def filterDate(self, startDate: str, endDate: str, format: str = '%Y-%m-%d', inputSet = None):
+    # def filterDate(self, startDate: str, endDate: str, format: str = '%Y-%m-%d', inputSet = None):
+    #     if inputSet == None or type(inputSet) != Subset:
+    #         inputSet = self.currentSet
+    #     if self.checkOperation("filterTime", startDate + " to " + endDate):
+    #         return
+    #     startDate = datetime.datetime.strptime(startDate, format)
+    #     endDate = datetime.datetime.strptime(endDate, format)
+    #     ans = bitarray(self.length)
+    #     ans.setall(0)
+    #     count = 0
+    #     for i in range(self.length):
+    #         if inputSet.indices[i]: # might be slow
+    #             tempDate = self.allData.iloc[i].at['CreatedTime']
+    #             dateObj = datetime.datetime.strptime(tempDate, '%Y-%m-%d %H:%M:%S.%f')
+    #             if dateObj >= startDate and dateObj <= endDate:
+    #                 ans[i] = True
+    #                 count += 1
+    #     self.makeOperation(ans, count, "filterTime", str(startDate) + " to " + str(endDate))
+        
+    def filterDate(self, startDate: str, endDate: str, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if self.checkOperation("filterTime", startDate + " to " + endDate):
             return
+        format = '%Y-%m-%d'
         startDate = datetime.datetime.strptime(startDate, format)
         endDate = datetime.datetime.strptime(endDate, format)
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if inputSet.indices[i]: # might be slow
-                tempDate = self.allData.iloc[i].at['CreatedTime']
-                dateObj = datetime.datetime.strptime(tempDate, '%Y-%m-%d %H:%M:%S.%f')
-                if dateObj >= startDate and dateObj <= endDate:
-                    ans[i] = True
-                    count += 1
-        self.makeOperation(ans, count, "filterTime", str(startDate) + " to " + str(endDate))
+        tempInd = toBoolArray(inputSet.indices) # change later
+        ans = self.allData[(tempInd) & (self.allData['CreatedTime'] >= startDate) & (self.allData['CreatedTime'] <= endDate)]
+        self.makeOperation(ans, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate))
 
     # def removeRetweets(self, inputSet = None):
     #     if inputSet == None or type(inputSet) != Subset:
@@ -411,9 +421,10 @@ class Session:
     def removeRetweets(self, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        tempInd = toBoolArray(inputSet.indices)
-        temp = self.allData.loc[tempInd]
-        ans = self.allData.loc[self.allData['MessageType'] != "Twitter Retweet"]
+        if self.checkOperation("removeRetweets", "None"):
+            return
+        tempInd = toBoolArray(inputSet.indices) # change later
+        ans = self.allData.loc[(tempInd) & (self.allData['MessageType'] != "Twitter Retweet")]
         self.makeOperation(ans, ans.shape[0], "removeRetweets", "None")
 
     def setDiff(self, setOne: Subset, setZero: Subset = None):

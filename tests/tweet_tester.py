@@ -465,13 +465,16 @@ def test20(s):
     s.simpleRandomSample(30)
     # s.summarize()
 
-def test99(s):
+def test21(s):
     s.removeRetweets()
     print(s.currentSet.size)
 
-def test21(s):
-    print(s.dataBase.allData[s.dataBase.allData["MessageType"] != "Twitter Retweet"].shape[0])
-    s.removeRetweets()
+def test99(s):
+    begin = time.perf_counter()
+    for i in range(100):
+        s.removeRetweets()
+        s.back()
+    print("total time", time.perf_counter() - begin)
     print(s.currentSet.size)
 
 def allTests(s1):
