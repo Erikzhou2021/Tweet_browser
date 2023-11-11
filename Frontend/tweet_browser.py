@@ -119,6 +119,7 @@ class Session:
 
         self.allData = data
         self.allData['CreatedTime'] = pd.to_datetime(self.allData['CreatedTime'])
+        self.allData['Message'] = self.allData['Message'].astype("string")
         self.headerDict = dict()
         headers = self.allData.columns
         for i in range(len(headers)): # put <header, columnNum> into a dictionary for faster access
@@ -330,26 +331,40 @@ class Session:
                     count += 1
         self.makeOperation(ans, count, "regexSearch", expression)
     
+    # def exclude(self, keywords: list, inputSet: Subset = None):
+    #     if inputSet == None or type(inputSet) != Subset:
+    #         inputSet = self.currentSet
+    #     if self.checkOperation("exclude", keywords):
+    #         return
+    #     ans = bitarray(self.length)
+    #     ans.setall(0)
+    #     count = 0
+    #     for i in range(self.length):
+    #         if inputSet.indices[i]:
+    #             include = True
+    #             for j in keywords:
+    #                 pattern = r"\b" + re.escape(j) + r"\b"
+    #                 if re.search(pattern, self.allData.iloc[i].at["Message"]):
+    #                     include = False
+    #                     break
+    #             if include:
+    #                 ans[i] = True
+    #                 count += 1
+    #     self.makeOperation(ans, count, "searchKeyword", keywords)
+
     def exclude(self, keywords: list, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if self.checkOperation("exclude", keywords):
             return
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if inputSet.indices[i]:
-                include = True
-                for j in keywords:
-                    pattern = r"\b" + re.escape(j) + r"\b"
-                    if re.search(pattern, self.allData.iloc[i].at["Message"]):
-                        include = False
-                        break
-                if include:
-                    ans[i] = True
-                    count += 1
-        self.makeOperation(ans, count, "searchKeyword", keywords)
+        pattern = re.compile(r'\b' + "|".join([re.escape(word) for word in keywords]) + r'\b')
+        def predicate(row):
+            if re.search(pattern, row.iloc[self.headerDict["Message"]]):
+                return False
+            return True
+        tempInd = self.allData.index.isin(inputSet.indices)
+        ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
+        self.makeOperation(ans, ans.shape[0], "searchKeyword", keywords)
 
     # def filterBy(self, colName: str, value, inputSet: Subset = None):
     #     if inputSet == None or type(inputSet) != Subset:
