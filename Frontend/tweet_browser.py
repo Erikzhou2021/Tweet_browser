@@ -316,20 +316,34 @@ class Session:
                     count += 1
         self.makeOperation(ans, count, "advancedSearch", expression)
 
+    # def regexSearch(self, expression: str, inputSet: Subset = None):
+    #     if inputSet == None or type(inputSet) != Subset:
+    #         inputSet = self.currentSet
+    #     if self.checkOperation("regexSearch", expression):
+    #         return
+    #     ans = bitarray(self.length)
+    #     ans.setall(0)
+    #     count = 0
+    #     for i in range(self.length):
+    #         if(inputSet.indices[i]):
+    #             if(re.findall(expression, self.allData.iloc[i].at["Message"], re.M)): #might be slow
+    #                 ans[i] = True
+    #                 count += 1
+    #     self.makeOperation(ans, count, "regexSearch", expression)
+
     def regexSearch(self, expression: str, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if self.checkOperation("regexSearch", expression):
             return
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if(inputSet.indices[i]):
-                if(re.findall(expression, self.allData.iloc[i].at["Message"], re.M)): #might be slow
-                    ans[i] = True
-                    count += 1
-        self.makeOperation(ans, count, "regexSearch", expression)
+        pattern = re.compile(expression)
+        def predicate(row):
+            if re.search(pattern, row.iloc[self.headerDict["Message"]]):
+                return True
+            return False
+        tempInd = self.allData.index.isin(inputSet.indices)
+        ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
+        # self.makeOperation(ans, count, "regexSearch", expression)
     
     # def exclude(self, keywords: list, inputSet: Subset = None):
     #     if inputSet == None or type(inputSet) != Subset:

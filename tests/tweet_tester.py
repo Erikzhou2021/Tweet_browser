@@ -472,7 +472,7 @@ def test21(s):
 def test99(s):
     begin = time.perf_counter()
     for i in range(100):
-        s.exclude(["a", "the"])
+        s.regexSearch("trump")
     print("total time", time.perf_counter() - begin)
     print(s.currentSet.size)
 
