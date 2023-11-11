@@ -471,9 +471,9 @@ def test21(s):
 
 def test99(s):
     begin = time.perf_counter()
-    for i in range(100):
-        s.removeRetweets()
-        s.back()
+    for i in range(1000):
+        s.filterBy("State", "California")
+        # s.back()
     print("total time", time.perf_counter() - begin)
     print(s.currentSet.size)
 

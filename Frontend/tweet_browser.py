@@ -103,12 +103,12 @@ class Operation:
         self.times = times
 
 class Subset:
-    indices = bitarray()
+    indices = []
     size = 0
     parent = None
     children = []
     doc_word_matrices = dict()
-    def __init__(self, ind: bitarray):
+    def __init__(self, ind):
         self.indices = ind
 
 class Session:
@@ -124,8 +124,7 @@ class Session:
         for i in range(len(headers)): # put <header, columnNum> into a dictionary for faster access
             self.headerDict[headers[i]] = i
         self.length = self.allData.shape[0]
-        arr = bitarray(self.length)
-        arr.setall(1)
+        arr = range(self.length)
         self.base = Subset(arr)
         self.base.size = self.length
         self.currentSet = self.base
@@ -371,9 +370,9 @@ class Session:
             inputSet = self.currentSet
         if self.checkOperation("filterBy", colName + " = " + value):
             return
-        tempInd = toBoolArray(inputSet.indices) # remove later
+        tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData.loc[(tempInd) & (self.allData[colName] == value)]
-        self.makeOperation(ans, ans.shape[0], "filterBy", colName + " = " + value)
+        # self.makeOperation(ans, ans.shape[0], "filterBy", colName + " = " + value)
 
     # def filterDate(self, startDate: str, endDate: str, format: str = '%Y-%m-%d', inputSet = None):
     #     if inputSet == None or type(inputSet) != Subset:
@@ -402,7 +401,7 @@ class Session:
         format = '%Y-%m-%d'
         startDate = datetime.datetime.strptime(startDate, format)
         endDate = datetime.datetime.strptime(endDate, format)
-        tempInd = toBoolArray(inputSet.indices) # change later
+        tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData[(tempInd) & (self.allData['CreatedTime'] >= startDate) & (self.allData['CreatedTime'] <= endDate)]
         self.makeOperation(ans, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate))
 
@@ -423,7 +422,7 @@ class Session:
             inputSet = self.currentSet
         if self.checkOperation("removeRetweets", "None"):
             return
-        tempInd = toBoolArray(inputSet.indices) # change later
+        tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData.loc[(tempInd) & (self.allData['MessageType'] != "Twitter Retweet")]
         self.makeOperation(ans, ans.shape[0], "removeRetweets", "None")
 
