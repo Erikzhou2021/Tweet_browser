@@ -341,9 +341,15 @@ class Session:
             if re.search(pattern, row.iloc[self.headerDict["Message"]]):
                 return True
             return False
-        tempInd = self.allData.index.isin(inputSet.indices)
-        ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
-        # self.makeOperation(ans, count, "regexSearch", expression)
+        if (self.length / inputSet.size >= 10):
+            tempInd = np.zeros(self.length, dtype=bool)
+            for row in inputSet.indices:
+                tempInd[row] = predicate(self.allData.iloc[row])
+            ans = self.allData[tempInd]
+        else:
+            tempInd = inputSet.indices
+            ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
+        # self.makeOperation(ans.index, count, "regexSearch", expression)
     
     # def exclude(self, keywords: list, inputSet: Subset = None):
     #     if inputSet == None or type(inputSet) != Subset:
@@ -378,7 +384,7 @@ class Session:
             return True
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
-        self.makeOperation(ans, ans.shape[0], "searchKeyword", keywords)
+        self.makeOperation(ans.index, ans.shape[0], "searchKeyword", keywords)
 
     # def filterBy(self, colName: str, value, inputSet: Subset = None):
     #     if inputSet == None or type(inputSet) != Subset:
@@ -401,7 +407,7 @@ class Session:
             return
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData.loc[(tempInd) & (self.allData[colName] == value)]
-        # self.makeOperation(ans, ans.shape[0], "filterBy", colName + " = " + value)
+        self.makeOperation(ans.index, ans.shape[0], "filterBy", colName + " = " + value)
 
     # def filterDate(self, startDate: str, endDate: str, format: str = '%Y-%m-%d', inputSet = None):
     #     if inputSet == None or type(inputSet) != Subset:
@@ -432,7 +438,7 @@ class Session:
         endDate = datetime.datetime.strptime(endDate, format)
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData[(tempInd) & (self.allData['CreatedTime'] >= startDate) & (self.allData['CreatedTime'] <= endDate)]
-        self.makeOperation(ans, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate))
+        self.makeOperation(ans.index, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate))
 
     # def removeRetweets(self, inputSet = None):
     #     if inputSet == None or type(inputSet) != Subset:
@@ -453,7 +459,7 @@ class Session:
             return
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData.loc[(tempInd) & (self.allData['MessageType'] != "Twitter Retweet")]
-        self.makeOperation(ans, ans.shape[0], "removeRetweets", "None")
+        self.makeOperation(ans.index, ans.shape[0], "removeRetweets", "None")
 
     def setDiff(self, setOne: Subset, setZero: Subset = None):
         if setZero == None or type(setZero) != Subset:

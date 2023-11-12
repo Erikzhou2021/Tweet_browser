@@ -471,6 +471,7 @@ def test21(s):
 
 def test99(s):
     begin = time.perf_counter()
+    s.filterBy("State", "California")
     for i in range(100):
         s.regexSearch("trump")
     print("total time", time.perf_counter() - begin)
