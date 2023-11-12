@@ -461,20 +461,35 @@ def test19(s):
     s.exclude(["a", "the"])
     print(s.currentSet.size)
 
+# test filter by
 def test20(s):
-    s.simpleRandomSample(30)
-    # s.summarize()
+    s.filterBy("State", "California")
+    assert(s.currentSet.size == 1347)
+    s.back()
+    s.filterBy("SenderGender", "OTHER")
+    assert(s.currentSet.size == 10136)
+    s.filterBy("SenderGender", "other")
+    assert(s.currentSet.size == 0)
+    s.back()
+    s.back()
+    s.filterBy("MessageType", "Twitter Update")
+    assert(s.currentSet.size == 2744)
+    s.back()
+    s.filterBy("MessageType", "Twitter Mention")
+    assert(s.currentSet.size == 897)
+    s.back()
+    s.filterBy("Sender Followers Count", 100)
+    assert(s.currentSet.size == 25)
 
+# test remove retweets
 def test21(s):
     s.removeRetweets()
-    print(s.currentSet.size)
+    assert(s.currentSet.size == 5080)
 
 def test99(s):
-    begin = time.perf_counter()
     s.filterBy("State", "California")
     for i in range(100):
-        s.regexSearch("trump")
-    print("total time", time.perf_counter() - begin)
+        s.regexSearch("trump", caseSensitive = True)
     print(s.currentSet.size)
 
 def allTests(s1):
@@ -493,4 +508,7 @@ if __name__=='__main__':
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
     # allTests(s)
+
+    begin = time.perf_counter()
     test99(s)
+    print("total time", time.perf_counter() - begin)

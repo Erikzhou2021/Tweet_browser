@@ -331,12 +331,15 @@ class Session:
     #                 count += 1
     #     self.makeOperation(ans, count, "regexSearch", expression)
 
-    def regexSearch(self, expression: str, inputSet: Subset = None):
+    def regexSearch(self, expression: str, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if self.checkOperation("regexSearch", expression):
             return
-        pattern = re.compile(expression)
+        if caseSensitive:
+            pattern = re.compile(expression)
+        else:
+            pattern = re.compile(expression, re.IGNORECASE)
         def predicate(row):
             if re.search(pattern, row.iloc[self.headerDict["Message"]]):
                 return True
@@ -349,7 +352,7 @@ class Session:
         else:
             tempInd = inputSet.indices
             ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
-        # self.makeOperation(ans.index, count, "regexSearch", expression)
+        self.makeOperation(ans.index, ans.shape[0], "regexSearch", expression)
     
     # def exclude(self, keywords: list, inputSet: Subset = None):
     #     if inputSet == None or type(inputSet) != Subset:
@@ -372,12 +375,15 @@ class Session:
     #                 count += 1
     #     self.makeOperation(ans, count, "searchKeyword", keywords)
 
-    def exclude(self, keywords: list, inputSet: Subset = None):
+    def exclude(self, keywords: list, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if self.checkOperation("exclude", keywords):
             return
-        pattern = re.compile(r'\b' + "|".join([re.escape(word) for word in keywords]) + r'\b')
+        if caseSensitive:
+            pattern = re.compile(r'\b' + "|".join([re.escape(word) for word in keywords]) + r'\b')
+        else:
+            pattern = re.compile(r'\b' + "|".join([re.escape(word) for word in keywords]) + r'\b', re.IGNORECASE)
         def predicate(row):
             if re.search(pattern, row.iloc[self.headerDict["Message"]]):
                 return False
@@ -403,11 +409,11 @@ class Session:
     def filterBy(self, colName: str, value, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        if self.checkOperation("filterBy", colName + " = " + value):
+        if self.checkOperation("filterBy", colName + " = " + str(value)):
             return
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData.loc[(tempInd) & (self.allData[colName] == value)]
-        self.makeOperation(ans.index, ans.shape[0], "filterBy", colName + " = " + value)
+        self.makeOperation(ans.index, ans.shape[0], "filterBy", colName + " = " + str(value))
 
     # def filterDate(self, startDate: str, endDate: str, format: str = '%Y-%m-%d', inputSet = None):
     #     if inputSet == None or type(inputSet) != Subset:
