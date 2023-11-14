@@ -259,35 +259,63 @@ class Session:
             ans[k] = True
         self.makeOperation(ans, size, "weightedSample", colName + str(size))
 
-    def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
+    # def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
+    #     if inputSet == None or type(inputSet) != Subset:
+    #         inputSet = self.currentSet
+    #     params = keywords + ["orMode = " + str(orMode)]
+    #     if self.checkOperation("searchKeyword", params):
+    #         return
+    #     ans = bitarray(self.length)
+    #     ans.setall(0)
+    #     count = 0
+    #     for i in range(self.length):
+    #         if inputSet.indices[i]:
+    #             if orMode:
+    #                 include = False
+    #                 for j in keywords:
+    #                     pattern = r"\b" + re.escape(j) + r"\b"
+    #                     if re.search(pattern, self.allData.iloc[i].at["Message"]):
+    #                         include = True
+    #                         break
+    #             else:
+    #                 include = True
+    #                 for j in keywords:
+    #                     pattern = r"\b" + re.escape(j) + r"\b"
+    #                     if not (re.search(pattern, self.allData.iloc[i].at["Message"])):
+    #                         include = False
+    #                         break
+    #             if include:
+    #                 ans[i] = True
+    #                 count += 1
+    #     self.makeOperation(ans, count, "searchKeyword", params)
+
+    def searchKeyword(self, keywords: list, orMode: bool = False, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        params = keywords + ["orMode = " + str(orMode)]
+        params = keywords + ["orMode = " + str(orMode) + ", caseSensitive = " + str(caseSensitive)]
         if self.checkOperation("searchKeyword", params):
             return
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if inputSet.indices[i]:
-                if orMode:
-                    include = False
-                    for j in keywords:
-                        pattern = r"\b" + re.escape(j) + r"\b"
-                        if re.search(pattern, self.allData.iloc[i].at["Message"]):
-                            include = True
-                            break
-                else:
-                    include = True
-                    for j in keywords:
-                        pattern = r"\b" + re.escape(j) + r"\b"
-                        if not (re.search(pattern, self.allData.iloc[i].at["Message"])):
-                            include = False
-                            break
-                if include:
-                    ans[i] = True
-                    count += 1
-        self.makeOperation(ans, count, "searchKeyword", params)
+        flag = re.DOTALL
+        if caseSensitive == False:
+            flag |= re.IGNORECASE
+        if orMode:
+            pattern = re.compile(r'\b' + "|".join([re.escape(word) for word in keywords]) + r'\b', flag)
+        else:
+            pattern = re.compile("^" + "".join([r"(?=.*\b" + re.escape(word) + r"\b)" for word in keywords]) + ".*$", flag)
+        def predicate(row):
+            if re.search(pattern, row.iloc[self.headerDict["Message"]]):
+                return True
+            return False
+
+        if (self.length / inputSet.size >= 10):
+            tempInd = np.zeros(self.length, dtype=bool)
+            for row in inputSet.indices:
+                tempInd[row] = predicate(self.allData.iloc[row])
+            ans = self.allData[tempInd]
+        else:
+            tempInd = inputSet.indices
+            ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
+        self.makeOperation(ans.index, ans.shape[0], "searchKeyword", params)
 
     def advancedSearch(self, expression: str, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:

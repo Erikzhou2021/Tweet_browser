@@ -486,6 +486,22 @@ def test21(s):
     s.removeRetweets()
     assert(s.currentSet.size == 5080)
 
+def test22(s):
+    s.searchKeyword(["test"])
+    assert(s.currentSet.size == 26)
+    s.searchKeyword(["COVID"])
+    assert(s.currentSet.size == 2)
+    s.back()
+    s.back()
+    s.searchKeyword(["test", "COVID"])
+    assert(s.currentSet.size == 2)
+    s.back()
+    print(s.currentSet.size)
+    s.searchKeyword(["test"], caseSensitive = True)
+    print(s.currentSet.size)
+    assert(s.currentSet.size == 22)
+
+
 def test99(s):
     s.filterBy("State", "California")
     for i in range(100):
@@ -510,5 +526,5 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test99(s)
+    test22(s)
     print("total time", time.perf_counter() - begin)
