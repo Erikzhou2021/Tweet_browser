@@ -496,10 +496,15 @@ def test22(s):
     s.searchKeyword(["test", "COVID"])
     assert(s.currentSet.size == 2)
     s.back()
-    print(s.currentSet.size)
     s.searchKeyword(["test"], caseSensitive = True)
-    print(s.currentSet.size)
     assert(s.currentSet.size == 22)
+    s.back()
+    s.searchKeyword(["covid", "vaccine"], True, True)
+    assert(s.currentSet.size == 65)
+    s.back()
+    s.searchKeyword(["census", "the", "poll"], False)
+    assert(s.currentSet.size == 14)
+    print(s.currentSet.size)
 
 
 def test99(s):

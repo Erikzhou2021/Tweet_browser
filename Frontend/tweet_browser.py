@@ -284,6 +284,8 @@ class Session:
     #                     if not (re.search(pattern, self.allData.iloc[i].at["Message"])):
     #                         include = False
     #                         break
+    #                     else:
+    #                         print(self.allData.iloc[i].at["Message"])
     #             if include:
     #                 ans[i] = True
     #                 count += 1
