@@ -319,31 +319,60 @@ class Session:
             ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
         self.makeOperation(ans.index, ans.shape[0], "searchKeyword", params)
 
-    def advancedSearch(self, expression: str, inputSet: Subset = None):
+    # def advancedSearch(self, expression: str, inputSet: Subset = None):
+    #     if inputSet == None or type(inputSet) != Subset:
+    #         inputSet = self.currentSet
+    #     if self.checkOperation("advancedSearch", expression):
+    #         return
+    #     ans = bitarray(self.length)
+    #     ans.setall(0)
+    #     count = 0
+    #     # split the expression into a list of operands and keywords
+    #     #regex = '\s*\(|\)\s*|\s*and\s*|\s*or\s*|\s*not\s*'
+    #     #keywords = list(filter(None, re.split(regex, expression)))
+    #     keywords = re.findall("'[^']+'", expression)
+    #     # loop through to evaluate the truth value of each keyword
+    #     for i in range(self.length):
+    #         if(inputSet.indices[i]):
+    #             newExpression = expression
+    #             for j in keywords:
+    #                 pattern = r"\b" + re.escape(j[1:-1]) + r"\b"
+    #                 if re.search(pattern, self.allData.iloc[i].at["Message"]):
+    #                     newExpression = newExpression.replace(j, " True")
+    #                 else:
+    #                     newExpression = newExpression.replace(j, " False")
+    #             if(eval(newExpression)):
+    #                 ans[i] = True
+    #                 count += 1
+    #     self.makeOperation(ans, count, "advancedSearch", expression)
+
+    def advancedSearch(self, expression: str, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if self.checkOperation("advancedSearch", expression):
             return
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        # split the expression into a list of operands and keywords
-        #regex = '\s*\(|\)\s*|\s*and\s*|\s*or\s*|\s*not\s*'
-        #keywords = list(filter(None, re.split(regex, expression)))
+        flag = re.DOTALL
+        if caseSensitive == False:
+            flag |= re.IGNORECASE
         keywords = re.findall("'[^']+'", expression)
         # loop through to evaluate the truth value of each keyword
-        for i in range(self.length):
-            if(inputSet.indices[i]):
-                newExpression = expression
-                for j in keywords:
+        def predicate(row):
+            newExpression = expression
+            for j in keywords:
                     pattern = r"\b" + re.escape(j[1:-1]) + r"\b"
-                    if re.search(pattern, self.allData.iloc[i].at["Message"]):
+                    if re.search(pattern, row.iloc[self.headerDict["Message"]]):
                         newExpression = newExpression.replace(j, " True")
                     else:
                         newExpression = newExpression.replace(j, " False")
-                if(eval(newExpression)):
-                    ans[i] = True
-                    count += 1
+            return eval(newExpression)
+        if (self.length / inputSet.size >= 10):
+            tempInd = np.zeros(self.length, dtype=bool)
+            for row in inputSet.indices:
+                tempInd[row] = predicate(self.allData.iloc[row])
+            ans = self.allData[tempInd]
+        else:
+            tempInd = inputSet.indices
+            ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
         self.makeOperation(ans, count, "advancedSearch", expression)
 
     # def regexSearch(self, expression: str, inputSet: Subset = None):
