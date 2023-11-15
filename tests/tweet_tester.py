@@ -507,12 +507,12 @@ def test22(s):
     print(s.currentSet.size)
 
 def test23(s):
-    # s.advancedSearch("'covid' and ('hospital' or 'vaccine')")
-    # assert(s.currentSet.size == 1)
-    # s.back()
-    # s.advancedSearch("'not' and 'census' and ('covid' or 'COVID')")
-    # assert(s.currentSet.size == 10)
-    # s.back()
+    s.advancedSearch("'covid' and ('hospital' or 'vaccine')")
+    assert(s.currentSet.size == 1)
+    s.back()
+    s.advancedSearch("'not' and 'census' and ('covid' or 'COVID')")
+    assert(s.currentSet.size == 10)
+    s.back()
     s.advancedSearch("and or not False True")
 
 def test99(s):

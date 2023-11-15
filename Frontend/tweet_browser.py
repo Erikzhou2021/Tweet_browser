@@ -198,20 +198,18 @@ class Session:
         count = self.length - inputSet.size
         self.makeOperation(~inputSet.indices, count, "Invert", "None")
 
-    def randomSubset(self, probability, inputSet: Subset = None):
+    def randomSubset(self, probability, inputSet: Subset = None): # need to test
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         if probability > 1 or probability < 0:
             raise ValueError("Invalid probability")
         random.seed()
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if inputSet.indices[i] and random.random() < probability:
-                ans[i] = True
-                count += 1
-        self.makeOperation(ans, count, "randomSubset", "None")
+        ans = []
+        for index in inputSet.indices:
+            if random.random() < probability:
+                ans.append(index)
+        ans = np.array(ans)
+        self.makeOperation(ans, len(ans), "randomSubset", "None")
 
     def simpleRandomSample(self, size: int, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -219,15 +217,7 @@ class Session:
         if inputSet.size < size:
             raise ValueError("Invalid sample size")
         random.seed()
-        ans = bitarray(self.length)
-        ans.setall(0)
-        population = []
-        for i in range(self.length):
-            if inputSet.indices[i]:
-                population.append(i)
-        temp = np.random.choice(population, size, replace=False)
-        for j in temp:
-            ans[j] = True
+        ans = np.random.choice(inputset.indices, size, replace=False)
         self.makeOperation(ans, size, "simpleRandomSample", size)
 
     def weightedSample(self, size: int, colName: str, inputSet: Subset = None):
@@ -238,26 +228,9 @@ class Session:
         if colName not in self.weightable:
             raise ValueError("Column name does not correspond to a column that can be weighted")
         random.seed()
-        ans = bitarray(self.length)
-        ans.setall(0)
-        population = []
-        weights = []
-        sum = 0
-        for i in range(self.length):
-            if inputSet.indices[i]:
-                population.append(i)
-                value = self.allData.iloc[i].at[colName]
-                if value != value: 
-                    value = 0
-                value += 1
-                sum += value
-                weights.append(int(value))
-        for j in range(len(weights)):
-            weights[j] = float(weights[j] / sum)  
-        temp = np.random.choice(population, size, replace=False, p=weights)
-        for k in temp:
-            ans[k] = True
-        self.makeOperation(ans, size, "weightedSample", colName + str(size))
+        temp = self.allData[self.allData.index.isin(inputSet.indices)]
+        ans = temp.sample(size, weights=temp[colName])
+        self.makeOperation(ans.index, ans.shape[0], "weightedSample", colName + str(size))
 
     # def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
     #     if inputSet == None or type(inputSet) != Subset:
