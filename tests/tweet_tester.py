@@ -506,6 +506,14 @@ def test22(s):
     assert(s.currentSet.size == 14)
     print(s.currentSet.size)
 
+def test23(s):
+    # s.advancedSearch("'covid' and ('hospital' or 'vaccine')")
+    # assert(s.currentSet.size == 1)
+    # s.back()
+    # s.advancedSearch("'not' and 'census' and ('covid' or 'COVID')")
+    # assert(s.currentSet.size == 10)
+    # s.back()
+    s.advancedSearch("and or not False True")
 
 def test99(s):
     s.filterBy("State", "California")
@@ -531,5 +539,5 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test22(s)
+    test23(s)
     print("total time", time.perf_counter() - begin)

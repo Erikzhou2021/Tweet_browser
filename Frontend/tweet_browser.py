@@ -365,15 +365,19 @@ class Session:
                     else:
                         newExpression = newExpression.replace(j, " False")
             return eval(newExpression)
-        if (self.length / inputSet.size >= 10):
-            tempInd = np.zeros(self.length, dtype=bool)
-            for row in inputSet.indices:
-                tempInd[row] = predicate(self.allData.iloc[row])
-            ans = self.allData[tempInd]
-        else:
-            tempInd = inputSet.indices
-            ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
-        self.makeOperation(ans, count, "advancedSearch", expression)
+        try: 
+            if (self.length / inputSet.size >= 10):
+                tempInd = np.zeros(self.length, dtype=bool)
+                for row in inputSet.indices:
+                    tempInd[row] = predicate(self.allData.iloc[row])
+                ans = self.allData[tempInd]
+            else:
+                tempInd = inputSet.indices
+                ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
+        except Exception as e: 
+            print("invalid expression")
+            return
+        self.makeOperation(ans.index, ans.shape[0], "advancedSearch", expression)
 
     # def regexSearch(self, expression: str, inputSet: Subset = None):
     #     if inputSet == None or type(inputSet) != Subset:
