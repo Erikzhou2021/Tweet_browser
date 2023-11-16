@@ -508,42 +508,30 @@ class Session:
             setZero = self.currentSet
         if type(setOne) != Subset:
             raise TypeError("Set operators require two subset objects")
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if setZero.indices[i] and not setOne.indices[i]:
-                ans[i] = True
-                count += 1
-        self.makeOperation(ans, count, "setDiff", setOne)
+        indexZero = self.allData.index.isin(setZero.indices) 
+        indexOne = self.allData.index.isin(setOne.indices) 
+        ans = self.allData.loc[(indexZero) & ~(indexOne)]
+        self.makeOperation(ans.index, ans.shape[0], "setDiff", setOne)
 
     def setUnion(self, setOne: Subset, setZero: Subset = None):
         if setZero == None or type(setZero) != Subset:
             setZero = self.currentSet
         if type(setOne) != Subset:
             raise TypeError("Set operators require two subset objects")
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if setZero.indices[i] or setOne.indices[i]:
-                ans[i] = True
-                count += 1
-        self.makeOperation(ans, count, "setUnion", setOne)
+        indexZero = self.allData.index.isin(setZero.indices) 
+        indexOne = self.allData.index.isin(setOne.indices) 
+        ans = self.allData.loc[(indexZero) | (indexOne)]
+        self.makeOperation(ans.index, ans.shape[0], "setUnion", setOne)
 
     def setIntersect(self, setOne: Subset, setZero: Subset = None):
         if setZero == None or type(setZero) != Subset:
             setZero = self.currentSet
         if type(setOne) != Subset:
             raise TypeError("Set operators require two subset objects")
-        ans = bitarray(self.length)
-        ans.setall(0)
-        count = 0
-        for i in range(self.length):
-            if setZero.indices[i] and setOne.indices[i]:
-                ans[i] = True
-                count += 1
-        self.makeOperation(ans, count, "setintersect", setOne)
+        indexZero = self.allData.index.isin(setZero.indices) 
+        indexOne = self.allData.index.isin(setOne.indices) 
+        ans = self.allData.loc[(indexZero) & (indexOne)]
+        self.makeOperation(ans.index, ans.shape[0], "setintersect", setOne)
 
     def back(self, index: int = 0):
         if(self.currentSet.size == self.length) or index >= len(self.currentSet.parent.parents):
