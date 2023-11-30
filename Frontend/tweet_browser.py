@@ -171,7 +171,6 @@ class Session:
         self.fileName = name + str(i) + ".pkl"
 
     def printColumn(self, column: int):
-        # print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iloc[:, column])
         print(self.allData.iloc[(toBoolArray(self.currentSet.indices), column)])
 
     def getCurrentSubset(self):
@@ -179,10 +178,9 @@ class Session:
 
     def printCurrSubset(self, verbose: bool = False):
         if verbose:
-            print(self.allData.iloc[toBoolArray(self.currentSet.indices)])
+            print(self.allData.iloc[self.currentSet.indices])
         else:
-            print(self.allData.iloc[(toBoolArray(self.currentSet.indices), self.headerDict['Message'])])
-            #print(self.dataBase.selectRows(toBoolArray(self.currentSet.indices)).iat[self.headerDict['Message']].values)
+            print(self.allData.loc[self.currentSet.indices]["Message"])
 
     def checkOperation(self, funcName, params):
         for op in self.currentSet.children:
@@ -232,38 +230,6 @@ class Session:
         ans = temp.sample(size, weights=temp[colName])
         self.makeOperation(ans.index, ans.shape[0], "weightedSample", colName + str(size))
 
-    # def searchKeyword(self, keywords: list, orMode: bool = False, inputSet: Subset = None):
-    #     if inputSet == None or type(inputSet) != Subset:
-    #         inputSet = self.currentSet
-    #     params = keywords + ["orMode = " + str(orMode)]
-    #     if self.checkOperation("searchKeyword", params):
-    #         return
-    #     ans = bitarray(self.length)
-    #     ans.setall(0)
-    #     count = 0
-    #     for i in range(self.length):
-    #         if inputSet.indices[i]:
-    #             if orMode:
-    #                 include = False
-    #                 for j in keywords:
-    #                     pattern = r"\b" + re.escape(j) + r"\b"
-    #                     if re.search(pattern, self.allData.iloc[i].at["Message"]):
-    #                         include = True
-    #                         break
-    #             else:
-    #                 include = True
-    #                 for j in keywords:
-    #                     pattern = r"\b" + re.escape(j) + r"\b"
-    #                     if not (re.search(pattern, self.allData.iloc[i].at["Message"])):
-    #                         include = False
-    #                         break
-    #                     else:
-    #                         print(self.allData.iloc[i].at["Message"])
-    #             if include:
-    #                 ans[i] = True
-    #                 count += 1
-    #     self.makeOperation(ans, count, "searchKeyword", params)
-
     def searchKeyword(self, keywords: list, orMode: bool = False, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
@@ -291,33 +257,6 @@ class Session:
             tempInd = inputSet.indices
             ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
         self.makeOperation(ans.index, ans.shape[0], "searchKeyword", params)
-
-    # def advancedSearch(self, expression: str, inputSet: Subset = None):
-    #     if inputSet == None or type(inputSet) != Subset:
-    #         inputSet = self.currentSet
-    #     if self.checkOperation("advancedSearch", expression):
-    #         return
-    #     ans = bitarray(self.length)
-    #     ans.setall(0)
-    #     count = 0
-    #     # split the expression into a list of operands and keywords
-    #     #regex = '\s*\(|\)\s*|\s*and\s*|\s*or\s*|\s*not\s*'
-    #     #keywords = list(filter(None, re.split(regex, expression)))
-    #     keywords = re.findall("'[^']+'", expression)
-    #     # loop through to evaluate the truth value of each keyword
-    #     for i in range(self.length):
-    #         if(inputSet.indices[i]):
-    #             newExpression = expression
-    #             for j in keywords:
-    #                 pattern = r"\b" + re.escape(j[1:-1]) + r"\b"
-    #                 if re.search(pattern, self.allData.iloc[i].at["Message"]):
-    #                     newExpression = newExpression.replace(j, " True")
-    #                 else:
-    #                     newExpression = newExpression.replace(j, " False")
-    #             if(eval(newExpression)):
-    #                 ans[i] = True
-    #                 count += 1
-    #     self.makeOperation(ans, count, "advancedSearch", expression)
 
     def advancedSearch(self, expression: str, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -352,21 +291,6 @@ class Session:
             return
         self.makeOperation(ans.index, ans.shape[0], "advancedSearch", expression)
 
-    # def regexSearch(self, expression: str, inputSet: Subset = None):
-    #     if inputSet == None or type(inputSet) != Subset:
-    #         inputSet = self.currentSet
-    #     if self.checkOperation("regexSearch", expression):
-    #         return
-    #     ans = bitarray(self.length)
-    #     ans.setall(0)
-    #     count = 0
-    #     for i in range(self.length):
-    #         if(inputSet.indices[i]):
-    #             if(re.findall(expression, self.allData.iloc[i].at["Message"], re.M)): #might be slow
-    #                 ans[i] = True
-    #                 count += 1
-    #     self.makeOperation(ans, count, "regexSearch", expression)
-
     def regexSearch(self, expression: str, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
@@ -388,28 +312,7 @@ class Session:
         else:
             tempInd = inputSet.indices
             ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
-        self.makeOperation(ans.index, ans.shape[0], "regexSearch", expression)
-    
-    # def exclude(self, keywords: list, inputSet: Subset = None):
-    #     if inputSet == None or type(inputSet) != Subset:
-    #         inputSet = self.currentSet
-    #     if self.checkOperation("exclude", keywords):
-    #         return
-    #     ans = bitarray(self.length)
-    #     ans.setall(0)
-    #     count = 0
-    #     for i in range(self.length):
-    #         if inputSet.indices[i]:
-    #             include = True
-    #             for j in keywords:
-    #                 pattern = r"\b" + re.escape(j) + r"\b"
-    #                 if re.search(pattern, self.allData.iloc[i].at["Message"]):
-    #                     include = False
-    #                     break
-    #             if include:
-    #                 ans[i] = True
-    #                 count += 1
-    #     self.makeOperation(ans, count, "searchKeyword", keywords)
+        # self.makeOperation(ans.index, ans.shape[0], "regexSearch", expression)
 
     def exclude(self, keywords: list, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -428,20 +331,6 @@ class Session:
         ans = self.allData[(tempInd) & self.allData.apply(predicate, axis=1)]
         self.makeOperation(ans.index, ans.shape[0], "searchKeyword", keywords)
 
-    # def filterBy(self, colName: str, value, inputSet: Subset = None):
-    #     if inputSet == None or type(inputSet) != Subset:
-    #         inputSet = self.currentSet
-    #     if self.checkOperation("filterBy", colName + " = " + value):
-    #         return
-    #     ans = bitarray(self.length)
-    #     ans.setall(0)
-    #     count = 0
-    #     for i in range(self.length):
-    #         if inputSet.indices[i] and self.allData.iloc[i].at[colName] == value: # might be slow
-    #             ans[i] = True
-    #             count += 1
-    #     self.makeOperation(ans, count, "filterBy", colName + " = " + value)
-
     def filterBy(self, colName: str, value, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
@@ -450,25 +339,6 @@ class Session:
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData.loc[(tempInd) & (self.allData[colName] == value)]
         self.makeOperation(ans.index, ans.shape[0], "filterBy", colName + " = " + str(value))
-
-    # def filterDate(self, startDate: str, endDate: str, format: str = '%Y-%m-%d', inputSet = None):
-    #     if inputSet == None or type(inputSet) != Subset:
-    #         inputSet = self.currentSet
-    #     if self.checkOperation("filterTime", startDate + " to " + endDate):
-    #         return
-    #     startDate = datetime.datetime.strptime(startDate, format)
-    #     endDate = datetime.datetime.strptime(endDate, format)
-    #     ans = bitarray(self.length)
-    #     ans.setall(0)
-    #     count = 0
-    #     for i in range(self.length):
-    #         if inputSet.indices[i]: # might be slow
-    #             tempDate = self.allData.iloc[i].at['CreatedTime']
-    #             dateObj = datetime.datetime.strptime(tempDate, '%Y-%m-%d %H:%M:%S.%f')
-    #             if dateObj >= startDate and dateObj <= endDate:
-    #                 ans[i] = True
-    #                 count += 1
-    #     self.makeOperation(ans, count, "filterTime", str(startDate) + " to " + str(endDate))
         
     def filterDate(self, startDate: str, endDate: str, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -481,18 +351,6 @@ class Session:
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData[(tempInd) & (self.allData['CreatedTime'] >= startDate) & (self.allData['CreatedTime'] <= endDate)]
         self.makeOperation(ans.index, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate))
-
-    # def removeRetweets(self, inputSet = None):
-    #     if inputSet == None or type(inputSet) != Subset:
-    #         inputSet = self.currentSet
-    #     ans = bitarray(self.length)
-    #     ans.setall(0)
-    #     count = 0
-    #     for i in range(self.length):
-    #         if inputSet.indices[i] and self.allData.iloc[i].at['MessageType'] != "Twitter Retweet": # might be slow
-    #             ans[i] = True
-    #             count += 1
-    #     self.makeOperation(ans, count, "removeRetweets", "None")
 
     def removeRetweets(self, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -532,6 +390,9 @@ class Session:
         indexOne = self.allData.index.isin(setOne.indices) 
         ans = self.allData.loc[(indexZero) & (indexOne)]
         self.makeOperation(ans.index, ans.shape[0], "setintersect", setOne)
+
+    def backToBase(self):
+        self.currentSet = self.base
 
     def back(self, index: int = 0):
         if(self.currentSet.size == self.length) or index >= len(self.currentSet.parent.parents):

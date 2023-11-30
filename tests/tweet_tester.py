@@ -517,8 +517,8 @@ def test23(s):
 
 def test99(s):
     s.filterBy("State", "California")
-    for i in range(100):
-        s.regexSearch("trump", caseSensitive = True)
+    for i in range(60):
+        s.regexSearch("covid", caseSensitive = True)
     print(s.currentSet.size)
 
 def allTests(s1):
@@ -539,5 +539,5 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test23(s)
+    test99(s)
     print("total time", time.perf_counter() - begin)
