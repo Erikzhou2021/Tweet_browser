@@ -161,8 +161,7 @@ def test1(s):
     print(s.currentSet.size)
 
 def test2(s):
-    s.randomSubset(0.01)
-    print(s.currentSet.size)
+    s.simpleRandomSample(170)
     s.back()
     print(s.currentSet.size)
     #s.back()
@@ -187,10 +186,9 @@ def test2(s):
     #s.next()
 
 def test3(s):
-    s.randomSubset(0.001)
+    s.simpleRandomSample(170)
     print(s.currentSet.size)
     tempSet = s.currentSet
-    s.back()
     print(tempSet.size)
     print(s.currentSet.size)
     s.advancedSearch("'the'", tempSet)
@@ -276,58 +274,12 @@ def test8(s):
     print(s.currentSet.size)
     #s.printCurrSubset()
     #print(words)
-    test = s.dimRed_and_clustering(dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
-        clustering_when= 'after_stage2', clustering_method= 'gmm', min_obs= 25, num_clusters= 2, num_neighbors= 25)
-    #print(test)
-    #print(matrix)
-    print(s.currentSet.size)
-    s.next()
-    print(s.currentSet.size)
-    #s.printCurrSubset()
-    s.back()
-    print(s.currentSet.size)
 
 def test9(s):
-    s.simpleRandomSample(30)
-    print(s.currentSet.size)
-    matrix, words = s.make_full_docWordMatrix(5)
-    test = s.dimRed_and_clustering(docWordMatrix = matrix, dimRed1_method='pca', dimRed1_dims= 2, dimRed2_method='umap', 
-        clustering_when= 'after_stage2', clustering_method= 'gmm', min_obs= 5, num_clusters= 5, num_neighbors= 5)
-    s.next(opIndex=4)
-    print(s.currentSet.size)
-    s.back()
-    s.next(opIndex=3)
-    print(s.currentSet.size)
-    s.back()
-    s.next(opIndex=2)
-    print(s.currentSet.size)
-    s.back()
-    s.next(opIndex=1)
-    print(s.currentSet.size)
-    s.back()
-    s.next(opIndex=0)
-    print(s.currentSet.size)
+    pass
 
 def test10(s):
-    s.simpleRandomSample(300)
-    #s.printCurrSubset()
-    matrix, words = s.make_full_docWordMatrix(50)
-    test = s.dimRed_and_clustering(docWordMatrix = matrix, dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
-        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
-    #print(test)
-    #test.show()
-    test2 = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
-        clustering_method='leiden', num_clusters=4, min_obs= 2, num_neighbors=2)
-    test3 = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='before_stage1', 
-        clustering_method='hdbscan', num_clusters=5, min_obs= 2, num_neighbors=2)
-    s.next(0, 1)
-    print(s.currentSet.size)
-    s.back()
-    s.next(1, 3)
-    print(s.currentSet.size)
-    s.back()
-    s.next(2,2)
-    print(s.currentSet.size)
+    pass
 
 def test11(s):
     #begin = time.perf_counter()
@@ -337,7 +289,7 @@ def test11(s):
     print(s.currentSet.size)
     s.weightedSample(10, "Sender Followers Count")
     s.simpleRandomSample(5)
-    s.printCurrSubset(True)
+    # s.printCurrSubset(True)
     s.back()
     s.weightedSample(5, "Retweets")
     print(s.currentSet.size)
@@ -349,33 +301,10 @@ def test12(s):
         print("exeption caught")
     
 def test13(s):
-    s.simpleRandomSample(300)
-    #s.printCurrSubset()
-    test = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
-        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
-    s.printChildren()
-    s.next()
-    print(s.currentSet.size)
-    matrix, words = s.make_full_docWordMatrix(5)
-    test2 = s.dimRed_and_clustering(docWordMatrix= matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='btwn', 
-        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
-    s.next()
-    print(s.currentSet.size)
-    s.back()
-    s.back()
-    matrix, words = s.make_full_docWordMatrix(1)
-    test3 = s.dimRed_and_clustering(docWordMatrix = matrix, dimRed1_method= 'umap', dimRed1_dims=2, clustering_when='btwn', 
-        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
-    test4 = s.dimRed_and_clustering(docWordMatrix = matrix, dimRed1_method='pca', dimRed1_dims= 3, dimRed2_method='umap', 
-        clustering_when= 'after_stage2', clustering_method= 'hdbscan', min_obs= 25, num_clusters= 2, num_neighbors= 25)
-    test5 = s.dimRed_and_clustering(dimRed1_method='umap', dimRed1_dims= 5, dimRed2_method='umap', 
-        clustering_when= 'btwn', clustering_method= 'k-means', min_obs= 25, num_clusters= 2, num_neighbors= 25)
+    pass
 
 def test14(s):
-    s.simpleRandomSample(30)
-    
-    test = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
-        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
+    pass
 
 def test15(s):
     s.simpleRandomSample(50)
@@ -445,10 +374,6 @@ def test17(s):
     s.back()
     s.printChildren()
     s.simpleRandomSample(30)
-    test = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
-        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
-    test = s.dimRed_and_clustering(dimRed1_method= 'pca', dimRed1_dims=2, clustering_when='after_stage2', 
-        clustering_method='gmm', num_clusters=2, min_obs= 2, num_neighbors=2)
 
 def test18(s):
     print(s.currentSet.size)
@@ -523,7 +448,7 @@ def test99(s):
 
 def allTests(s1):
     current_module = __import__(__name__)
-    for i in range(1,21):
+    for i in range(1,24):
         s = copy.deepcopy(s1)
         print("---------------------------")
         print("test ", i)
@@ -539,5 +464,6 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test99(s)
+    # test23(s)
+    allTests(s)
     print("total time", time.perf_counter() - begin)
