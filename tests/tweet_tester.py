@@ -137,7 +137,7 @@ class DataBaseSim:
     def getMatrix(self):
         return self.matrix
 
-def createSession(fileName: str, makeMatrix = True, logSearches = False) -> Session:
+def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
     s = Session(data, makeMatrix, logSearches)
     return s

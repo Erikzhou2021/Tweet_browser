@@ -107,12 +107,11 @@ class Subset:
     size = 0
     parent = None
     children = []
-    doc_word_matrices = dict()
     def __init__(self, ind):
         self.indices = ind
 
 class Session:
-    def __init__(self, data, makeMatrix = True, logSearches = False):
+    def __init__(self, data, logSearches = False):
         self.logSearches = logSearches
         if logSearches:
             self.createSessionDump()
@@ -133,8 +132,6 @@ class Session:
         for i in range(len(self.allData.dtypes)):
             if self.allData.dtypes[i] == int or self.allData.dtypes[i] == float:
                 self.weightable[headers[i]] = i
-        if makeMatrix:
-            self.matrix, self.words = self.make_full_docWordMatrix(5)
 
     def makeOperation(self, outputs, counts, funcName, params, inputs: Subset = None):
         if inputs == None or type(inputs) != Subset:
@@ -428,29 +425,9 @@ class Session:
         return result
 
 
-class DataBaseSim:
-    def __init__(self, data):
-        self.allData = data
-        self.matrix = None
-    def getRow(self, i):
-        return self.allData.iloc[i]
-    def getColHeaders(self):
-        return self.allData.columns
-    def selectRows(self, rows: list):
-        return self.allData.iloc[rows]
-    def dtypes(self):
-        return self.allData.dtypes
-    def shape(self):
-        return self.allData.shape
-    def setMatrix(self, input):
-        self.matrix = input
-    def getMatrix(self):
-        return self.matrix
-
-def createSession(fileName: str, makeMatrix = True) -> Session:
+def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
-    db = DataBaseSim(data)
-    s = Session(db, makeMatrix)
+    s = Session(data, logSearches)
     return s
 
 if __name__=='__main__':

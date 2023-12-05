@@ -25,7 +25,9 @@ export function render({ model, el }) {
             let row = JSON.parse(value[i]);
             let tweetBox = createAndAdd(el, "", "tweet-data");
             createAndAdd(tweetBox, "@" + row.SenderScreenName, "userName");
-            createAndAdd(tweetBox, row.CreatedTime.substring(0, row.CreatedTime.indexOf(' ')), "date");
+            let date = new Date(row.CreatedTime);
+            let dateString = date.toISOString().split('T')[0];
+            createAndAdd(tweetBox, dateString, "date");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'location.svg\" class="icon"> ' + makeNotNull(row.State, "Unknown"), "state");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'retweet.svg\" class="icon"> ' + makeNotNull(row.Retweets), "retweets");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'like.svg\" class="icon"> ' + makeNotNull(row.Favorites), "likes");
