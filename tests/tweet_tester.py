@@ -118,28 +118,9 @@ class Operation:
         self.parameters = parameter
         self.times = times
 
-class DataBaseSim:
-    def __init__(self, data):
-        self.allData = data
-        self.matrix = None
-    def getRow(self, i):
-        return self.allData.iloc[i]
-    def getColHeaders(self):
-        return self.allData.columns
-    def selectRows(self, rows: list):
-        return self.allData.iloc[rows]
-    def dtypes(self):
-        return self.allData.dtypes
-    def shape(self):
-        return self.allData.shape
-    def setMatrix(self, input):
-        self.matrix = input
-    def getMatrix(self):
-        return self.matrix
-
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
-    s = Session(data, makeMatrix, logSearches)
+    s = Session(data, logSearches)
     return s
 
 def test1(s):
@@ -441,9 +422,7 @@ def test23(s):
     s.advancedSearch("and or not False True")
 
 def test99(s):
-    s.filterBy("State", "California")
-    for i in range(60):
-        s.regexSearch("covid", caseSensitive = True)
+    s.searchKeyword(["test"])
     print(s.currentSet.size)
 
 def allTests(s1):

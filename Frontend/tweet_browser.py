@@ -239,7 +239,7 @@ class Session:
         params = keywords + ["orMode = " + str(orMode) + ", caseSensitive = " + str(caseSensitive)]
         if self.checkOperation("searchKeyword", params):
             return
-        flag = re.DOTALL
+        flag = re.DOTALL | re.MULTILINE
         if caseSensitive == False:
             flag |= re.IGNORECASE
         if orMode:
@@ -266,7 +266,7 @@ class Session:
             inputSet = self.currentSet
         if self.checkOperation("advancedSearch", expression):
             return
-        flag = re.DOTALL
+        flag = re.DOTALL | re.MULTILINE
         if caseSensitive == False:
             flag |= re.IGNORECASE
         keywords = re.findall("'[^']+'", expression)
@@ -299,10 +299,10 @@ class Session:
             inputSet = self.currentSet
         if self.checkOperation("regexSearch", expression):
             return
-        if caseSensitive:
-            pattern = re.compile(expression)
-        else:
-            pattern = re.compile(expression, re.IGNORECASE)
+        flag = re.DOTALL | re.MULTILINE
+        if not caseSensitive:
+            flag |= re.IGNORECASE
+        pattern = re.compile(expression, flag)
         def predicate(row):
             if re.search(pattern, row.iloc[self.headerDict["Message"]]):
                 return True
