@@ -133,7 +133,7 @@ class Session:
             if self.allData.dtypes[i] == int or self.allData.dtypes[i] == float:
                 self.weightable[headers[i]] = i
 
-    def makeOperation(self, outputs, counts, funcName, params, inputs: Subset = None):
+    def makeOperation(self, outputs, counts, funcName, params, switch = True, inputs: Subset = None):
         if inputs == None or type(inputs) != Subset:
             inputs = self.currentSet
         if not isinstance(inputs, list):
@@ -155,7 +155,8 @@ class Session:
             #input.children.append(deepcopy(newOp))
             #can't use append
             newOp.parents[i].children = newOp.parents[i].children + [newOp]
-        self.currentSet = newSets[0]
+        if switch:
+            self.currentSet = newSets[0]
         if self.logSearches:
             with open(self.fileName, "wb+") as ouput:
                 pickle.dump(self, ouput, pickle.HIGHEST_PROTOCOL)
@@ -187,9 +188,9 @@ class Session:
                 op.times.append(datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
                 if switch:
                     self.currentSet = op.outputs[0]
-                    return True
+                    return True, None
                 return True, op.outputs[0]
-        return False
+        return False, None
 
     def invert(self, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -237,7 +238,8 @@ class Session:
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         params = keywords + ["orMode = " + str(orMode) + ", caseSensitive = " + str(caseSensitive)]
-        if self.checkOperation("searchKeyword", params):
+        result, _ = self.checkOperation("searchKeyword", params)
+        if result:
             return
         flag = re.DOTALL | re.MULTILINE
         if caseSensitive == False:
@@ -264,7 +266,8 @@ class Session:
     def advancedSearch(self, expression: str, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        if self.checkOperation("advancedSearch", expression):
+        result, _ = self.checkOperation("advancedSearch", expression)
+        if result:
             return
         flag = re.DOTALL | re.MULTILINE
         if caseSensitive == False:
@@ -297,7 +300,8 @@ class Session:
     def regexSearch(self, expression: str, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        if self.checkOperation("regexSearch", expression):
+        result, _ = self.checkOperation("regexSearch", expression)
+        if result:
             return
         flag = re.DOTALL | re.MULTILINE
         if not caseSensitive:
@@ -320,7 +324,8 @@ class Session:
     def exclude(self, keywords: list, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        if self.checkOperation("exclude", keywords):
+        result, _ = self.checkOperation("exclude", keywords)
+        if result:
             return
         if caseSensitive:
             pattern = re.compile(r'\b' + "|".join([re.escape(word) for word in keywords]) + r'\b')
@@ -337,31 +342,43 @@ class Session:
     def filterBy(self, colName: str, value, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        if self.checkOperation("filterBy", colName + " = " + str(value)):
-            return
+        found, result = self.checkOperation("filterBy", colName + " = " + str(value), False, self.base)
+        if found:
+            self.setIntersect(result)
+            return 
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData.loc[(tempInd) & (self.allData[colName] == value)]
+
+        self.makeOperation(ans.index, ans.shape[0], "filterBy", colName + " = " + str(value), False, self.base)
         self.makeOperation(ans.index, ans.shape[0], "filterBy", colName + " = " + str(value))
         
     def filterDate(self, startDate: str, endDate: str, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        if self.checkOperation("filterTime", startDate + " to " + endDate):
+        found, result = self.checkOperation("filterTime", startDate + " to " + endDate, False, self.base)
+        if found:
+            self.setIntersect(result)
             return
         format = '%Y-%m-%d'
         startDate = datetime.datetime.strptime(startDate, format)
         endDate = datetime.datetime.strptime(endDate, format)
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData[(tempInd) & (self.allData['CreatedTime'] >= startDate) & (self.allData['CreatedTime'] <= endDate)]
+
+        self.makeOperation(ans.index, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate), False, self.base)
         self.makeOperation(ans.index, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate))
 
     def removeRetweets(self, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        if self.checkOperation("removeRetweets", "None"):
+        found, result = self.checkOperation("removeRetweets", "None", False, self.base)
+        if found:
+            self.setIntersect(result)
             return
         tempInd = self.allData.index.isin(inputSet.indices)
         ans = self.allData.loc[(tempInd) & (self.allData['MessageType'] != "Twitter Retweet")]
+
+        self.makeOperation(ans.index, ans.shape[0], "removeRetweets", "None", False, self.base)
         self.makeOperation(ans.index, ans.shape[0], "removeRetweets", "None")
 
     def setDiff(self, setOne: Subset, setZero: Subset = None):
@@ -384,17 +401,18 @@ class Session:
         ans = self.allData.loc[(indexZero) | (indexOne)]
         self.makeOperation(ans.index, ans.shape[0], "setUnion", setOne)
 
-    def setIntersect(self, setOne: Subset, setZero: Subset = None):
+    def setIntersect(self, inputs, setZero: Subset = None):
         if setZero == None or type(setZero) != Subset:
             setZero = self.currentSet
-        if type(setOne) != Subset:
-            raise TypeError("Set operators require two subset objects")
-        indexZero = self.allData.index.isin(setZero.indices) 
-        indexOne = self.allData.index.isin(setOne.indices) 
-        ans = self.allData.loc[(indexZero) & (indexOne)]
-        self.makeOperation(ans.index, ans.shape[0], "setintersect", setOne)
+        if type(inputs) == Subset:
+            inputs = [inputs]
+        index = self.allData.index.isin(setZero.indices) 
+        for subSet in inputs:
+            index &= self.allData.index.isin(subSet.indices) 
+        ans = self.allData.loc[index]
+        self.makeOperation(ans.index, ans.shape[0], "setintersect", inputs)
 
-    def backToBase(self):
+    def resetToBase(self):
         self.currentSet = self.base
 
     def back(self, index: int = 0):

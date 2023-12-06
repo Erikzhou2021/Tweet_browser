@@ -257,7 +257,25 @@ def test8(s):
     #print(words)
 
 def test9(s):
-    pass
+    s.removeRetweets()
+    set1 = s.currentSet
+    print(set1.size)
+    s.back()
+    s.filterDate("2020-01-01", "2020-06-01")
+    set2 = s.currentSet
+    print(set2.size)
+    s.back()
+    s.searchKeyword(["test"])
+    set3 = s.currentSet
+    print(set3.size)
+    s.setIntersect(set1)
+    print(s.currentSet.size)
+    s.resetToBase()
+    s.setIntersect([set1, set3])
+    print(s.currentSet.size)
+    s.resetToBase()
+    s.setIntersect([set1, set2, set3])
+    print(s.currentSet.size)
 
 def test10(s):
     pass
@@ -443,6 +461,6 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    # test23(s)
+    # test9(s)
     allTests(s)
     print("total time", time.perf_counter() - begin)
