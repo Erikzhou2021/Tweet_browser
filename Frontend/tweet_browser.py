@@ -2,7 +2,6 @@ from ast import keyword
 from cmath import exp
 import numpy as np
 import os.path
-from bitarray import bitarray
 import pandas as pd
 import random
 import re
@@ -26,7 +25,7 @@ from sklearn.neighbors import kneighbors_graph
 import leidenalg
 import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
-from ai_summary import Summarizer
+# from ai_summary import Summarizer
 
 # Ignore warnings
 import warnings
@@ -79,14 +78,6 @@ def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, remov
         tweet = ' '.join([ps.stem(word) for word in tweet.split()])
     return tweet
 
-def toBoolArray(arr: bitarray):
-    result = []
-    for i in range(len(arr)):
-        if arr[i]:
-            result.append(True)
-        else:
-            result.append(False)
-    return result
 
 class Operation:
     parents = []
@@ -343,43 +334,40 @@ class Session:
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         found, result = self.checkOperation("filterBy", colName + " = " + str(value), False, self.base)
-        if found:
-            self.setIntersect(result)
-            return 
-        tempInd = self.allData.index.isin(inputSet.indices)
-        ans = self.allData.loc[(tempInd) & (self.allData[colName] == value)]
+        if not found:
+            ans = self.allData.loc[(self.allData[colName] == value)]
 
-        self.makeOperation(ans.index, ans.shape[0], "filterBy", colName + " = " + str(value), False, self.base)
-        self.makeOperation(ans.index, ans.shape[0], "filterBy", colName + " = " + str(value))
+            self.makeOperation(ans.index, ans.shape[0], "filterBy", colName + " = " + str(value), False, self.base)
+            found, result = self.checkOperation("filterBy", colName + " = " + str(value), False, self.base)
+
+        self.setIntersect(result)
         
     def filterDate(self, startDate: str, endDate: str, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         found, result = self.checkOperation("filterTime", startDate + " to " + endDate, False, self.base)
-        if found:
-            self.setIntersect(result)
-            return
-        format = '%Y-%m-%d'
-        startDate = datetime.datetime.strptime(startDate, format)
-        endDate = datetime.datetime.strptime(endDate, format)
-        tempInd = self.allData.index.isin(inputSet.indices)
-        ans = self.allData[(tempInd) & (self.allData['CreatedTime'] >= startDate) & (self.allData['CreatedTime'] <= endDate)]
+        if not found:  
+            format = '%Y-%m-%d'
+            dateStart = datetime.datetime.strptime(startDate, format)
+            dateEnd = datetime.datetime.strptime(endDate, format)
+            ans = self.allData[(self.allData['CreatedTime'] >= dateStart) & (self.allData['CreatedTime'] <= dateEnd)]
 
-        self.makeOperation(ans.index, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate), False, self.base)
-        self.makeOperation(ans.index, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate))
+            self.makeOperation(ans.index, ans.shape[0], "filterTime", str(startDate) + " to " + str(endDate), False, self.base)
+            found, result = self.checkOperation("filterTime", startDate + " to " + endDate, False, self.base)
+
+        self.setIntersect(result)
 
     def removeRetweets(self, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         found, result = self.checkOperation("removeRetweets", "None", False, self.base)
-        if found:
-            self.setIntersect(result)
-            return
-        tempInd = self.allData.index.isin(inputSet.indices)
-        ans = self.allData.loc[(tempInd) & (self.allData['MessageType'] != "Twitter Retweet")]
+        if not found:
+            ans = self.allData[(self.allData['MessageType'] != "Twitter Retweet")]
 
-        self.makeOperation(ans.index, ans.shape[0], "removeRetweets", "None", False, self.base)
-        self.makeOperation(ans.index, ans.shape[0], "removeRetweets", "None")
+            self.makeOperation(ans.index, ans.shape[0], "removeRetweets", "None", False, self.base)
+            found, result = self.checkOperation("removeRetweets", "None", False, self.base)
+            
+        self.setIntersect(result)
 
     def setDiff(self, setOne: Subset, setZero: Subset = None):
         if setZero == None or type(setZero) != Subset:
@@ -434,13 +422,14 @@ class Session:
             print("Type = ", i.operationType, ", parameters = ", i.parameters,
                   ", time = ", i.times, ", number of children = ", len(i.outputs))
     
-    def summarize(self, inputSet: Subset = None):
-        if inputSet == None or type(inputSet) != Subset:
-            inputSet = self.currentSet
-        summarizer = Summarizer()
-        result = summarizer.llm_summarize(self.allData.iloc[toBoolArray(inputSet.indices)])
-        print(result)
-        return result
+    # def summarize(self, inputSet: Subset = None):
+    #     if inputSet == None or type(inputSet) != Subset:
+    #         inputSet = self.currentSet
+    #     summarizer = Summarizer()
+    #### TODO update this
+    #     result = summarizer.llm_summarize(self.allData.iloc[toBoolArray(inputSet.indices)])
+    #     print(result)
+    #     return result
 
 
 def createSession(fileName: str, logSearches = False) -> Session:
