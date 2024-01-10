@@ -21,6 +21,9 @@ RUN pip install --upgrade "voila<0.5"
 WORKDIR /home/jovyan/.jupyter
 COPY jupyter_notebook_config.py jupyter_notebook_config.py 
 
+WORKDIR /opt/conda/lib/python3.11/site-packages/voila
+COPY app.py app.py
+
 WORKDIR /home/jovyan
 COPY tweet_browser.ipynb tweet_browser.ipynb
 COPY allCensus_sample.csv allCensus_sample.csv
@@ -31,11 +34,10 @@ COPY images/ images/
 RUN mkdir Data
 WORKDIR /home/jovyan
 
-# CMD ["voila", "--Voila.ip=0.0.0.0 --Voila.tornado_settings=\"{'websocket_max_message_size': 209715200}\" ", "tweet_browser.ipynb"]
+# CMD ["voila", "tweet_browser.ipynb", "--Voila.ip=0.0.0.0 --Voila.tornado_settings=\"{'websocket_max_message_size': 209715200}\""]
 CMD ["voila", "--Voila.ip=0.0.0.0", "tweet_browser.ipynb"]
 
 #ENV NOTEBOOK_ARGS = " --no-browser --ServerApp.token='' "
-# New CMD was not tested yet
 # https://github.com/voila-dashboards/voila/issues/807
 
 ## docker build -t erikzhou2021/tweet_browser:latest .
