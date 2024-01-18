@@ -47,26 +47,23 @@ export function render({ model, el }) {
     dropDowns.classList.add("dropdowns");
 
     let orderBy = document.createElement("div");
-    let asc = document.createElement("img");
-    asc.src = filePath + "ascending.svg";
-    asc.addEventListener("click", updateAsc);
+    let arrow = document.createElement("img");
+    arrow.src = filePath + "arrow_down.svg";
+    arrow.addEventListener("click", updateOrder);
 
-    function updateAsc(){
-        model.set("sortOrder", "ASC");
+    function updateOrder(){
+        if(model.get("sortOrder") == "ASC"){
+            arrow.src = filePath + "arrow_up.svg";
+            model.set("sortOrder", "DESC");
+        }
+        else{
+            arrow.src = filePath + "arrow_down.svg";
+            model.set("sortOrder", "ASC");
+        }
         model.save_changes();
     }
 
-    let dsc = document.createElement("img");
-    dsc.src = filePath + "descending.svg";
-    dsc.addEventListener("click", updateDsc);
-
-    function updateDsc(){
-        model.set("sortOrder", "DESC");
-        model.save_changes();
-    }
-
-    orderBy.appendChild(asc);
-    orderBy.appendChild(dsc);
+    orderBy.appendChild(arrow);
 
     function addOption(parent, text, value, css = ""){
         let temp = document.createElement("option");
