@@ -24,7 +24,8 @@ export function render({ model, el }) {
     list.classList.add("value-list");
 
     let currVal = model.get("value");
-    for(let i = 0; i < currVal.length; i++){
+    let count = model.get("count");
+    for(let i = 0; i < count; i++){
         createSearchedValue(currVal[i]);
     }
 

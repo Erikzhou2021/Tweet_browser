@@ -50,6 +50,27 @@
 .generic-button img{
     color: white;
 }
+.clear-button{
+    background-color: white;
+    color: black;
+    text-decoration: underline;
+    width: 5.5em;
+    border:0px !important;
+    box-shadow: none !important;
+    margin-right: 2em;
+}
+.close-button{
+    background-color: white;
+    float: right;
+    width: 1.5em;
+    font-size: 2em;
+    /* pointer-events: none; */
+    border:0px !important;
+    box-shadow: none !important;
+}
+.search-button{
+    font-size: 1.1em;
+}
 
 
 /* Search Box */
@@ -104,20 +125,6 @@
     background-color: lightgray;
 }
 
-.close-button{
-    background-color: white;
-    float: right;
-    width: 1.5em;
-    font-size: 2em;
-    /* pointer-events: none; */
-    border:0px !important;
-    box-shadow: none !important;
-}
-
-.search-button{
-    float: right;
-    font-size: 1.1em;
-}
 
 /* Advanced page main box */
 .advanced-box{
