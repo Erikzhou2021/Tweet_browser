@@ -1,0 +1,16 @@
+.search-history{
+    flex-grow: 1;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
+
+.search-history span{
+    text-decoration: underline;
+    text-align: center;
+}
+
+.middle{
+    margin: 0px 10px;
+}
