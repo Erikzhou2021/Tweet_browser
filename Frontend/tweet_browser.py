@@ -108,7 +108,7 @@ class Session:
             self.createSessionDump()
 
         self.allData = data
-        self.allData['CreatedTime'] = pd.to_datetime(self.allData['CreatedTime'])
+        self.allData['CreatedTime'] = pd.to_datetime(self.allData['CreatedTime']).dt.floor('D')
         self.allData['Message'] = self.allData['Message'].astype("string")
         self.headerDict = dict()
         headers = self.allData.columns
@@ -356,6 +356,12 @@ class Session:
             found, result = self.checkOperation("filterTime", startDate + " to " + endDate, False, self.base)
 
         self.setIntersect(result)
+
+    def findMinDate(self):
+        return self.allData["CreatedTime"].min()
+    
+    def findMaxDate(self):
+        return self.allData["CreatedTime"].max()
 
     def removeRetweets(self, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:

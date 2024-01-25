@@ -440,7 +440,9 @@ def test23(s):
     s.advancedSearch("and or not False True")
 
 def test99(s):
-    s.searchKeyword(["test"])
+    s.filterDate("2020-9-01", "2020-9-01")
+    print(s.findMinDate())
+    print(s.findMaxDate())
     print(s.currentSet.size)
 
 def allTests(s1):
@@ -461,6 +463,6 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    # test9(s)
-    allTests(s)
+    test99(s)
+    # allTests(s)
     print("total time", time.perf_counter() - begin)
