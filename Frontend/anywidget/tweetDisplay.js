@@ -13,7 +13,7 @@ export function render({ model, el }) {
             let box = document.createElement("div");
             box.classList.add("no-results");
             let title = document.createElement("h1");
-            title.innerHTML = "No Results Fond";
+            title.innerHTML = "No Results Found";
             let text = document.createElement("div");
             text.innerHTML = "Click <b>MODIFY SEARCH</b> to change keywords or filters";
             box.appendChild(title);

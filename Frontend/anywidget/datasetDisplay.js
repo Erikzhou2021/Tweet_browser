@@ -7,7 +7,7 @@ export function render({ model, el }) {
     text.classList.add("large-font");
 
     let fileName = document.createElement("div");
-    fileName.innerHTML = model.get("fileName") + "bruh";
+    fileName.innerHTML = model.get("fileName");
     fileName.classList.add("small-font");
 
     leftText.appendChild(text);
