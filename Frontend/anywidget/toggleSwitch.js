@@ -19,7 +19,8 @@ export function render({ model, el }) {
     
     if(model.get("value") == 1){
         invisibleBox.checked = true;
-    }else{
+    }
+    else{
         invisibleBox.checked = false;
     }
 
@@ -33,4 +34,13 @@ export function render({ model, el }) {
             model.save_changes();
         }
     }
+
+    const query = '.date-constraint > input:first-of-type';
+    let start = model.get("calendarStart");
+    let end = model.get("calendarEnd");
+    let results = document.querySelectorAll(query);
+    results.forEach((calenderEl) => {
+        calenderEl.setAttribute('min', start);
+        calenderEl.setAttribute('max', end);
+    });
 }
