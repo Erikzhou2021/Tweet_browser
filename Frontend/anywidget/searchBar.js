@@ -43,7 +43,8 @@ export function render({ model, el }) {
         model.set("count", currCount+1);
         model.set("value", currVal.concat(value));
         model.save_changes();
-        
+
+        input.value = "";
         createSearchedValue(value);        
     }
 

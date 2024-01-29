@@ -43,4 +43,16 @@ export function render({ model, el }) {
         calenderEl.setAttribute('min', start);
         calenderEl.setAttribute('max', end);
     });
+
+    let button = document.querySelector('.search-button');
+    button.addEventListener("click", preSearch);
+    function preSearch(){
+        let searchBars = document.querySelectorAll('.plusButton');
+        searchBars.forEach((elem) =>{
+            elem.click();
+        });
+        let invisButton = document.querySelector('.hidden-button');
+        invisButton.click();
+    }
+    
 }
