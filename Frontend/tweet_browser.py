@@ -230,7 +230,7 @@ class Session:
             inputSet = self.currentSet
         params = keywords + ["orMode = " + str(orMode) + ", caseSensitive = " + str(caseSensitive)]
         result, _ = self.checkOperation("searchKeyword", params)
-        if result:
+        if result or inputSet.size == 0:
             return
         flag = re.DOTALL | re.MULTILINE
         if caseSensitive == False:
@@ -258,7 +258,7 @@ class Session:
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         result, _ = self.checkOperation("advancedSearch", expression)
-        if result:
+        if result or inputSet.size == 0:
             return
         flag = re.DOTALL | re.MULTILINE
         if caseSensitive == False:
@@ -292,7 +292,7 @@ class Session:
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         result, _ = self.checkOperation("regexSearch", expression)
-        if result:
+        if result or inputSet.size == 0:
             return
         flag = re.DOTALL | re.MULTILINE
         if not caseSensitive:
