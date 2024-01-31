@@ -33,19 +33,23 @@ export function render({ model, el }) {
         if(value == ""){
             return;
         }
-        let currVal = model.get("value");
-        for(let index = 0; index < currVal.length; index++){
-            if(currVal[index] == value){
-                return;
+        let keywords = value.match(/(?:[^\s"]+|"[^"]*")+/g);
+        for(let word of keywords){
+            word = word.replace(/['"]+/g, '')
+            let currVal = model.get("value");
+            for(let index = 0; index < currVal.length; index++){
+                if(currVal[index] == word){
+                    return;
+                }
             }
-        }
-        let currCount = model.get("count");
-        model.set("count", currCount+1);
-        model.set("value", currVal.concat(value));
-        model.save_changes();
+            let currCount = model.get("count");
+            model.set("count", currCount+1);
+            model.set("value", currVal.concat(word));
+            model.save_changes();
 
-        input.value = "";
-        createSearchedValue(value);        
+            input.value = "";
+            createSearchedValue(word);   
+        }     
     }
 
     function createSearchedValue(value){
