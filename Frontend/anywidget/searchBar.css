@@ -39,3 +39,11 @@
     cursor: pointer;
     margin-left: 7px;
 }
+.full-header{
+    display: flex;
+    align-items: baseline;
+}
+.full-header h5{
+    margin-left: 10px;
+    color: #696969;
+}

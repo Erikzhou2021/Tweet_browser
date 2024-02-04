@@ -1,9 +1,18 @@
 export function render({ model, el }) {   
     let headerText = model.get("header");
     if(headerText != null && headerText != ""){
+        let fullHeader = document.createElement("div");
         let header = document.createElement("h4");
         header.innerHTML = headerText;
-        el.appendChild(header);
+        fullHeader.appendChild(header);
+        let headerText2 = model.get("header2");
+        if(headerText2 != null && headerText2 != ""){
+            let header2 = document.createElement("h5");
+            header2.innerHTML = headerText2;
+            fullHeader.appendChild(header2);
+        }
+        fullHeader.classList.add("full-header");
+        el.appendChild(fullHeader);
     }
     let inputBar = document.createElement("div");
     inputBar.classList.add("search-bar");
@@ -33,9 +42,11 @@ export function render({ model, el }) {
         if(value == ""){
             return;
         }
-        let keywords = value.match(/(?:[^\s"]+|"[^"]*")+/g);
+        let keywords = value.match(/(?:[^,\s"]+|"[^"]*")+/g);
         for(let word of keywords){
-            word = word.replace(/['"]+/g, '')
+            if(word[0] == word[word.length-1] && (word[0] == '\"' || word[0] == "\'")){
+                word = word.substring(1, word.length-1)
+            }
             let currVal = model.get("value");
             for(let index = 0; index < currVal.length; index++){
                 if(currVal[index] == word){
