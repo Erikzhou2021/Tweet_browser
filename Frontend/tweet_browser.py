@@ -110,6 +110,7 @@ class Session:
         self.allData = data
         self.allData['CreatedTime'] = pd.to_datetime(self.allData['CreatedTime']).dt.floor('D')
         self.allData['Message'] = self.allData['Message'].astype("string")
+        # self.allData['State'] = self.allData['State'].str.lower()
         self.headerDict = dict()
         headers = self.allData.columns
         for i in range(len(headers)): # put <header, columnNum> into a dictionary for faster access
