@@ -1,27 +1,55 @@
 export function render({ model, el }) { 
-    return;
-    // let filePath = model.get("filePath");  
-    // el.classList.add("search-history");  
+    let MAX_PAGES_AROUND_CURRENT= 3;
+    let count = model.get("count");
+    let current = model.get("current");
+    if(count == 0){
+        return;
+    }
+    let filePath = model.get("filePath");  
+    el.classList.add("search-history");  
 
-    // let left = document.createElement("img");
-    // left.src = filePath + "left.svg";
-    // left.classList.add("arrow");
-    // let leftText = document.createElement("span");
-    // leftText.innerHTML = "Prev";
+    let left = document.createElement("img");
+    left.src = filePath + "left.svg";
+    left.classList.add("arrow");
+    let leftText = document.createElement("span");
+    leftText.innerHTML = "Prev";
+    left.addEventListener("click", function(){ changeCurrent(current-1); });
 
-    // let middle = document.createElement("div");
-    // middle.innerHTML = "1";
-    // middle.classList.add("middle");
+    let middle = document.createElement("div");
+    middle.classList.add("middle");
+    for(var i = Math.max(1, current - MAX_PAGES_AROUND_CURRENT); i < current; i++){
+        let ellipse = document.createElement("img");
+        ellipse.src = filePath + "ellipse.svg";
+        ellipse.classList.add("middle");
+        middle.appendChild(ellipse);
+    }
+    let currPage = document.createElement("div");
+    currPage.innerHTML = current;
+    middle.appendChild(currPage);
+    for(var i = Math.min(count, current + MAX_PAGES_AROUND_CURRENT); i < current; i++){
+        let ellipse = document.createElement("img");
+        ellipse.src = filePath + "ellipse.svg";
+        ellipse.classList.add("middle");
+        middle.appendChild(ellipse);
+    }
 
-    // let right = document.createElement("img");
-    // right.src = filePath + "right.svg";
-    // right.classList.add("arrow");
-    // let rightText = document.createElement("span");
-    // rightText.innerHTML = "Next";
+    let right = document.createElement("img");
+    right.src = filePath + "right.svg";
+    right.classList.add("arrow");
+    let rightText = document.createElement("span");
+    rightText.innerHTML = "Next";
+    right.addEventListener("click", function(){ changeCurrent(current+1); });
 
-    // el.appendChild(left);
-    // el.appendChild(leftText);
-    // el.appendChild(middle);
-    // el.appendChild(rightText);
-    // el.appendChild(right);
+    function changeCurrent(val){
+        let changeSignal = model.get("changeSignal") + 1;
+        model.set("current", val);
+        model.set("changeSignal", changeSignal);
+        model.save_changes();
+    }
+
+    el.appendChild(left);
+    el.appendChild(leftText);
+    el.appendChild(middle);
+    el.appendChild(rightText);
+    el.appendChild(right);
 }

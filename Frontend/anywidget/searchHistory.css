@@ -6,11 +6,17 @@
     align-content: center;
 }
 
-.search-history span{
+.search-history span,img{
     text-decoration: underline;
     text-align: center;
+    cursor: pointer;
 }
 
 .middle{
-    margin: 0px 10px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.middle img,div{
+    margin: 0 5px;
 }
