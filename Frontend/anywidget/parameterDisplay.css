@@ -3,14 +3,23 @@
     flex-basis: 40%;
 }
 .parameter-display .title{
+    color: #000;
     font-size: 1.5em;
+    padding-top: 16px;
+    padding-bottom: 8px;
 }
 .parameter-display .container{
-    background-color: lightgray;
-    border-radius: 5px;
+    background-color: #F0F1F1;
+    border-radius: 6px;
     padding: 5px;
-    font-weight: bold;
     height: 5.5em;
     width: 90%;
     margin-bottom: 20px; /*remove later*/
+
+    font-color: #000;
+    display: flex;
+    font-weight: bold;
+    padding: 8px 16px;
+    align-items: flex-start;
+    flex-shrink: 0;
 }
