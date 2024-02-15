@@ -25,9 +25,10 @@ Now clone the repository with
     git clone https://github.com/Erikzhou2021/Tweet_browser.git
 You  should be able to open the project by using the command `jupyter notebook` in the Tweet_browser directory.
 ## Data Format
-Tweet Browser currently only supports analyzing [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) files. We recommend [Sprinklr](https://www.sprinklr.com/), but your dataset can come from any source as long as each entry follows the format in the below table. The browser will open the file called allCensus_sample.csv in the `Frontend` directory by default, but you can select another file later.
+Tweet Browser currently only supports analyzing [.csv](https://en.wikipedia.org/wiki/Comma-separated_values) files. We recommend [Sprinklr](https://www.sprinklr.com/), but your dataset can come from any source as long as each entry follows the format in the below table. The browser will open the file called allCensus_sample.csv in the `Frontend` directory by default, but you can select another file later. The .csv should have the following format:
 | UniversalMessageId | SocialNetwork | SenderUserId | SenderScreenName | SenderListedName | SenderProfileImgUrl | SenderProfileLink | SenderFollowersCount | SenderInfluencerScore | SenderAge | SenderGender | OriginalAuthor | OriginalAuthorProfileLink | Title | Message | MessageType | CreatedTime | Language | LanguageCode | CountryCode | MediaTypeList | Permalink | Domain | Retweets |
-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+
 Not every field is required, so feel free to exclude unnecessary fields.
 ## Quickstart Guide
 ### Selecting a dataset
