@@ -17,7 +17,7 @@
     margin-bottom: 20px; /*remove later*/
 
     font-color: #000;
-    display: flex;
+    /* display: flex; */
     font-weight: bold;
     padding: 8px 16px;
     align-items: flex-start;
