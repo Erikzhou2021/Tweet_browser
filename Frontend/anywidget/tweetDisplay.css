@@ -1,45 +1,56 @@
+/*Here is CSS code modify the style of post display section on whole site*/
 .tweet-display {
-    background-color: rgba(0,0,0,0.0);
+    background-color: #F5F5F5;
     padding: 0px 2px;
     overflow: auto;
     height: var(--height);
     /* min-width: 70%; */
 }
+/*set the style for each individual post box*/
 .tweet-data{
-    border-radius: 15px;
-    border: 2px solid black;
-    padding: 5px 10px;
-    margin: 6px 0px;
+    border-radius: 8px;
+    border: 1px solid rgba(119, 119, 119, 0.47);
+    background: #FFF;
+    padding: 16px 32px;
+    margin: 4px auto;
     display: flex;
     flex-wrap: wrap;
+    width: 94%;
+    align-items: center;
 }
 .tweet-data img{
     max-height: 1em;
     vertical-align: bottom;
 }
 .userName{
+    color: #000;
     flex-basis: 20%;
     font-weight: bold;
     font-size: 1.1em;
     vertical-align: bottom;
     padding: 5px 0px;
+
 }
 .date{
+    color: #686868;
     flex-basis: 10%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .state{
+    color: #686868;
     flex-basis: 55%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .retweets{
+    color: #000;
     flex-basis: 7%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .likes{
+    color: #000;
     flex-basis: 8%;
     vertical-align: bottom;
     padding: 5px 0px;
@@ -52,14 +63,16 @@
     max-height: 20px;
 }
 
+/*Need to figure out set max width to the whole site to shrink down the overall width of the site for better reading experience*/
 .tweet-display .no-results{
-    border: 2px solid black;
-    border-radius: 5px;
-    width: inherit;
+    border: 1px solid #777;
+    border-radius: 8px;
+    background: #FFF;
+    width: 96%;
     height: 95%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin: 5px 0px;
+    margin: 16px auto;
 }
