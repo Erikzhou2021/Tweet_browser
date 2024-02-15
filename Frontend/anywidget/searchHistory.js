@@ -14,22 +14,27 @@ export function render({ model, el }) {
     let leftText = document.createElement("span");
     leftText.innerHTML = "Prev";
     left.addEventListener("click", function(){ changeCurrent(current-1); });
+    leftText.addEventListener("click", function(){ changeCurrent(current-1); });
 
     let middle = document.createElement("div");
-    middle.classList.add("middle");
+    middle.classList.add("middle-nums");
     for(var i = Math.max(1, current - MAX_PAGES_AROUND_CURRENT); i < current; i++){
         let ellipse = document.createElement("img");
         ellipse.src = filePath + "ellipse.svg";
-        ellipse.classList.add("middle");
+        ellipse.classList.add("middle-nums");
+        let index = i;
+        ellipse.addEventListener("click", function(){ changeCurrent(index); });
         middle.appendChild(ellipse);
     }
     let currPage = document.createElement("div");
     currPage.innerHTML = current;
     middle.appendChild(currPage);
-    for(var i = Math.min(count, current + MAX_PAGES_AROUND_CURRENT); i < current; i++){
+    for(var i = current+1; i <= Math.min(count, current + MAX_PAGES_AROUND_CURRENT); i++){
         let ellipse = document.createElement("img");
         ellipse.src = filePath + "ellipse.svg";
-        ellipse.classList.add("middle");
+        ellipse.classList.add("middle-nums");
+        let index = i;
+        ellipse.addEventListener("click", function(){ changeCurrent(index); });
         middle.appendChild(ellipse);
     }
 
@@ -39,8 +44,12 @@ export function render({ model, el }) {
     let rightText = document.createElement("span");
     rightText.innerHTML = "Next";
     right.addEventListener("click", function(){ changeCurrent(current+1); });
+    rightText.addEventListener("click", function(){ changeCurrent(current+1); });
 
     function changeCurrent(val){
+        if(val < 1 || val > count){
+            return;
+        }
         let changeSignal = model.get("changeSignal") + 1;
         model.set("current", val);
         model.set("changeSignal", changeSignal);

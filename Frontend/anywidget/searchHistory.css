@@ -12,11 +12,11 @@
     cursor: pointer;
 }
 
-.middle{
+.middle-nums{
     display: flex;
     justify-content: space-around;
 }
 
-.middle img,div{
+.middle-nums img, .middle-nums div{
     margin: 0 5px;
 }
