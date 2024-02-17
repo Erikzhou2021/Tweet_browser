@@ -53,11 +53,11 @@ export function render({ model, el }) {
 
     function updateOrder(){
         if(model.get("sortOrder") == "ASC"){
-            arrow.src = filePath + "arrow_up.svg";
+            arrow.src = filePath + "arrow_down.svg";
             model.set("sortOrder", "DESC");
         }
         else{
-            arrow.src = filePath + "arrow_down.svg";
+            arrow.src = filePath + "arrow_up.svg";
             model.set("sortOrder", "ASC");
         }
         model.save_changes();
