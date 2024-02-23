@@ -2,7 +2,7 @@ export function render({ model, el }) {
     let MAX_PAGES_AROUND_CURRENT= 3;
     let count = model.get("count");
     let current = model.get("current");
-    if(count == 0){
+    if(count <= 1){
         return;
     }
     let filePath = model.get("filePath");  
@@ -29,7 +29,7 @@ export function render({ model, el }) {
     let currPage = document.createElement("div");
     currPage.innerHTML = current;
     middle.appendChild(currPage);
-    for(var i = current+1; i <= Math.min(count, current + MAX_PAGES_AROUND_CURRENT); i++){
+    for(var i = current+1; i <= Math.min(count-1, current + MAX_PAGES_AROUND_CURRENT); i++){
         let ellipse = document.createElement("img");
         ellipse.src = filePath + "ellipse.svg";
         ellipse.classList.add("middle-nums");
