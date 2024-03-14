@@ -22,16 +22,10 @@ from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import TruncatedSVD
 from scipy.sparse import csc_matrix
-import umap.umap_ as umap
-from sklearn.mixture import GaussianMixture
-from sklearn.cluster import KMeans
-import hdbscan
-from sklearn.neighbors import kneighbors_graph
 import leidenalg
 import igraph as ig
-import copy
-import textwrap # hover text on dimension reduction/clustering plot
-# Ignore warnings
+
+from fastlexrank import FastLexRankSummarizer
 
 import pickle
 import datetime
@@ -439,11 +433,16 @@ def test23(s):
     s.back()
     s.advancedSearch("and or not False True")
 
-def test99(s):
-    s.filterDate("2020-9-01", "2020-9-01")
-    print(s.findMinDate())
-    print(s.findMaxDate())
+def test24(s):
+    s.searchKeyword(["test"])
     print(s.currentSet.size)
+    result = s.getCentral()
+    # print(result[["centrality", "Message"]])
+
+def test99(s):
+    summarizer = FastLexRankSummarizer()
+    scores = summarizer.get_lexrank_scores(["hi", "greatings", "test", "hello"])
+    print(scores)
 
 def allTests(s1):
     current_module = __import__(__name__)
@@ -457,7 +456,9 @@ def allTests(s1):
 
 if __name__=='__main__':
     #s = createSession("allCensus_sample.csv")
+
     s = createSession("allCensus_sample.csv", False)
+
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
     # allTests(s)
@@ -466,3 +467,6 @@ if __name__=='__main__':
     test99(s)
     # allTests(s)
     print("total time", time.perf_counter() - begin)
+    begin = time.perf_counter()
+    test99(s)
+    print("second time", time.perf_counter() - begin)
