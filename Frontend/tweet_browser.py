@@ -209,6 +209,11 @@ class Session:
         ans = np.random.choice(inputSet.indices, size, replace=False)
         self.makeOperation(ans, size, "simpleRandomSample", size)
 
+    def randomShuffle(self, seed: int, inputSet: Subset = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        return self.allData.iloc[self.currentSet.indices].sample(frac=1, random_state=seed)
+
     def weightedSample(self, size: int, colName: str, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
