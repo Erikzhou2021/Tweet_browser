@@ -136,3 +136,12 @@
     padding: 10px;
     padding-bottom: 25px;
 }
+
+.lm-TabBar-tabLabel{
+    font-weight: bold;
+}
+
+.displayCount{
+    font-weight: bold;
+    font-size: 1.3em;
+}
