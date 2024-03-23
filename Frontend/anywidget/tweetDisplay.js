@@ -4,6 +4,8 @@ export function render({ model, el }) {
     let height = model.get("height")
     el.style.setProperty('--height', height);
     model.on("change:value", displayVals);
+    let pageNum = 1;
+    el.onscroll = getNewTweets;
     displayVals();
 
     function displayVals(){
@@ -40,6 +42,16 @@ export function render({ model, el }) {
             return replace;
         }
         return val;
+    }
+    function getNewTweets(){
+        if (el.scrollTop == 0 && pageNum > 1){
+            pageNum--;
+        } 
+        else if(el.scrollTop + el.offsetHeight>= el.scrollHeight){
+            pageNum++;
+        }
+        model.set("pageNum", pageNum);
+        model.save_changes();
     }
     function createAndAdd(parent, html, cssClass){
         let temp = document.createElement("div");
