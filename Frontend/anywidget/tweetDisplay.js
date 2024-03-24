@@ -6,6 +6,7 @@ export function render({ model, el }) {
     model.on("change:value", displayVals);
     let pageNum = 1;
     el.onscroll = getNewTweets;
+    let updateFlag = 0; // 0 = no update, 1 = waiting for prev page, 2 = waiting for next page
     displayVals();
 
     function displayVals(){
@@ -36,6 +37,15 @@ export function render({ model, el }) {
             createAndAdd(tweetBox, row.Message, "message");
             el.appendChild(tweetBox);
         }
+        if(pageNum > 1){
+            if(updateFlag == 1){ // TODO: make more precise later
+                el.scrollTop = el.scrollHeight / 2;
+            }
+            else{
+                el.scrollTop = el.scrollHeight / 2 - el.offsetHeight * 0.95;
+            }
+        }
+        updateFlag = 0;
     }
     function makeNotNull(val, replace = 0){
         if (val == null){
@@ -44,11 +54,16 @@ export function render({ model, el }) {
         return val;
     }
     function getNewTweets(){
+        if(updateFlag != 0){
+            return;
+        }
         if (el.scrollTop == 0 && pageNum > 1){
             pageNum--;
+            updateFlag = 1;
         } 
-        else if(el.scrollTop + el.offsetHeight>= el.scrollHeight){
+        else if(el.scrollTop + el.offsetHeight >= el.scrollHeight){
             pageNum++;
+            updateFlag = 2;
         }
         model.set("pageNum", pageNum);
         model.save_changes();
