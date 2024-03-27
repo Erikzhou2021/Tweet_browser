@@ -1,0 +1,17 @@
+.sample-selector{
+    display: flex;
+}
+.sample-selector div{
+    font-weight: bold;
+    font-size: 1.2em;
+    margin: 1px 5px;
+}
+.sample-selector select{
+    border: none;
+    text-decoration: underline;
+    background-color: transparent;
+    font-weight: bold;
+}
+.sample-selector option{
+    font-weight: bold;
+}
