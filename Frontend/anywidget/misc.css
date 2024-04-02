@@ -3,10 +3,12 @@
     background-color: lightgray;
     /* width: 20%; */
     max-width: 30%;
+    height: 3.5em;
     display: flex;
     align-items: center;
     padding: 3px 7px;
     border-radius: 5px;
+    align-self:last baseline;
 }
 .text-block{
     overflow: hidden;

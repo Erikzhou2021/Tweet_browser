@@ -423,6 +423,13 @@ class Session:
             raise IndexError("Can't go to next (Out of bounds)")
         self.currentSet = self.currentSet.children[setIndex].outputs[opIndex]
 
+    def getRandomSampleChildren(self):
+        ans = []
+        for i in range(len(self.currentSet.children)):
+            if self.currentSet.children[i].operationType == "simpleRandomSample":
+                ans.append[i]
+        return ans
+
     def printChildren(self):
         if len(self.currentSet.children) == 0:
             print("No children searches")

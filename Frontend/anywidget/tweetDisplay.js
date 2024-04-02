@@ -5,7 +5,6 @@ export function render({ model, el }) {
     el.style.setProperty('--height', height);
     model.on("change:value", displayVals);
     let pageNum = 1;
-    let maxPage = model.get("maxPage") + 1;
     el.onscroll = getNewTweets;
     let updateFlag = 0; // 0 = no update, 1 = waiting for prev page, 2 = waiting for next page
     displayVals();
@@ -39,7 +38,6 @@ export function render({ model, el }) {
             createAndAdd(tweetBox, row.Message, "message");
             el.appendChild(tweetBox);
         }
-        alert(pageNum);
         if(pageNum > 1){
             if(updateFlag == 1){ // TODO: make more precise later
                 el.scrollTop = el.scrollHeight / 2;
@@ -67,7 +65,7 @@ export function render({ model, el }) {
             pageNum--;
             updateFlag = 1;
         } 
-        else if(el.scrollTop + el.offsetHeight >= el.scrollHeight && pageNum < maxPage){
+        else if(el.scrollTop + el.offsetHeight >= el.scrollHeight && pageNum < model.get("maxPage")){
             pageNum++;
             updateFlag = 2;
         }

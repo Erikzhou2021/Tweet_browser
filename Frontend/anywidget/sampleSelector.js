@@ -28,20 +28,24 @@ export function render({ model, el }) {
 
     let option5 = document.createElement("option");
     option5.innerHTML = "All";
-    option5.value = model.get("value");
+    option5.value = -1;
     sampleSize.appendChild(option5);
 
     let text2 = document.createElement("div");
     text2.innerHTML = "posts from&nbsp;" + model.get("total").toString() + "&nbsp;results";
 
     function updateValue(){
-        let val = sampleSize.value;
+        let val = parseInt(sampleSize.value);
         model.set("value", val);
         model.save_changes();
+    }
+    function updateTotal(){
+        text2.innerHTML = "posts from&nbsp;" + model.get("total").toString() + "&nbsp;results";
     }
 
     sampleSize.value = model.get("value");
     sampleSize.addEventListener("change", updateValue);
+    model.on("change:total", updateTotal);
     el.appendChild(text1);
     el.appendChild(sampleSize);
     el.appendChild(text2);
