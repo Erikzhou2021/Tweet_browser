@@ -427,7 +427,7 @@ class Session:
         ans = []
         for i in range(len(self.currentSet.children)):
             if self.currentSet.children[i].operationType == "simpleRandomSample":
-                ans.append[i]
+                ans.append(i)
         return ans
 
     def printChildren(self):

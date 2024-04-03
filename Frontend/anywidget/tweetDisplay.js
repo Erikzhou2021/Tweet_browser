@@ -6,6 +6,7 @@ export function render({ model, el }) {
     model.on("change:value", displayVals);
     let pageNum = 1;
     el.onscroll = getNewTweets;
+    let middle = model.get("tweetsPerPage");
     let updateFlag = 0; // 0 = no update, 1 = waiting for prev page, 2 = waiting for next page
     displayVals();
 
@@ -13,6 +14,7 @@ export function render({ model, el }) {
         pageNum = model.get("pageNum");
         el.textContent = "";
         let value = model.get("value");
+        let middleHeight = 0;
         if(value == undefined || value.length < 1){
             let box = document.createElement("div");
             box.classList.add("no-results");
@@ -37,13 +39,16 @@ export function render({ model, el }) {
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'like.svg\" class="icon"> ' + makeNotNull(row.Favorites), "likes");
             createAndAdd(tweetBox, row.Message, "message");
             el.appendChild(tweetBox);
+            if(i == middle){
+                middleHeight = tweetBox.offsetTop;
+            }
         }
         if(pageNum > 1){
-            if(updateFlag == 1){ // TODO: make more precise later
-                el.scrollTop = el.scrollHeight / 2;
+            if(updateFlag == 1){
+                el.scrollTop = middleHeight - 4;
             }
             else if(updateFlag == 2){
-                el.scrollTop = el.scrollHeight / 2 - el.offsetHeight * 0.95;
+                el.scrollTop = middleHeight - 4 - el.offsetHeight * 0.95;
             }else{
                 el.scrollTop = 0;
             }
