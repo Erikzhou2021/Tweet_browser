@@ -10,7 +10,6 @@ export function render({ model, el }) {
     let container = document.createElement("div");
     container.classList.add("page-input");
 
-
     let text1 = document.createElement("p");
     text1.innerHTML = "Page &nbsp;";
     
@@ -18,9 +17,7 @@ export function render({ model, el }) {
     input.type = "number";
     input.value = "1";
     input.classList.add("page-num");
-    input.addEventListener("input", function(){
-        pageChange(input.value);
-    });
+    input.addEventListener("input", pageChange);
     input.addEventListener("blur", resetPage);
 
     let text2 = document.createElement("p");
@@ -37,7 +34,8 @@ export function render({ model, el }) {
 
     model.on("change:maxPage", update);
 
-    function pageChange(newVal){
+    function pageChange(){
+        let newVal = input.value;
         if(newVal == null || newVal == ""){
             return;
         }
@@ -50,6 +48,8 @@ export function render({ model, el }) {
         }
         input.value = newVal;
         model.set("value", newVal);
+        let signal = model.get("changeSignal");
+        model.set("changeSignal", signal + 1);
         model.save_changes();
     }
 
