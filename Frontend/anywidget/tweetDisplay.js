@@ -53,6 +53,9 @@ export function render({ model, el }) {
                 el.scrollTop = 0;
             }
         }
+        else{ // TODO: keep scroll top the same after a user closes out the advanced menu without searching
+            el.scrollTop = 0;
+        }
         updateFlag = 0;
     }
     function makeNotNull(val, replace = 0){
@@ -70,7 +73,7 @@ export function render({ model, el }) {
             pageNum--;
             updateFlag = 1;
         } 
-        else if(el.scrollTop + el.offsetHeight >= el.scrollHeight && pageNum < model.get("maxPage")){
+        else if(Math.ceil(el.scrollTop + el.offsetHeight) >= el.scrollHeight && pageNum < model.get("maxPage")){
             pageNum++;
             updateFlag = 2;
         }
@@ -84,5 +87,4 @@ export function render({ model, el }) {
         parent.appendChild(temp);
         return temp;
     }
-    
 }

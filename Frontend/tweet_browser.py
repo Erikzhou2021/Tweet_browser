@@ -21,7 +21,7 @@ import leidenalg
 import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
 # from ai_summary import Summarizer
-from fastlexrank import FastLexRankSummarizer
+# from fastlexrank import FastLexRankSummarizer
 
 # Ignore warnings
 import warnings
@@ -117,7 +117,7 @@ class Session:
         self.base.size = self.length
         self.currentSet = self.base
         self.weightable = dict()
-        self.summarizer = FastLexRankSummarizer()
+        # self.summarizer = FastLexRankSummarizer()
         for i in range(len(self.allData.dtypes)):
             if self.allData.dtypes[i] == int or self.allData.dtypes[i] == float:
                 self.weightable[headers[i]] = i
@@ -447,14 +447,14 @@ class Session:
     #     print(result)
     #     return result
 
-    def getCentral(self, inputSet = None):
-        if inputSet == None or type(inputSet) != Subset:
-            inputSet = self.currentSet
-        data = self.allData.iloc[inputSet.indices]
-        corpus = data["Message"]
-        scores = self.summarizer.get_lexrank_scores(corpus.array)
-        data = data.assign(centrality=scores)
-        return data
+    # def getCentral(self, inputSet = None):
+    #     if inputSet == None or type(inputSet) != Subset:
+    #         inputSet = self.currentSet
+    #     data = self.allData.iloc[inputSet.indices]
+    #     corpus = data["Message"]
+    #     scores = self.summarizer.get_lexrank_scores(corpus.array)
+    #     data = data.assign(centrality=scores)
+    #     return data
 
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)

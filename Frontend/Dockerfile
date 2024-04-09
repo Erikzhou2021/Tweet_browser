@@ -13,6 +13,7 @@ WORKDIR /home/jovyan
 
 #RUN /usr/bin/python3 -m pip3 install --upgrade pip
 RUN pip install regex anywidget plotly nltk umap-learn hdbscan leidenalg igraph pandas matplotlib
+# RUN pip install fastlexrank
 
 # Need to roll back versions (Not tested on docker yet)
 RUN pip install --upgrade "pyzmq<25" "jupyter_client<8"
