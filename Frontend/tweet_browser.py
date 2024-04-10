@@ -94,6 +94,7 @@ class Subset:
     size = 0
     parent = None
     children = []
+    searchIndex = -1
     def __init__(self, ind):
         self.indices = ind
 
@@ -403,6 +404,9 @@ class Session:
             setZero = self.currentSet
         if type(inputs) == Subset:
             inputs = [inputs]
+        found, result = self.checkOperation("setintersect", inputs)
+        if found: 
+            return
         index = self.allData.index.isin(setZero.indices) 
         for subSet in inputs:
             index &= self.allData.index.isin(subSet.indices) 
