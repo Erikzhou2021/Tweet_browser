@@ -2,6 +2,7 @@ import re
 from typing import List
 
 import numpy as np
+import torch
 from peft import PeftConfig, PeftModel
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModelForCausalLM, AutoTokenizer
