@@ -17,7 +17,7 @@ export function render({ model, el }) {
     el.appendChild(text);
     el.appendChild(toggleSwitch);
     
-    if(model.get("value") == 1){
+    if(model.get("value") > 1){
         invisibleBox.checked = true;
     }
     else{

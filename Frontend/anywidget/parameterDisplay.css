@@ -17,9 +17,11 @@
     margin-bottom: 20px; /*remove later*/
 
     font-color: #000;
-    /* display: flex; */
+    display: flex;
+    flex-direction: column;
     font-weight: bold;
     padding: 8px 16px;
-    align-items: flex-start;
+    /* align-items: flex-start; */
     flex-shrink: 0;
+    flex-wrap: wrap;
 }

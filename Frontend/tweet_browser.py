@@ -226,8 +226,12 @@ class Session:
         temp = self.allData[colName][self.allData.index.isin(inputSet.indices)]
         temp.fillna(0, inplace=True)
         temp += 1
-        ans = temp.sample(size, weights=temp)
-        self.makeOperation(ans.index, ans.shape[0], "weightedSample", colName + str(size))
+        if temp.sum() > 0:
+            temp /= temp.sum()
+            ans = np.random.choice(inputSet.indices, size, replace=False, p=temp)
+        else:
+            ans = np.random.choice(inputSet.indices, size, replace=False)
+        self.makeOperation(ans, size, "weightedSample", str(size) + ";" + colName)
 
     def searchKeyword(self, keywords: list, orMode: bool = False, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -427,10 +431,13 @@ class Session:
             raise IndexError("Can't go to next (Out of bounds)")
         self.currentSet = self.currentSet.children[setIndex].outputs[opIndex]
 
-    def getRandomSampleChildren(self):
+    def getRandomSampleChildren(self, weightColumn):
         ans = []
         for i in range(len(self.currentSet.children)):
-            if self.currentSet.children[i].operationType == "simpleRandomSample":
+            child = self.currentSet.children[i]
+            if weightColumn == "None" and child.operationType == "simpleRandomSample":
+                ans.append(i)
+            elif child.operationType == "weightedSample" and child.parameters.split(";", 1)[1] == weightColumn:
                 ans.append(i)
         return ans
 

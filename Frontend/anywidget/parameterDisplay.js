@@ -1,6 +1,7 @@
 export function render({ model, el }) {
     el.classList.add("parameter-display");
     let title = document.createElement("div");
+    let filePath = model.get("filePath");
     title.innerHTML = model.get("firstWord") + "<b> " + model.get("secondWord") + " <b/>";
     title.classList.add("title");
     let container = document.createElement("div");
@@ -22,7 +23,12 @@ export function render({ model, el }) {
     else{
         for(let i = 0; i < data.length; i++){
             let temp = document.createElement("div");
-            temp.innerHTML = headers[i] + ": " + data[i];
+            if (headers[i].search(".svg") == -1) {
+                temp.innerHTML = headers[i] + ": " + data[i];
+            }
+            else{
+                temp.innerHTML = "<img src=" + filePath + headers[i] + "> &nbsp;" + data[i];
+            }
             container.appendChild(temp);
         }
     }

@@ -3,10 +3,8 @@ warnings.filterwarnings("ignore")
 
 import time
 import_time = time.perf_counter()
-from ast import keyword
-from cmath import exp
+import copy
 import numpy as np
-from bitarray import bitarray
 import pandas as pd
 import random
 import re
@@ -15,15 +13,8 @@ import string
 import scipy
 import sklearn
 import nltk
-import plotly.express as px
-from nltk.stem import PorterStemmer
 #nltk.download('stopwords')
 #from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import TruncatedSVD
-from scipy.sparse import csc_matrix
-import leidenalg
-import igraph as ig
 
 from fastlexrank import FastLexRankSummarizer
 
@@ -88,15 +79,6 @@ def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, remov
     if stem==True:
         tweet = ' '.join([ps.stem(word) for word in tweet.split()])
     return tweet
-
-def toBoolArray(arr: bitarray):
-    result = []
-    for i in range(len(arr)):
-        if arr[i]:
-            result.append(True)
-        else:
-            result.append(False)
-    return result
 
 class Operation:
     parents = []
@@ -440,9 +422,12 @@ def test24(s):
     # print(result[["centrality", "Message"]])
 
 def test99(s):
-    summarizer = FastLexRankSummarizer()
-    scores = summarizer.get_lexrank_scores(["hi", "greatings", "test", "hello"])
-    print(scores)
+    # summarizer = FastLexRankSummarizer()
+    # scores = summarizer.get_lexrank_scores(["hi", "greatings", "test", "hello"])
+    # print(scores)
+    s.searchKeyword(["reee"])
+    print(s.currentSet.size)
+    s.weightedSample(0, "Retweets")
 
 def allTests(s1):
     current_module = __import__(__name__)
@@ -467,6 +452,6 @@ if __name__=='__main__':
     test99(s)
     # allTests(s)
     print("total time", time.perf_counter() - begin)
-    begin = time.perf_counter()
-    test99(s)
-    print("second time", time.perf_counter() - begin)
+    # begin = time.perf_counter()
+    # test99(s)
+    # print("second time", time.perf_counter() - begin)
