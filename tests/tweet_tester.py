@@ -422,12 +422,9 @@ def test24(s):
     # print(result[["centrality", "Message"]])
 
 def test99(s):
-    # summarizer = FastLexRankSummarizer()
-    # scores = summarizer.get_lexrank_scores(["hi", "greatings", "test", "hello"])
-    # print(scores)
-    s.searchKeyword(["reee"])
-    print(s.currentSet.size)
-    s.weightedSample(0, "Retweets")
+    summarizer = FastLexRankSummarizer()
+    scores = summarizer.get_lexrank_scores(["hi", "greatings", "test", "hello"])
+    print(scores)
 
 def allTests(s1):
     current_module = __import__(__name__)

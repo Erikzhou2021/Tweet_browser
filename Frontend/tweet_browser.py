@@ -421,7 +421,7 @@ class Session:
         self.currentSet = self.base
 
     def back(self, index: int = 0):
-        if(self.currentSet.size == self.length) or index >= len(self.currentSet.parent.parents):
+        if self.currentSet.parent == None or index >= len(self.currentSet.parent.parents):
         # if(self.currentSet == self.base):
             raise IndexError("Can't go back (Out of bounds)")
         self.currentSet = self.currentSet.parent.parents[index]
