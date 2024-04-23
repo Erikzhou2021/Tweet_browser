@@ -441,6 +441,11 @@ class Session:
             elif child.operationType == "weightedSample" and child.parameters.split(";", 1)[1] == weightColumn:
                 ans.append(i)
         return ans
+    
+    # def resetRandomSampleChildren(self):
+    #     for i in range(len(self.currentSet.children)):
+    #         if self.currentSet.children[i].operationType == "simpleRandomSample":
+
 
     def printChildren(self):
         if len(self.currentSet.children) == 0:
