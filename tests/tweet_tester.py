@@ -94,9 +94,12 @@ class Operation:
         self.parameters = parameter
         self.times = times
 
-def createSession(fileName: str, logSearches = False) -> Session:
+def createSession(fileName: str, logSearches = False, useEmbeddings = False) -> Session:
     data = parse_data(fileName)
-    s = Session(data, logSearches)
+    embeddings = None
+    if useEmbeddings:
+        embeddings = parse_data("allCensus_sample_embeddings.csv")
+    s = Session(data, logSearches, embeddings)
     return s
 
 def test1(s):
@@ -439,7 +442,7 @@ def allTests(s1):
 if __name__=='__main__':
     #s = createSession("allCensus_sample.csv")
 
-    s = createSession("allCensus_sample.csv", False)
+    s = createSession("allCensus_sample.csv", False, True)
 
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
