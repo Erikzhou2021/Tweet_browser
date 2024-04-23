@@ -94,6 +94,7 @@ class Subset:
     size = 0
     parent = None
     children = []
+    searchIndex = -1
     def __init__(self, ind):
         self.indices = ind
 
@@ -118,7 +119,7 @@ class Session:
         self.base.size = self.length
         self.currentSet = self.base
         self.weightable = dict()
-        self.summarizer = FastLexRankSummarizer()
+        # self.summarizer = FastLexRankSummarizer()
         for i in range(len(self.allData.dtypes)):
             if self.allData.dtypes[i] == int or self.allData.dtypes[i] == float:
                 self.weightable[headers[i]] = i
@@ -226,8 +227,12 @@ class Session:
         temp = self.allData[colName][self.allData.index.isin(inputSet.indices)]
         temp.fillna(0, inplace=True)
         temp += 1
-        ans = temp.sample(size, weights=temp)
-        self.makeOperation(ans.index, ans.shape[0], "weightedSample", colName + str(size))
+        if temp.sum() > 0:
+            temp /= temp.sum()
+            ans = np.random.choice(inputSet.indices, size, replace=False, p=temp)
+        else:
+            ans = np.random.choice(inputSet.indices, size, replace=False)
+        self.makeOperation(ans, size, "weightedSample", str(size) + ";" + colName)
 
     def searchKeyword(self, keywords: list, orMode: bool = False, caseSensitive = False, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -404,6 +409,9 @@ class Session:
             setZero = self.currentSet
         if type(inputs) == Subset:
             inputs = [inputs]
+        found, result = self.checkOperation("setintersect", inputs)
+        if found: 
+            return
         index = self.allData.index.isin(setZero.indices) 
         for subSet in inputs:
             index &= self.allData.index.isin(subSet.indices) 
@@ -424,6 +432,16 @@ class Session:
             raise IndexError("Can't go to next (Out of bounds)")
         self.currentSet = self.currentSet.children[setIndex].outputs[opIndex]
 
+    def getRandomSampleChildren(self, weightColumn):
+        ans = []
+        for i in range(len(self.currentSet.children)):
+            child = self.currentSet.children[i]
+            if weightColumn == "None" and child.operationType == "simpleRandomSample":
+                ans.append(i)
+            elif child.operationType == "weightedSample" and child.parameters.split(";", 1)[1] == weightColumn:
+                ans.append(i)
+        return ans
+
     def printChildren(self):
         if len(self.currentSet.children) == 0:
             print("No children searches")
@@ -440,6 +458,7 @@ class Session:
     #     result = summarizer.llm_summarize(self.allData.iloc[toBoolArray(inputSet.indices)])
     #     print(result)
     #     return result
+
 
     def getCentral(self, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:

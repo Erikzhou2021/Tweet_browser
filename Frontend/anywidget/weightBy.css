@@ -1,0 +1,15 @@
+/* .weight-by{
+    display: flex;
+} */
+
+.weight-by select{
+    border: none;
+    border-bottom: 3px solid black;
+    /* text-decoration: underline; */
+    background-color: transparent;
+    width: 100%;
+}
+
+/* .weight-by h4{
+    margin-bottom: 7px;
+} */

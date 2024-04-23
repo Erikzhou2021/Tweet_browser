@@ -1,49 +1,27 @@
 export function render({ model, el }) { 
     let filePath = model.get("filePath");   
     el.classList.add("sort-bar");
-    let sort = document.createElement("div");
-    let temp = document.createElement("div");
 
     let dropDowns = document.createElement("div");
     let label = document.createElement("strong");
-    label.innerHTML = "&nbsp;Sort";
-    sort.appendChild(temp);
-    sort.appendChild(label);
-    sort.classList.add("box-container");
+    label.innerHTML = "&nbsp;Sort By";
 
-    let dropDown1 = document.createElement("select");
-    addOption(dropDown1, "Displayed Examples", "Displayed Examples");
-    addOption(dropDown1, "Entire Dataset", "Entire Dataset");
-    dropDown1.addEventListener("change", updateSortScope);
-    dropDown1.value = model.get("sortScope");
-
-    function updateSortScope(){
-        let sortScope = dropDown1.value;
-        model.set("sortScope", sortScope);
-        model.save_changes();
-    }
-
-    let byText = document.createElement("strong");
-    byText.innerHTML = "&nbsp; By &nbsp;";
-
-    let dropDown2 = document.createElement("select");
-    addOption(dropDown2, "None", "None");
-    addOption(dropDown2, "Date", "CreatedTime");
-    addOption(dropDown2, "Geography", "State");
-    addOption(dropDown2, "Retweets", "Retweets");
-    addOption(dropDown2, "Username", "SenderScreenName");
-    dropDown2.addEventListener("change", updateSortColumn);
-    dropDown2.value = model.get("sortColumn");
+    let dropDown = document.createElement("select");
+    addOption(dropDown, "None", "None");
+    addOption(dropDown, "Date", "CreatedTime");
+    addOption(dropDown, "Geography", "State");
+    addOption(dropDown, "Retweets", "Retweets");
+    addOption(dropDown, "Username", "SenderScreenName");
+    dropDown.addEventListener("change", updateSortColumn);
+    dropDown.value = model.get("sortColumn");
 
     function updateSortColumn(){
-        let sortColumn = dropDown2.value;
+        let sortColumn = dropDown.value;
         model.set("sortColumn", sortColumn);
         model.save_changes();
     }
 
-    dropDowns.appendChild(dropDown1);
-    dropDowns.appendChild(byText);
-    dropDowns.appendChild(dropDown2);
+    dropDowns.appendChild(dropDown);
     dropDowns.classList.add("dropdowns");
 
     let orderBy = document.createElement("div");
@@ -75,7 +53,7 @@ export function render({ model, el }) {
         parent.appendChild(temp);
     }
 
-    el.appendChild(sort);
+    el.appendChild(label);
     el.appendChild(dropDowns);
     el.appendChild(orderBy);
 }

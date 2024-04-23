@@ -10,21 +10,18 @@ export function render({ model, el }) {
     let container = document.createElement("div");
     container.classList.add("page-input");
 
-
     let text1 = document.createElement("p");
-    text1.innerHTML = "Page &nbsp;";
+    text1.innerHTML = "Sample &nbsp;";
     
     let input = document.createElement("input");
     input.type = "number";
     input.value = "1";
     input.classList.add("page-num");
-    input.addEventListener("input", function(){
-        pageChange(input.value);
-    });
+    input.addEventListener("input", pageChange);
     input.addEventListener("blur", resetPage);
 
     let text2 = document.createElement("p");
-    text2.innerHTML = "&nbsp; out of " + getMaxPage();
+    text2.innerHTML = "&nbsp; out of " + model.get("maxPage");
 
     container.appendChild(text1);
     container.appendChild(input);
@@ -35,13 +32,14 @@ export function render({ model, el }) {
     right.classList.add("arrow");
     right.addEventListener("click", increment);
 
-    model.on("change:changeSignal", update);
+    model.on("change:maxPage", update);
 
-    function pageChange(newVal){
+    function pageChange(){
+        let newVal = input.value;
         if(newVal == null || newVal == ""){
             return;
         }
-        let maxPage = getMaxPage();
+        let maxPage = model.get("maxPage");
         if(newVal < 1){
             newVal = 1;
         }
@@ -50,6 +48,8 @@ export function render({ model, el }) {
         }
         input.value = newVal;
         model.set("value", newVal);
+        let signal = model.get("changeSignal");
+        model.set("changeSignal", signal + 1);
         model.save_changes();
     }
 
@@ -60,10 +60,12 @@ export function render({ model, el }) {
     }
 
     function increment(){
-        let maxPage = getMaxPage();
+        let maxPage = model.get("maxPage");
         if(input.value <= maxPage-1){
             input.value++;
             model.set("value", input.value);
+            let signal = model.get("changeSignal");
+            model.set("changeSignal", signal + 1);
             model.save_changes();
         }
     }
@@ -72,12 +74,14 @@ export function render({ model, el }) {
         if(input.value > 1){
             input.value--;
             model.set("value", input.value);
+            let signal = model.get("changeSignal");
+            model.set("changeSignal", signal + 1);
             model.save_changes();
         }
     }
 
     function update(){
-        let maxPage = getMaxPage();
+        let maxPage = model.get("maxPage");
         if(model.get("value") < 1){
             model.set("value", 1);
             model.save_changes();
@@ -88,12 +92,12 @@ export function render({ model, el }) {
             model.save_changes();
             input.value = String(maxPage);
         }
+        else{
+            input.value = String(model.get("value"))
+        }
         text2.innerHTML = "&nbsp; out of " + maxPage;
     }
 
-    function getMaxPage(){
-        return Math.floor(model.get("totalTweets") / model.get("tweetsPerPage")) + 1;
-    }
     resetPage(true);
     el.appendChild(left);
     el.appendChild(container);

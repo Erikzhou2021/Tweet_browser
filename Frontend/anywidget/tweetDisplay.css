@@ -6,6 +6,9 @@
     height: var(--height);
     /* min-width: 70%; */
 }
+.tweet-display::-webkit-scrollbar {
+    display: none;
+  }
 /*set the style for each individual post box*/
 .tweet-data{
     border-radius: 8px;
