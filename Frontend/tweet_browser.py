@@ -20,8 +20,8 @@ from scipy.sparse import csc_matrix
 import leidenalg
 import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
-# from ai_summary import Summarizer
-# from fastlexrank import FastLexRankSummarizer
+from fastlexrank import FastLexRankSummarizer
+import ai_summary
 
 # Ignore warnings
 import warnings
@@ -99,11 +99,12 @@ class Subset:
         self.indices = ind
 
 class Session:
-    def __init__(self, data, logSearches = False):
+    def __init__(self, data, logSearches = False, embeddings=None):
         self.logSearches = logSearches
         if logSearches:
             self.createSessionDump()
 
+        self.embeddings = embeddings
         self.allData = data
         self.allData['CreatedTime'] = pd.to_datetime(self.allData['CreatedTime']).dt.floor('D')
         self.allData['Message'] = self.allData['Message'].astype("string")
@@ -458,14 +459,15 @@ class Session:
     #     print(result)
     #     return result
 
-    # def getCentral(self, inputSet = None):
-    #     if inputSet == None or type(inputSet) != Subset:
-    #         inputSet = self.currentSet
-    #     data = self.allData.iloc[inputSet.indices]
-    #     corpus = data["Message"]
-    #     scores = self.summarizer.get_lexrank_scores(corpus.array)
-    #     data = data.assign(centrality=scores)
-    #     return data
+
+    def getCentral(self, inputSet = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        input = self.embeddings.iloc[inputSet.indices]
+        scores = ai_summary.get_fastlexrank_scores(input)
+        data = self.allData.iloc[inputSet.indices]
+        data = data.assign(centrality=scores)
+        return data
 
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
