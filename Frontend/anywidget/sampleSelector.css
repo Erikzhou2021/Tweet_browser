@@ -1,17 +1,27 @@
 .sample-selector{
-    display: flex;
+    align-self: center;
 }
-.sample-selector div{
-    font-weight: bold;
-    font-size: 1.2em;
-    margin: 1px 5px;
-}
+
 .sample-selector select{
     border: none;
-    text-decoration: underline;
-    background-color: transparent;
-    font-weight: bold;
+    color: white;
+    background-color: black;
+    font-size: 0.9em;
+    border-radius: 10px;
+    text-align: center;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    text-indent: 1px;
+    text-overflow: '';
+    padding: 5px;
 }
+
+.sample-selector .hide{
+    display: none;
+}
+
 .sample-selector option{
-    font-weight: bold;
+    background-color: white;
+    color: black;
+    text-align: left;
 }

@@ -425,9 +425,9 @@ def test24(s):
     # print(result[["centrality", "Message"]])
 
 def test99(s):
-    s.searchKeyword(["test"])
-    result = s.getCentral()
-    print(result["centrality"])
+    summarizer = FastLexRankSummarizer()
+    scores = summarizer.get_lexrank_scores(["hi", "greatings", "test", "hello"])
+    print(scores)
 
 def allTests(s1):
     current_module = __import__(__name__)
