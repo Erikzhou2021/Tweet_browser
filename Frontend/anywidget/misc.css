@@ -147,3 +147,9 @@
     font-weight: bold;
     font-size: 1.3em;
 }
+
+.greyed-out{
+    opacity: 50%;
+    cursor: not-allowed;
+    pointer-events: none
+}

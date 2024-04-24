@@ -2,9 +2,7 @@ export function render({ model, el }) {
     let MAX_PAGES_AROUND_CURRENT= 3;
     let count = model.get("count");
     let current = model.get("current");
-    if(count <= 1){
-        return;
-    }
+
     let filePath = model.get("filePath");  
     el.classList.add("search-history");  
 
@@ -15,25 +13,29 @@ export function render({ model, el }) {
     leftText.innerHTML = "Prev";
     left.addEventListener("click", function(){ changeCurrent(current-1); });
     leftText.addEventListener("click", function(){ changeCurrent(current-1); });
+    if(current == 0){
+        left.classList.add("greyed-out");
+        leftText.classList.add("greyed-out");
+    }
 
     let middle = document.createElement("div");
     middle.classList.add("middle-nums");
-    for(var i = Math.max(1, current - MAX_PAGES_AROUND_CURRENT); i < current; i++){
+    for(var i = Math.max(1, current+1 - MAX_PAGES_AROUND_CURRENT); i < current+1; i++){
         let ellipse = document.createElement("img");
         ellipse.src = filePath + "ellipse.svg";
         ellipse.classList.add("middle-nums");
-        let index = i;
+        let index = i-1;
         ellipse.addEventListener("click", function(){ changeCurrent(index); });
         middle.appendChild(ellipse);
     }
     let currPage = document.createElement("div");
-    currPage.innerHTML = current;
+    currPage.innerHTML = current+1;
     middle.appendChild(currPage);
-    for(var i = current+1; i <= Math.min(count-1, current + MAX_PAGES_AROUND_CURRENT); i++){
+    for(var i = current+2; i <= Math.min(count, current+1 + MAX_PAGES_AROUND_CURRENT); i++){
         let ellipse = document.createElement("img");
         ellipse.src = filePath + "ellipse.svg";
         ellipse.classList.add("middle-nums");
-        let index = i;
+        let index = i-1;
         ellipse.addEventListener("click", function(){ changeCurrent(index); });
         middle.appendChild(ellipse);
     }
@@ -45,9 +47,13 @@ export function render({ model, el }) {
     rightText.innerHTML = "Next";
     right.addEventListener("click", function(){ changeCurrent(current+1); });
     rightText.addEventListener("click", function(){ changeCurrent(current+1); });
+    if(current == count-1){
+        right.classList.add("greyed-out");
+        rightText.classList.add("greyed-out");
+    }
 
     function changeCurrent(val){
-        if(val < 1 || val > count){
+        if(val < 0 || val >= count){
             return;
         }
         let changeSignal = model.get("changeSignal") + 1;

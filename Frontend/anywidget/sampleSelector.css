@@ -25,9 +25,3 @@
     color: black;
     text-align: left;
 }
-
-.greyed-out{
-    opacity: 50%;
-    cursor: not-allowed;
-    pointer-events: none
-}
