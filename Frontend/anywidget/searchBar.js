@@ -32,7 +32,7 @@ export function render({ model, el }) {
     let list = document.createElement('div');
     list.classList.add("value-list");
 
-    let currVal = model.get("value");
+    let currVal = JSON.parse(model.get("value"));
     let count = model.get("count");
     for(let i = 0; i < count; i++){
         createSearchedValue(currVal[i]);
@@ -47,7 +47,7 @@ export function render({ model, el }) {
             if(word[0] == word[word.length-1] && (word[0] == '\"' || word[0] == "\'")){
                 word = word.substring(1, word.length-1)
             }
-            let currVal = model.get("value");
+            let currVal = JSON.parse(model.get("value"));
             for(let index = 0; index < currVal.length; index++){
                 if(currVal[index] == word){
                     return;
@@ -55,7 +55,7 @@ export function render({ model, el }) {
             }
             let currCount = model.get("count");
             model.set("count", currCount+1);
-            model.set("value", currVal.concat(word));
+            model.set("value", JSON.stringify(currVal.concat(word)));
             model.save_changes();
 
             input.value = "";
@@ -78,18 +78,14 @@ export function render({ model, el }) {
         let closeHTML = "<span>x</span>";
         let deletedVal = this.parentElement.innerHTML;
         deletedVal = deletedVal.substring(0, deletedVal.length - closeHTML.length);
-        let oldVal = model.get("value");
+        let oldVal = JSON.parse(model.get("value"));
         for(let i = 0; i < oldVal.length; i++){
             if(oldVal[i] == deletedVal){
                 oldVal[i] = oldVal[oldVal.length -1];
                 oldVal.pop();
-                //model.set("value", [...oldVal]);
-                // need to do this weird stuff, might be a bug in backbone.js or anywidget
-                // still doesn't even work properly when deleting the last element
                 let currCount = model.get("count");
                 model.set("count", currCount-1);
-                model.set("value", []);
-                model.set("value", oldVal);
+                model.set("value", JSON.stringify(oldVal));
                 model.save_changes();
                 break;
             }
