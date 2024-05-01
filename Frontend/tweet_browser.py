@@ -472,7 +472,7 @@ class Session:
         scores = ai_summary.get_fastlexrank_scores(input)
         data = self.allData.iloc[inputSet.indices]
         data = data.assign(centrality=scores)
-        return data
+        return data.sort_values(by=["centrality"], ascending=False)
 
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
