@@ -25,7 +25,7 @@ def embed_text(text: list[str], model: SentenceTransformer) -> np.ndarray:
 
 def get_fastlexrank_scores(embeddings: np.ndarray) -> np.ndarray:
     """Calculate the FastLexRank scores for a set of embeddings."""
-    print("Calculating FastLexRank scores...")
+    # print("Calculating FastLexRank scores...")
     F = embeddings.T
     z = embeddings.sum(axis=0)
     z = z / np.sqrt((z**2).sum(axis=0))

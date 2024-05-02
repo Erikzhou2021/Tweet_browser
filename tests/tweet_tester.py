@@ -35,13 +35,13 @@ print("import time = ", end_import - import_time)
 fileName = "Data/Session.pkl"
 
 # this function reads in the data (copied from online)
-def parse_data(filename):
+def parse_data(filename, header='infer'):
     path = './' + filename
     begin = time.perf_counter()
     try:
         if "csv" in filename:
             # Assume that the user uploaded a CSV or TXT file
-            df = pd.read_csv(path, encoding = "utf-8", index_col=False)
+            df = pd.read_csv(path, encoding = "utf-8", index_col=False, header=header)
         elif "xls" in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(path, index_col=[0])
@@ -98,7 +98,7 @@ def createSession(fileName: str, logSearches = False, useEmbeddings = False) -> 
     data = parse_data(fileName)
     embeddings = None
     if useEmbeddings:
-        embeddings = parse_data("allCensus_sample_embeddings.csv")
+        embeddings = parse_data("allCensus_sample_embeddings.csv", header=None)
     s = Session(data, logSearches, embeddings)
     return s
 
@@ -425,9 +425,9 @@ def test24(s):
     # print(result[["centrality", "Message"]])
 
 def test99(s):
-    summarizer = FastLexRankSummarizer()
-    scores = summarizer.get_lexrank_scores(["hi", "greatings", "test", "hello"])
-    print(scores)
+    result = s.getCentral()
+    for i in range(5):
+        print(result.iloc[i]["centrality"])
 
 def allTests(s1):
     current_module = __import__(__name__)

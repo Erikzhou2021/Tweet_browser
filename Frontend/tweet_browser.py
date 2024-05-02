@@ -33,12 +33,12 @@ import datetime
 warnings.filterwarnings("ignore")
 
 # this function reads in the data (copied from online)
-def parse_data(filename):
+def parse_data(filename, header='infer'):
     path = './' + filename
     try:
         if "csv" in filename:
             # Assume that the user uploaded a CSV or TXT file
-            df = pd.read_csv(path, encoding = "utf-8", index_col=False)
+            df = pd.read_csv(path, encoding = "utf-8", index_col=False, header=header)
         elif "xls" in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(path, index_col=[0])
