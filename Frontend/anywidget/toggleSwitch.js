@@ -13,7 +13,6 @@ export function render({ model, el }) {
     toggleSwitch.appendChild(invisibleBox);
     toggleSwitch.appendChild(slider);
 
-    // toggleSwitch.innerHTML = "<input type='checkbox'> <span class='slider round'></span>";
     el.appendChild(text);
     el.appendChild(toggleSwitch);
     
@@ -53,6 +52,5 @@ export function render({ model, el }) {
         });
         let invisButton = document.querySelector('.hidden-button');
         invisButton.click();
-    }
-    
+    } 
 }

@@ -22,9 +22,6 @@ export function render({ model, el }) {
         return model.get("size");
     }
 
-    // let hiddenInput = document.getElementById("fileup");
-    // hiddenInput.addEventListener("change", alert(hiddenInput.files[0]));
-
     el.appendChild(leftText);
     el.appendChild(changeButton);
 }

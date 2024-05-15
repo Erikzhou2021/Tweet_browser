@@ -30,7 +30,6 @@
 .sort-bar select{
     border: none;
     background-color: transparent;
-    /* text-align: center; */
     text-decoration: underline;
     font-size: 0.8em;
 }
