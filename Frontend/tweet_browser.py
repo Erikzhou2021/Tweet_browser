@@ -14,13 +14,10 @@ import plotly.express as px
 from nltk.stem import PorterStemmer
 #nltk.download('stopwords')
 #from nltk.corpus import stopwords
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import TruncatedSVD
 from scipy.sparse import csc_matrix
-import leidenalg
 import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
-from fastlexrank import FastLexRankSummarizer
+# from fastlexrank import FastLexRankSummarizer
 import ai_summary
 
 # Ignore warnings

@@ -12,7 +12,7 @@ WORKDIR /home/jovyan
 # USER 1000
 
 #RUN /usr/bin/python3 -m pip3 install --upgrade pip
-RUN pip install regex anywidget plotly nltk umap-learn hdbscan leidenalg igraph pandas matplotlib
+RUN pip install regex anywidget plotly nltk torch peft sentence_transformers transformers igraph pandas matplotlib
 # RUN pip install fastlexrank
 
 # Need to roll back versions (Not tested on docker yet)
@@ -28,6 +28,7 @@ COPY app.py app.py
 WORKDIR /home/jovyan
 COPY tweet_browser.ipynb tweet_browser.ipynb
 COPY allCensus_sample.csv allCensus_sample.csv
+COPY allCensus_sample_embeddings.csv allCensus_sample_embeddings.csv
 COPY tweet_browser.py tweet_browser.py
 COPY ai_summary.py ai_summary.py
 COPY anywidget/ anywidget/
