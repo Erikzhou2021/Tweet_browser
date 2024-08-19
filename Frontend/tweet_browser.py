@@ -19,7 +19,7 @@ import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
 # from fastlexrank import FastLexRankSummarizer
 import ai_summary
-import OpenAI
+from openai import OpenAI
 
 # Ignore warnings
 import warnings
@@ -470,7 +470,8 @@ class Session:
         assert(inputSet.size <= 100)
         tweets = ''
         for i in range(len(inputSet.indices)):
-            tweets += f"{i}-[{self.allData.iloc[i]}] "
+            tweet = self.allData.iloc[inputSet.indices[i]]['Message']
+            tweets += f"{i}-[{tweet}] "
         input_text = llama3_gen_prompt.format(
             "I would like you to help me by summarizing a group of tweets, delimited by triple backticks, and each tweet is labeled by a number in a given format: number-[tweet]. Give me a comprehensive summary in a concise paragraph and as you generate each sentence, provide the identifying number of tweets on which that sentence is based:",  # instruction
             tweets,  # input
