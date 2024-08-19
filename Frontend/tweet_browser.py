@@ -19,6 +19,7 @@ import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
 # from fastlexrank import FastLexRankSummarizer
 import ai_summary
+import OpenAI
 
 # Ignore warnings
 import warnings
@@ -28,6 +29,17 @@ import datetime
 
 #from formatter import NullFormatter
 warnings.filterwarnings("ignore")
+
+# Initialize OpenAI client
+client = OpenAI(
+    base_url="http://localhost:8000/v1",
+    api_key="token-census",
+)
+llama3_gen_prompt = """system
+
+{}user
+
+{}assistant {}"""
 
 # this function reads in the data (copied from online)
 def parse_data(filename, header='infer'):
@@ -452,14 +464,24 @@ class Session:
             print("Type = ", i.operationType, ", parameters = ", i.parameters,
                   ", time = ", i.times, ", number of children = ", len(i.outputs))
     
-    # def summarize(self, inputSet: Subset = None):
-    #     if inputSet == None or type(inputSet) != Subset:
-    #         inputSet = self.currentSet
-    #     summarizer = Summarizer()
-    #### TODO update this
-    #     result = summarizer.llm_summarize(self.allData.iloc[toBoolArray(inputSet.indices)])
-    #     print(result)
-    #     return result
+    def summarize(self, inputSet: Subset = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        assert(inputSet.size <= 100)
+        tweets = ''
+        for i in range(len(inputSet.indices)):
+            tweets += f"{i}-[{self.allData.iloc[i]}] "
+        input_text = llama3_gen_prompt.format(
+            "I would like you to help me by summarizing a group of tweets, delimited by triple backticks, and each tweet is labeled by a number in a given format: number-[tweet]. Give me a comprehensive summary in a concise paragraph and as you generate each sentence, provide the identifying number of tweets on which that sentence is based:",  # instruction
+            tweets,  # input
+            "",  # output - leave this blank for generation!
+        ) 
+        completion = client.chat.completions.create(
+            model="Lllama3TS_unsloth_vllm",
+            messages=[{"role": "user", "content": input_text}]
+        )
+        result = completion.choices[0].message.content
+        return result
 
 
     def getCentral(self, inputSet = None):

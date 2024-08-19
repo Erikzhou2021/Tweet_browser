@@ -421,8 +421,10 @@ def test23(s):
 def test24(s):
     s.searchKeyword(["test"])
     print(s.currentSet.size)
-    result = s.getCentral()
+    # result = s.getCentral()
     # print(result[["centrality", "Message"]])
+    result = s.summarize()
+    print(result)
 
 def test99(s):
     result = s.getCentral()
@@ -449,7 +451,7 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test99(s)
+    test24(s)
     # allTests(s)
     print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()

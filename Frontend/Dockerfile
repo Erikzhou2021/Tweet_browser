@@ -12,7 +12,7 @@ WORKDIR /home/jovyan
 # USER 1000
 
 #RUN /usr/bin/python3 -m pip3 install --upgrade pip
-RUN pip install regex anywidget plotly nltk torch peft sentence_transformers transformers igraph pandas matplotlib
+RUN pip install regex anywidget plotly nltk torch peft sentence_transformers transformers igraph pandas matplotlib openai
 # RUN pip install fastlexrank
 
 # Need to roll back versions (Not tested on docker yet)
