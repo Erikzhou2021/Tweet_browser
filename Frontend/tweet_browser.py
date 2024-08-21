@@ -474,8 +474,8 @@ class Session:
             tweets += f"{i}-[{tweet}] "
         input_text = llama3_gen_prompt.format(
             "I would like you to help me by summarizing a group of tweets, delimited by triple backticks, and each tweet is labeled by a number in a given format: number-[tweet]. Give me a comprehensive summary in a concise paragraph and as you generate each sentence, provide the identifying number of tweets on which that sentence is based:",  # instruction
-            tweets,  # input
-            "",  # output - leave this blank for generation!
+            tweets,
+            "",
         ) 
         completion = client.chat.completions.create(
             model="Lllama3TS_unsloth_vllm",
@@ -483,6 +483,25 @@ class Session:
         )
         result = completion.choices[0].message.content
         return result
+    
+    def parseSummary(self, AISummary, inputSet: Subset = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        pattern = re.compile(r'\([\d,\s]+\)')
+        sources = re.findall(pattern, AISummary)
+        strings = re.split(pattern, AISummary)
+        tweets = []
+        for match in sources:
+            currList = []
+            sourceNums = re.findall(r'\d+', match)
+            for source in sourceNums:
+                sourceNum = int(source)
+                if sourceNum < inputSet.size:
+                    currList.append(self.allData.iloc[inputSet.indices[sourceNum]]['Message'])
+            tweets.append(currList)
+        while len(tweets) < len(strings):
+            tweets.append([])
+        return strings, tweets
 
 
     def getCentral(self, inputSet = None):

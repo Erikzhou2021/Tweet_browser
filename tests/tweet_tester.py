@@ -24,7 +24,7 @@ import datetime
 import sys
 # sys.path.insert(0, '/mnt/c/Users/erikz/Documents/Tweet_browser/Tweet_browser/src/tweet_browser_test')
 sys.path.insert(0, '/mnt/c/Users/erikz/Documents/Tweet_browser/Tweet_browser/Frontend')
-from tweet_browser import Session
+from tweet_browser import Session, Subset
 
 
 
@@ -420,11 +420,34 @@ def test23(s):
 
 def test24(s):
     s.searchKeyword(["test"])
-    print(s.currentSet.size)
     # result = s.getCentral()
     # print(result[["centrality", "Message"]])
     result = s.summarize()
+    # print(result)
+    text, tweets = s.parseSummary(result)
+    # print(text, tweets)
+    s.back()
+    s.searchKeyword(["trump"])
+    s.simpleRandomSample(50)
+    result = s.summarize()
     print(result)
+    text, tweets = s.parseSummary(result)
+    print(text, tweets)
+
+def test25(s):
+    subset = Subset(range(30))
+    subset.size = 30
+    input = """Lorem ipsum dolor sit amet, consectetur adipiscing elit, (0, 2, 10)
+    sed do eiusmod tempor (20, 22, 10) incididunt ut labore et
+    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut (2021)
+    aliquip ex ea commodo consequat. Duis aute (5, 3) irure dolor in reprehenderit in voluptate velit esse cillum (2021, 2022)
+    dolore eu fugiat nulla pariatur. Excepteur sint (abcd) occaecat cupidatat non proident, sunt in culpa qui officia 
+    deserunt mollit (ABC123) anim id est laborum."""
+    text, tweets = s.parseSummary(input, subset)
+    assert(text == ['Lorem ipsum dolor sit amet, consectetur adipiscing elit, ', '\n    sed do eiusmod tempor ', ' incididunt ut labore et\n    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut ', '\n    aliquip ex ea commodo consequat. Duis aute ', ' irure dolor in reprehenderit in voluptate velit esse cillum ', '\n    dolore eu fugiat nulla pariatur. Excepteur sint (abcd) occaecat cupidatat non proident, sunt in culpa qui officia \n    deserunt mollit (ABC123) anim id est laborum.'])
+    assert(tweets == [['RT @realDailyWire New Census Data Suggests Previous Report Wrong, Republican States Gaining Seats In Congress  dailywire.com/news/new-censu…', 'RT @CatsTalkBack1 Sometimes the truth is hard to swallow...but still may be the truth.  The citizenship question on the census was hurried to meet a deadline...and was fumbled by the administration.   But we have the research in hand..perhaps another try??\r\n\r\nthefederalist.com/2020/01/01/cen…', 'RT @poesyomamajokes In England and Wales the population of blacks is proportionately smaller than Americans but just as many incidents can occur. black people experienced 12% of use-of-force incidents in 2017-18, despite accounting for just 3.3% of the census.'], ['Now, NPR and census are anti-secular newindianexpress.com/opinions/2019/… via @NewIndianXpress', 'RT @iheartmindy AOC might lose her district after the census due to it having too many illegals and not enough citizens.\r\n\r\nIt really starts to make sense why the Dems have been pushing so hard to try and count them. They know their demographic isn’t law abiding Americans.\r\nthegatewaypundit.com/2020/01/what-a…', 'RT @poesyomamajokes In England and Wales the population of blacks is proportionately smaller than Americans but just as many incidents can occur. black people experienced 12% of use-of-force incidents in 2017-18, despite accounting for just 3.3% of the census.'], [], ["RT @1776Stonewall New York is expected to lose a House seat after the 2020 census, and AOC might be the odd man out, as her district is expected to be redrawn. . By the way, residents in AOC's district are over 25% illegal", "RT @WWG1WGA_WW WHAT A SHAME: AOC Cld Lose Her House Seat After 2020 Through Elimination Of Her District\r\n\r\nAOC cld soon be out of her gov't job. Due to the high number of non-citizens in her district, it might be eliminated after the census.\r\n\r\nWldn’t that be ironic?👍🏻😂🤣\r\n\r\nthegatewaypundit.com/2020/01/what-a…"], [], []])
+    
+    # print(text, tweets)
 
 def test99(s):
     result = s.getCentral()
@@ -451,7 +474,7 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test24(s)
+    test25(s)
     # allTests(s)
     print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()
