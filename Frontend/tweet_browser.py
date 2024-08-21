@@ -490,18 +490,21 @@ class Session:
         pattern = re.compile(r'\([\d,\s]+\)')
         sources = re.findall(pattern, AISummary)
         strings = re.split(pattern, AISummary)
+        unused = set(range(inputSet.size))
         tweets = []
         for match in sources:
             currList = []
             sourceNums = re.findall(r'\d+', match)
             for source in sourceNums:
                 sourceNum = int(source)
+                if sourceNum in unused:
+                    unused.remove(sourceNum)
                 if sourceNum < inputSet.size:
                     currList.append(self.allData.iloc[inputSet.indices[sourceNum]]['Message'])
             tweets.append(currList)
         while len(tweets) < len(strings):
             tweets.append([])
-        return strings, tweets
+        return strings, tweets, list(unused)
 
 
     def getCentral(self, inputSet = None):
