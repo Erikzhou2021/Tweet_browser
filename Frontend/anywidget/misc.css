@@ -43,6 +43,20 @@
     border-radius: 10px;
     text-align: center;
 }
+
+p{
+    margin: 0;
+}
+
+.long-button{
+    color: black;
+    background-color: white;
+    border: 1px solid black;
+    text-align: left;
+    width: calc(100% - 10px);
+    margin: 5px;
+};
+
 .modify-search{
     flex-grow: 1;
     height: 50px;
@@ -80,12 +94,14 @@
 
 /* Search Box */
 .search-box{
-    border-right: 2px solid black;
-    padding-right: 20px;
+    /* border-right: 2px solid black; */
+    border: 2px solid black;
+    border-radius: 20px;
+    padding: 20px;
     min-height: 400px;
     background-color: white;
     display: flex;
-    width: 60%;
+    /* width: 60%; */
     flex-grow: 1;
 }
 .search-box div{
