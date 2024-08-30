@@ -1,19 +1,19 @@
-/* Dataset display */
-.dataset-display {
-    background-color: lightgray;
-    /* width: 20%; */
-    max-width: 30%;
-    height: 3.5em;
-    display: flex;
-    align-items: center;
-    padding: 3px 7px;
-    border-radius: 5px;
-    align-self:last baseline;
+.title{
+    font-size: 32px;
+    font-weight: bold;
+    align-self: center;
+    height: 100%;
 }
+
 .text-block{
     overflow: hidden;
     flex-grow: 1;
 }
+
+.advanced-bar{
+    margin: 16px 0px 16px 0px;
+}
+
 .change-input{
     color: white;
     background-color: black;
@@ -45,7 +45,7 @@
 }
 
 p{
-    margin: 0;
+    margin: 0px;
 }
 
 .long-button{
@@ -54,12 +54,17 @@ p{
     border: 1px solid black;
     text-align: left;
     width: calc(100% - 10px);
-    margin: 5px;
-};
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    /* padding: 8px 16px; */
+}
+
+.searched-criteria{
+    font-size: 24px;
+}
 
 .modify-search{
-    flex-grow: 1;
-    height: 50px;
     font-size: 1em;
     align-self: center;
 }
@@ -123,9 +128,9 @@ p{
     flex-grow: 1;
     margin: 0% 3%;
 }
-.filter-box div{
+/* .filter-box div{
     flex-grow: 1;
-}
+} */
 .filter-box b{
     font-size: 1.5em;
 }
