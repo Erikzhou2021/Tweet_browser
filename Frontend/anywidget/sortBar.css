@@ -1,10 +1,11 @@
 .sort-bar{
-    background-color: lightgray;
-    border-radius: 5px;
     display: flex;
-    padding: 3px 7px;
     align-items:center;
     justify-content: space-between;
+    width: fit-content;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 18px;
 }
 .box-container{
     display: flex;
@@ -38,4 +39,6 @@
 }
 .sort-bar img{
     cursor: pointer;
+    width: 24px;
+    height: 24px;
 }

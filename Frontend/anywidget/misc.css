@@ -49,14 +49,14 @@ p{
 }
 
 .long-button{
-    color: black;
+    color: #9595;
     background-color: white;
     border: 1px solid black;
     text-align: left;
     width: calc(100% - 10px);
     margin-top: 16px;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 400;
     /* padding: 8px 16px; */
 }
 
@@ -96,6 +96,21 @@ p{
     display: none;
 }
 
+.jupyter-widget-tab li{
+    padding: 16px 24px !important;
+    justify-content: center;
+    align-items: center;
+    width: fit-content !important;
+    margin-right: 8px;
+    border-radius: 8px 8px 0px 0px;
+    background-color: #DEDEDE !important;
+}
+.lm-TabBar-tab.lm-mod-current {
+    background-color: #F5F5F5 !important;
+}
+.widget-tab-contents {
+    background-color: #F5F5F5 !important;
+}
 
 /* Search Box */
 .search-box{
@@ -165,8 +180,9 @@ p{
 }
 
 .display-count{
-    font-weight: bold;
-    font-size: 1.3em;
+    font-weight: 500;
+    font-size: 24px;
+    align-self: center;
 }
 
 .greyed-out{
