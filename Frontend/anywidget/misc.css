@@ -148,8 +148,8 @@ p{
     max-width: 321px;
     /* margin: 0% 3%; */
 }
-.date-range{
-    font-size: 14px;
+.filter-bar-label{
+    font-size: 14px !important;
     height: 16px;
     margin-bottom: 8px;
 }
@@ -166,14 +166,17 @@ p{
     margin: 0;
     height: 16px !important;
     line-height: 16px !important;
-    font-size: 14px;
+    font-size: 14px !important;
 }
 
 /* .filter-box div{
     flex-grow: 1;
 } */
-.filter-box b{
+/* .filter-box b{
     font-size: 1.5em;
+} */
+.filter-box{
+    justify-content: space-between;
 }
 .filter-box h4{
     font-weight: bold;
