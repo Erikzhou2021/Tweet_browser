@@ -33,5 +33,4 @@ export function render({ model, el }) {
             model.save_changes();
         }
     }
-
 }
