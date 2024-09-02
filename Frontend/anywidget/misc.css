@@ -139,10 +139,36 @@ p{
 
 /* Filter box */
 .filter-box{
+    background-color: #F5F5F5;
     border: none;
-    flex-grow: 1;
-    margin: 0% 3%;
+    /* flex-grow: 1; */
+    margin-right: 16px;
+    padding: 16px 32px;
+    min-width: 6%;
+    max-width: 321px;
+    /* margin: 0% 3%; */
 }
+.date-range{
+    font-size: 14px;
+    height: 16px;
+    margin-bottom: 8px;
+}
+.date-bar{
+    overflow: visible !important;
+}
+
+.filter-by{
+    font-size: 20px;
+}
+
+.widget-datepicker .widget-label{
+    padding: 0;
+    margin: 0;
+    height: 16px !important;
+    line-height: 16px !important;
+    font-size: 14px;
+}
+
 /* .filter-box div{
     flex-grow: 1;
 } */
