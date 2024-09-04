@@ -1,0 +1,13 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="File upload">
+<g clip-path="url(#clip0_3295_96953)">
+<path id="Vector" d="M11.9998 21.3333H19.9998V13.3333H25.3332L15.9998 4L6.6665 13.3333H11.9998V21.3333ZM6.6665 24H25.3332V26.6667H6.6665V24Z" fill="black"/>
+</g>
+<rect x="1" y="1" width="30" height="30" rx="3" stroke="black" stroke-width="2"/>
+</g>
+<defs>
+<clipPath id="clip0_3295_96953">
+<rect width="32" height="32" rx="4" fill="white"/>
+</clipPath>
+</defs>
+</svg>

@@ -14,17 +14,6 @@
     margin: 16px 0px 16px 0px;
 }
 
-.change-input{
-    color: white;
-    background-color: black;
-    padding: 2px 10px;
-    width: auto;
-    height: auto;
-    border-radius: 15px;
-    text-align: center;
-    cursor: pointer;
-    font-size: 0.65em;
-}
 .small-font{
     font-size: 0.6em;
     padding: 0px 0px;
@@ -175,6 +164,11 @@ p{
 /* .filter-box b{
     font-size: 1.5em;
 } */
+
+.widget-upload{
+    display: none;
+}
+
 .filter-box{
     justify-content: space-between;
 }
@@ -218,4 +212,31 @@ p{
     opacity: 50%;
     cursor: not-allowed;
     pointer-events: none
+}
+
+/* File upload dataset widget */
+.dataset-display {
+    background-color: lightgray;
+    max-width: 30%;
+    height: 3.5em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 16px 8px 8px;
+    margin: 8px;
+    border-radius: 5px;
+    /* align-self: center; */
+    justify-content: center;
+    cursor: pointer;
+}
+
+.dataset-display input{
+    display: none;
+}
+
+.dataset-display label{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    justify-content: space-evenly;
 }

@@ -11,6 +11,7 @@ export function render({ model, el }) {
     if(button != null){
         button.addEventListener("click", preSearch);
     }
+
     const query = '.date-constraint > input:first-of-type';
     let start = model.get("calendarStart");
     let end = model.get("calendarEnd");
@@ -19,4 +20,44 @@ export function render({ model, el }) {
         calenderEl.setAttribute('min', start);
         calenderEl.setAttribute('max', end);
     });
+
+
+
+
+    let fileUp = document.querySelector(".widget-upload");
+    if(fileUp == null){
+        return;
+    }
+    if(document.getElementById("file-upload-cover") != null){
+        return;
+    }
+    fileUp.setAttribute("id", "file-upload");
+    let parent = fileUp.parentElement;
+
+    let label = document.createElement("label");
+    label.classList.add("dataset-display");     
+    label.setAttribute("id", "file-upload-cover"); 
+
+    label.htmlFor = "file-upload";
+
+    let leftText = document.createElement("div");
+
+    let fileName = model.get("fileName");
+    if(fileName == null || fileName == ""){
+        fileName = "No File Loaded";
+    }
+    let filePath = model.get("filePath");
+    let fileIcon = document.createElement("img");
+    fileIcon.src = filePath + "file.svg";
+
+    let uploadIcon = document.createElement("img");
+    uploadIcon.src = filePath + "upload.svg";
+    
+    leftText.innerHTML = "&nbsp; &nbsp; <b><u>" + fileName + "</u></b> &nbsp; " + model.get("size") + " Posts &nbsp; &nbsp;";
+
+    
+    label.appendChild(fileIcon);
+    label.appendChild(leftText);
+    label.appendChild(uploadIcon);
+    parent.appendChild(label);
 }
