@@ -199,7 +199,9 @@ p{
 }
 
 .lm-TabBar-tabLabel{
+    font-family: Roboto;
     font-weight: bold;
+    text-align: center;
 }
 
 .display-count{
