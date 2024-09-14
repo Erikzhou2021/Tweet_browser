@@ -1,3 +1,7 @@
+html{
+    font-family: r;
+}
+
 .title{
     font-size: 32px;
     font-weight: bold;
@@ -27,7 +31,7 @@
 .generic-button{
     color: white;
     background-color: black;
-    width: auto;
+    width: fit-content;
     font-size: 0.9em;
     border-radius: 10px;
     text-align: center;
@@ -49,8 +53,9 @@ p{
     /* padding: 8px 16px; */
 }
 
-.searched-criteria{
+.header{
     font-size: 24px;
+    font-weight: 500;
 }
 
 .modify-search{
@@ -101,6 +106,11 @@ p{
     background-color: #F5F5F5 !important;
 }
 
+.jupyter-widget-tab {
+    flex-grow: 1;
+    flex-basis: 70%;
+}
+
 /* Search Box */
 .search-box{
     /* border-right: 2px solid black; */
@@ -130,12 +140,12 @@ p{
 .filter-box{
     background-color: #F5F5F5;
     border: none;
-    /* flex-grow: 1; */
+    flex-basis: 16%;
+    flex-grow: 1;
     margin-right: 16px;
     padding: 16px 32px;
     min-width: 6%;
     max-width: 321px;
-    /* margin: 0% 3%; */
 }
 .filter-bar-label{
     font-size: 14px !important;
@@ -207,7 +217,7 @@ p{
 .display-count{
     font-weight: 500;
     font-size: 24px;
-    align-self: center;
+    /* align-self: center; */
 }
 
 .greyed-out{

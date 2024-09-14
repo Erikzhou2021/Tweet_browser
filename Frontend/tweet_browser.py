@@ -500,7 +500,7 @@ class Session:
                 if sourceNum in unused:
                     unused.remove(sourceNum)
                 if sourceNum < inputSet.size:
-                    currList.append(self.allData.iloc[inputSet.indices[sourceNum]]['Message'])
+                    currList.append(inputSet.indices[sourceNum])
             tweets.append(currList)
         while len(tweets) < len(strings):
             tweets.append([])

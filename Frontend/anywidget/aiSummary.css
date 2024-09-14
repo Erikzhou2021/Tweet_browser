@@ -1,12 +1,18 @@
 /*modify the overview summary display box*/
 .summary {
-    padding: 16px;
     border-radius: 8px;
     border: 1px solid #777;
+    flex-grow: 1;
+    min-width: 80%;
+    margin: 16px;
     /*following code try to limit view width and center the content for an easy reading experience*/
     /*width: 80%;
     transform: translateX(25%);*/
 }
+
+/* .summary-tab{
+    background: white;
+} */
 
 .summary span:hover{
     background-color: lightblue;
@@ -14,19 +20,19 @@
     cursor: pointer;
 }
 
-.ai-summary h3{
-    font-weight: lighter;
+.summary .selected{
+    background-color: lightblue;
 }
 
 /*left summary display section in viewing each contributed/omitted posts*/
 .left-bar{
     justify-content: space-between;
     background-color: #F5F5F5;
-    flex-basis: 30%;
-    flex-shrink:0;
+    flex-basis: 34%;
+    flex-grow: 1;
     margin: 0px 16px 8px 0px;
     align-items: center;
-    padding: 16px 24px;
+    /* padding: 16px 24px; */
 }
 
 .back-button{
