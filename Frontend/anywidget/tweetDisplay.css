@@ -3,11 +3,8 @@
     background-color: #F5F5F5;
     padding: 0px 2px;
     overflow: auto;
-    /* height: var(--height); */
     /* flex-grow: 1; */
     /* flex-basis: 60%; */
-    /* min-height: 50vh; */
-    max-height: 50vh;
     /* min-width: 70%; */
 }
 .tweet-display::-webkit-scrollbar {

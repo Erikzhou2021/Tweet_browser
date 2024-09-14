@@ -2,6 +2,7 @@
 .summary {
     border-radius: 8px;
     border: 1px solid #777;
+    background-color: white;
     flex-grow: 1;
     min-width: 80%;
     margin: 16px;
@@ -10,9 +11,9 @@
     transform: translateX(25%);*/
 }
 
-/* .summary-tab{
-    background: white;
-} */
+.summary-tab{
+    background: white !important;
+}
 
 .summary span:hover{
     background-color: lightblue;
@@ -27,7 +28,6 @@
 /*left summary display section in viewing each contributed/omitted posts*/
 .left-bar{
     justify-content: space-between;
-    background-color: #F5F5F5;
     flex-basis: 34%;
     flex-grow: 1;
     margin: 0px 16px 8px 0px;

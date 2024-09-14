@@ -104,6 +104,7 @@ p{
 }
 .widget-tab-contents {
     background-color: #F5F5F5 !important;
+    height: 67%;
 }
 
 .jupyter-widget-tab {
