@@ -9,9 +9,23 @@ export function render({ model, el }) {
 
     function showcontributing(){
         model.set("selected", this.dataset.num);
-        let temp = model.get("changeSignal");
-        model.set("changeSignal", temp+1);
+        model.set("changeSignal", model.get("changeSignal")+1);
         model.save_changes();
+        let highlighted = document.getElementsByClassName("selected");
+        for(let i = 0; i < highlighted.length; i++){
+            highlighted[i].classList.remove("selected");
+        }
+        this.classList.add("selected");
+    }
+
+    function changePage(){
+        let highlighted = document.getElementsByClassName("selected");
+        for(let i = 0; i < highlighted.length; i++){
+            highlighted[i].classList.remove("selected");
+        }
+        let newPage = model.get("selected");
+        let toHighlight = document.getElementById("sentence-" + newPage);
+        toHighlight.classList.add("selected");
     }
 
     function renderSentences(){
@@ -20,6 +34,7 @@ export function render({ model, el }) {
         for(let i = 0; i < sentences.length; i++){
             let temp = document.createElement("span");
             temp.innerHTML = sentences[i];
+            temp.id = "sentence-" + i;
             temp.dataset.num = i;
             temp.addEventListener("click", showcontributing);
             if(i == selected){
@@ -30,6 +45,7 @@ export function render({ model, el }) {
     }
     
     model.on("change:value", renderSentences);
+    model.on("change:selected", changePage);
     let caveat = document.createElement("h3");
     caveat.innerHTML = "*Not all tweets are captured in the summary. Click to view ommited tweets"
     // el.appendChild(header);

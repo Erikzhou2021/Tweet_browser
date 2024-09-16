@@ -487,9 +487,12 @@ class Session:
     def parseSummary(self, AISummary, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        pattern = re.compile(r'\([\d,\s]+\)')
+        pattern = re.compile(r'\s*\([\d,\s]+\)\s*')
         sources = re.findall(pattern, AISummary)
         strings = re.split(pattern, AISummary)
+        if len(strings) >  len(sources) and len(strings) > 1:
+            strings[-2] += strings[-1]
+            strings = strings[:-1]
         unused = set(range(inputSet.size))
         tweets = []
         for match in sources:
@@ -502,8 +505,6 @@ class Session:
                 if sourceNum < inputSet.size:
                     currList.append(inputSet.indices[sourceNum])
             tweets.append(currList)
-        while len(tweets) < len(strings):
-            tweets.append([])
         return strings, tweets, list(unused)
 
 

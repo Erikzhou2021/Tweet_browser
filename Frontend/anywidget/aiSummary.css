@@ -3,20 +3,31 @@
     border-radius: 8px;
     border: 1px solid #777;
     background-color: white;
-    flex-grow: 1;
+    height: 40vh;
     min-width: 80%;
     margin: 16px;
+    overflow: auto;
     /*following code try to limit view width and center the content for an easy reading experience*/
     /*width: 80%;
     transform: translateX(25%);*/
 }
 
 .summary-tab{
+    margin-top: 16px;
+    margin-bottom: 16px;
     background: white !important;
+    padding: 24px;
+    /* flex-grow: 1; */
+    /* flex-basis: 26.6%; */
+}
+
+.summary-button{
+    margin-left: auto; 
+    margin-right: 0;
 }
 
 .summary span:hover{
-    background-color: lightblue;
+    background-color: lightyellow;
     text-decoration: underline;
     cursor: pointer;
 }

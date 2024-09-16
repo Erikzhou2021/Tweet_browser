@@ -1,8 +1,9 @@
 /*Here is CSS code modify the style of post display section on whole site*/
 .tweet-display {
-    background-color: #F5F5F5;
+    /* background-color: #F5F5F5; */
     padding: 0px 2px;
     overflow: auto;
+    max-height: 60vh;
     /* flex-grow: 1; */
     /* flex-basis: 60%; */
     /* min-width: 70%; */
