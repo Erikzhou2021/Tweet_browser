@@ -449,6 +449,11 @@ def test25(s):
     # assert(unused == [1, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 23, 24, 25, 26, 27, 28, 29])
     # print(text, tweets, unused)
 
+def test26(s):
+    s.simpleRandomSample(10)
+    result = s.summarize()
+    print(result)
+
 def test99(s):
     result = s.getCentral()
     for i in range(5):

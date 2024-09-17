@@ -46,6 +46,10 @@
     /* padding: 16px 24px; */
 }
 
+.right-bar{
+    flex-basis: 60%;
+}
+
 .back-button{
     margin-right: auto;
     width: 2em;

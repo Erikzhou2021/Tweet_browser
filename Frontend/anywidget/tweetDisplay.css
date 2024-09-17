@@ -20,7 +20,7 @@
     margin: 8px 0px;
     display: flex;
     flex-wrap: wrap;
-    width: 94%;
+    gap: 8px;
     align-items: center;
 }
 .tweet-data img{
@@ -29,39 +29,34 @@
 }
 .userName{
     color: #000;
-    flex-basis: 20%;
     font-weight: bold;
     font-size: 1.1em;
     vertical-align: bottom;
     padding: 5px 0px;
-
+    margin-right: 8px
 }
 .date{
     color: #686868;
-    flex-basis: 10%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .state{
     color: #686868;
-    flex-basis: 55%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .retweets{
     color: #000;
-    flex-basis: 7%;
+    margin-left: auto;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .likes{
     color: #000;
-    flex-basis: 8%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .message{
-    flex-basis: 100%;
     padding: 5px 0px;
 }
 .icon{

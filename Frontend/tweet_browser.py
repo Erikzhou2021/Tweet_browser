@@ -473,9 +473,9 @@ class Session:
             tweet = self.allData.iloc[inputSet.indices[i]]['Message']
             tweets += f"{i}-[{tweet}] "
         input_text = llama3_gen_prompt.format(
-            "I would like you to help me by summarizing a group of tweets, delimited by triple backticks, and each tweet is labeled by a number in a given format: number-[tweet]. Give me a comprehensive summary in a concise paragraph and as you generate each sentence, provide the identifying number of tweets on which that sentence is based:",  # instruction
-            tweets,
-            "",
+            AI_SUMMARY_PROMPT, 
+            tweets, 
+            ""
         ) 
         completion = client.chat.completions.create(
             model="Lllama3TS_unsloth_vllm",
@@ -521,6 +521,45 @@ def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
     s = Session(data, logSearches)
     return s
+
+AI_SUMMARY_PROMPT = """I would like you to help me by summarizing a group of tweets, delimited by triple backticks, 
+and each tweet is labeled by a number in a given format: number-[tweet]. 
+Give me a comprehensive summary in a concise paragraph and as you generate each sentence, 
+provide the comma seperated identifying numbers of the tweets on which that sentence is based:"
+
+For examples with these input tweets:
+0-[RT @kpnationalist19 President #Trump planning an executive order to exclude #illegalimmigrants from the #Census.
+
+#KAG #TWGRP
+nypost.com/2020/07/18/tru…] 1-[RT @crampell What happened to all those constitutional conservatives I've heard about? Postal service, decennial census, legislative branch holding power of the purse -- Trump is sabotaging so many things literally required by the Constitution with nary a peep from GOP washingtonpost.com/business/2020/…] 2-[RT @TPInsidr AOC should be removed from Congress for this.  thepoliticalinsider.com/aoc-tells-ille…] 3-[RT @SenWarren It is flagrantly unconstitutional to exclude people from the Census count based on their immigration status. The Constitution requires that every person be counted. This is another attempt by Trump to use scaremongering against immigrants & rig the system. usatoday.com/story/news/pol…] 4-[RT @JoyAnnReid Do not be fooled by these @GOP forms. They are NOT census forms. Warn everyone you know and PLEASE fill out the REAL U.S. Census form when it arrives by mail. It's crucial that you do so, to get the representation and resources your community deserves. Look sharp, fam!!] 5-[@Shivadam, the results of the 2020 Census will help determine how hundreds of billions of dollars in federal funding flow into communities every year for the next decade. Do your part and complete the 2020 Census today.] 6-[RT @charliekirk11 BREAKING:
+
+President Trump just signed an Executive Order barring illegal aliens from being counted in the US census for Congressional Representation 
+
+This is the right move.
+
+Illegal aliens should not determine electoral votes
+
+RT if you agree!] 7-[@jrosejunior1975 Oh, I don't think it, I'm absolutely certain of it for hundreds of reasons. Inflating their Census numbers is the number one reason for Sanctuary city policies. Entire reason Obama took the immigration question off the Census--hasnt been asked since 2000 when there were 11million] 8-[RT @gacensus2020 Join our mission to ensure a complete #2020Census count by pledging to fill out the questionnaire for your household! #EveryOneCounts pic.twitter.com/EJVFxx6x1K] 9-[RT @jbendery Morning! A thing getting lost in the news is that Trump is ending the 2020 Census count early and it's going to disproportionately hurt communities of color all over the county.
+
+They'll lose a lot of federal money.
+
+Their political power will be weakened.
+
+For 10 years.]
+
+Here is a potential response in the correct format.
+
+The tweets discuss the ongoing Census process in the United States. A tweet from the president's camp mentions an executive order to exclude illegal immigrants from the Census (0). Others express concern over the potential political manipulation of the Census, citing Trump's actions such as sabotaging the postal service and the legislative branch's power (1). There are concerns about AOC's statement regarding the Illinois census (2). The unconstitutionality of excluding people from the Census based on immigration status is highlighted (3). A tweet warns against fake Census forms and emphasizes the importance of filling out the real form for community representation (4). Tweets discuss the role of the Census in allocating federal funds (5) and the controversy surrounding President Trump's executive order to exclude illegal aliens from the Census for Congressional representation (6, 9). There is a mention of inflating Census numbers linked to Sanctuary city policies (7). The importance of participating in the Census is reiterated (8).
+
+Here are the actual tweets for you to summarize in the triple backticks:
+```
+{tweets}
+```
+"""
+
+
+
+
 
 if __name__=='__main__':
     print("You weren't supposed to run this")
