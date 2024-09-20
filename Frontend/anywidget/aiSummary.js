@@ -29,6 +29,7 @@ export function render({ model, el }) {
     }
 
     function renderSentences(){
+        summary.innerHTML = "";
         let sentences = model.get("value");
         let selected = model.get("selected");
         for(let i = 0; i < sentences.length; i++){
@@ -40,6 +41,7 @@ export function render({ model, el }) {
             if(i == selected){
                 temp.classList.add("selected");
             }
+            temp.classList.add("ai-sentence");
             summary.appendChild(temp);
         }
     }
