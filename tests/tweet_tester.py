@@ -452,8 +452,8 @@ def test25(s):
 
 def test26(s):
     s.simpleRandomSample(50)
-    result = s.semanticSearch("coronavirus pandemic")
-    print(result)
+    result = s.semanticSearch("2020 U.S. census", s.allData.iloc[s.currentSet.indices])
+    print(result["Message"], result["cos_score"])
 
 def test99(s):
     columns = []

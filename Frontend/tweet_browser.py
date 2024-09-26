@@ -524,21 +524,21 @@ class Session:
         data = data.assign(centrality=scores)
         return data.sort_values(by=["centrality"], ascending=False)
     
-    def semanticSearch(self, query, inputSet = None):
+    def semanticSearch(self, query, df, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         query_embedding = embedding_model.encode(
             query, convert_to_tensor=True, normalize_embeddings=True
         )
-        data = self.allData.iloc[inputSet.indices]
         embeddings = embedding_model.encode(
-            data["Message"].reset_index(drop=True),
+            df["Message"].reset_index(drop=True),
             convert_to_tensor=True,
             batch_size=32,
             normalize_embeddings=True,
         )
         cos_scores = torch.matmul(query_embedding, embeddings.T).to("cpu").numpy().flatten()
-        return cos_scores
+        df = df.assign(cos_score=cos_scores)
+        return df
 
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
