@@ -19,7 +19,10 @@ import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
 # from fastlexrank import FastLexRankSummarizer
 import ai_summary
+import torch
 from openai import OpenAI
+from prompts import *
+from sentence_transformers import SentenceTransformer
 
 # Ignore warnings
 import warnings
@@ -40,6 +43,10 @@ llama3_gen_prompt = """system
 {}user
 
 {}assistant {}"""
+
+embedding_model = SentenceTransformer(
+    "BAAI/bge-base-en-v1.5", device="cuda" if torch.cuda.is_available() else "cpu"
+)
 
 # this function reads in the data (copied from online)
 def parse_data(filename, header='infer'):
@@ -516,24 +523,28 @@ class Session:
         data = self.allData.iloc[inputSet.indices]
         data = data.assign(centrality=scores)
         return data.sort_values(by=["centrality"], ascending=False)
+    
+    def semanticSearch(self, query, inputSet = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        query_embedding = embedding_model.encode(
+            query, convert_to_tensor=True, normalize_embeddings=True
+        )
+        data = self.allData.iloc[inputSet.indices]
+        embeddings = embedding_model.encode(
+            data["Message"].reset_index(drop=True),
+            convert_to_tensor=True,
+            batch_size=32,
+            normalize_embeddings=True,
+        )
+        cos_scores = torch.matmul(query_embedding, embeddings.T).to("cpu").numpy().flatten()
+        return cos_scores
 
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
     s = Session(data, logSearches)
     return s
 
-AI_SUMMARY_PROMPT = """I would like you to help me by summarizing a group of tweets, delimited by triple backticks, 
-and each tweet is labeled by a number in a given format: number-[tweet]. 
-Give me a comprehensive summary in a concise paragraph and as you generate each sentence, 
-provide the comma seperated identifying numbers of the tweets on which that sentence is based, no other response is necessary."
-
-
-
-Here are the actual tweets for you to summarize in the triple backticks:
-```
-{tweets}
-```
-"""
 
 
 

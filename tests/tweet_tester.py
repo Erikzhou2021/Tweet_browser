@@ -451,8 +451,8 @@ def test25(s):
     # print(text, tweets, unused)
 
 def test26(s):
-    s.simpleRandomSample(10)
-    result = s.summarize()
+    s.simpleRandomSample(50)
+    result = s.semanticSearch("coronavirus pandemic")
     print(result)
 
 def test99(s):
@@ -485,7 +485,7 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test25(s)
+    test26(s)
     # allTests(s)
     print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()
