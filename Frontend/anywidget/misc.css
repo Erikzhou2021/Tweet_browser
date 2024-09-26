@@ -1,5 +1,5 @@
-html{
-    font-family: r;
+body{
+    font-family: 'Roboto';
 }
 
 .title{
@@ -126,9 +126,6 @@ p{
 }
 .search-box div{
     flex-grow: 1;
-}
-.search-box .keyword-search{
-    flex-grow: 0;
 }
 .search-box h4{
     font-weight: bold;

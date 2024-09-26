@@ -111,4 +111,5 @@ class LoadingPage(anywidget.AnyWidget):
 class SemanticSearch(anywidget.AnyWidget):
     _esm = "anywidget/semanticSearch.js"
     _css = "anywidget/semanticSearch.css"
-    value = traitlets.Unicode().tag(sync=True)
+    value = traitlets.Unicode("").tag(sync=True)
+    placeholder = traitlets.Unicode("").tag(sync=True)

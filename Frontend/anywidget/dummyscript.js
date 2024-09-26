@@ -1,4 +1,14 @@
-export function render({ model, el }) {      
+export function render({ model, el }) {   
+    const fontLink = 'https://fonts.googleapis.com/css?family=Roboto';
+    const existingLink = document.querySelector(`link[href="${fontLink}"]`);
+    if (!existingLink) {
+      const linkTag = document.createElement('link');
+      linkTag.rel = 'stylesheet';
+      linkTag.href = fontLink;
+      document.head.appendChild(linkTag);
+    } 
+    
+
     let button = document.querySelector('.search-button');
     function preSearch(){
         let searchBars = document.querySelectorAll('.plusButton');
