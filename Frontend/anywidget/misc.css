@@ -66,7 +66,7 @@ p{
     color: white;
 }
 .clear-button{
-    background-color: white;
+    background-color: transparent;
     color: black;
     text-decoration: underline;
     width: 5.5em;
@@ -249,4 +249,11 @@ p{
     align-items: center;
     cursor: pointer;
     justify-content: space-evenly;
+}
+
+.pop-up-options{
+    background-color: #F5F5F5;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
 }

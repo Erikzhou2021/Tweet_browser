@@ -524,12 +524,13 @@ class Session:
         data = data.assign(centrality=scores)
         return data.sort_values(by=["centrality"], ascending=False)
     
-    def semanticSearch(self, query, df, inputSet = None):
+    def semanticSearch(self, query, topPercent, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         query_embedding = embedding_model.encode(
             query, convert_to_tensor=True, normalize_embeddings=True
         )
+        df = self.allData.iloc[inputSet.indices]
         embeddings = embedding_model.encode(
             df["Message"].reset_index(drop=True),
             convert_to_tensor=True,
@@ -538,7 +539,8 @@ class Session:
         )
         cos_scores = torch.matmul(query_embedding, embeddings.T).to("cpu").numpy().flatten()
         df = df.assign(cos_score=cos_scores)
-        return df
+        df = df.nlargest(topPercent * inputSet.size, 'cos_score')
+        self.makeOperation(df.index, df.shape[0], "semanticSearch", topPercent)
 
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)

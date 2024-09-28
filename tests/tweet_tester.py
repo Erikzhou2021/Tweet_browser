@@ -451,9 +451,9 @@ def test25(s):
     # print(text, tweets, unused)
 
 def test26(s):
-    s.simpleRandomSample(50)
-    result = s.semanticSearch("2020 U.S. census", s.allData.iloc[s.currentSet.indices])
-    print(result["Message"], result["cos_score"])
+    s.searchKeyword(["election"])
+    s.semanticSearch("2020 U.S. census", 0.1)
+    s.printCurrSubset()
 
 def test99(s):
     columns = []
