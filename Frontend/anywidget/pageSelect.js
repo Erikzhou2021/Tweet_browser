@@ -33,6 +33,7 @@ export function render({ model, el }) {
     right.addEventListener("click", increment);
 
     model.on("change:maxPage", update);
+    model.on("change:changeSignal", updateInput);
 
     function pageChange(){
         let newVal = input.value;
@@ -78,6 +79,10 @@ export function render({ model, el }) {
             model.set("changeSignal", signal + 1);
             model.save_changes();
         }
+    }
+
+    function updateInput(){
+        input.value = model.get("value");
     }
 
     function update(){

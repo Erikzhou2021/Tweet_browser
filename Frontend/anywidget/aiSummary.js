@@ -1,31 +1,57 @@
 export function render({ model, el }) {      
-    el.classList.add("ai-summary"); 
-    let header = document.createElement("h1");
-    header.innerHTML = "AI Summary of Displayed Tweets";
+    el.classList.add("summary"); 
+    let header = document.createElement("div");
+    header.classList.add("header");
+    header.innerHTML = "AI Generated Summary";
     let tip = document.createElement("h3");
     tip.innerHTML = "Click each sentence to view the contributing tweets";
     let summary = document.createElement("div");
-    summary.classList.add("summary");
-    let sentences = model.get("value");
 
     function showcontributing(){
         model.set("selected", this.dataset.num);
-        let temp = model.get("changeSignal");
-        model.set("changeSignal", temp+1);
+        model.set("changeSignal", model.get("changeSignal")+1);
         model.save_changes();
+        let highlighted = document.getElementsByClassName("selected");
+        for(let i = 0; i < highlighted.length; i++){
+            highlighted[i].classList.remove("selected");
+        }
+        this.classList.add("selected");
     }
 
-    for(let i = 0; i < sentences.length; i++){
-        let temp = document.createElement("span");
-        temp.innerHTML = sentences[i];
-        temp.dataset.num = i;
-        temp.addEventListener("click", showcontributing);
-        summary.appendChild(temp);
+    function changePage(){
+        let highlighted = document.getElementsByClassName("selected");
+        for(let i = 0; i < highlighted.length; i++){
+            highlighted[i].classList.remove("selected");
+        }
+        let newPage = model.get("selected");
+        let toHighlight = document.getElementById("sentence-" + newPage);
+        toHighlight.classList.add("selected");
     }
+
+    function renderSentences(){
+        summary.innerHTML = "";
+        let sentences = model.get("value");
+        let selected = model.get("selected");
+        for(let i = 0; i < sentences.length; i++){
+            let temp = document.createElement("span");
+            temp.innerHTML = sentences[i];
+            temp.id = "sentence-" + i;
+            temp.dataset.num = i;
+            temp.addEventListener("click", showcontributing);
+            if(i == selected){
+                temp.classList.add("selected");
+            }
+            temp.classList.add("ai-sentence");
+            summary.appendChild(temp);
+        }
+    }
+    
+    model.on("change:value", renderSentences);
+    model.on("change:selected", changePage);
     let caveat = document.createElement("h3");
     caveat.innerHTML = "*Not all tweets are captured in the summary. Click to view ommited tweets"
-    el.appendChild(header);
-    el.appendChild(tip);
+    // el.appendChild(header);
+    // el.appendChild(tip);
     el.appendChild(summary);
-    el.appendChild(caveat);
+    // el.appendChild(caveat);
 }

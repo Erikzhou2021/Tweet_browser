@@ -19,7 +19,10 @@ import igraph as ig
 import textwrap # hover text on dimension reduction/clustering plot
 # from fastlexrank import FastLexRankSummarizer
 import ai_summary
+import torch
 from openai import OpenAI
+from prompts import *
+from sentence_transformers import SentenceTransformer
 
 # Ignore warnings
 import warnings
@@ -40,6 +43,10 @@ llama3_gen_prompt = """system
 {}user
 
 {}assistant {}"""
+
+embedding_model = SentenceTransformer(
+    "BAAI/bge-base-en-v1.5", device="cuda" if torch.cuda.is_available() else "cpu"
+)
 
 # this function reads in the data (copied from online)
 def parse_data(filename, header='infer'):
@@ -473,9 +480,9 @@ class Session:
             tweet = self.allData.iloc[inputSet.indices[i]]['Message']
             tweets += f"{i}-[{tweet}] "
         input_text = llama3_gen_prompt.format(
-            "I would like you to help me by summarizing a group of tweets, delimited by triple backticks, and each tweet is labeled by a number in a given format: number-[tweet]. Give me a comprehensive summary in a concise paragraph and as you generate each sentence, provide the identifying number of tweets on which that sentence is based:",  # instruction
-            tweets,
-            "",
+            AI_SUMMARY_PROMPT, 
+            tweets, 
+            ""
         ) 
         completion = client.chat.completions.create(
             model="Lllama3TS_unsloth_vllm",
@@ -490,6 +497,9 @@ class Session:
         pattern = re.compile(r'\([\d,\s]+\)')
         sources = re.findall(pattern, AISummary)
         strings = re.split(pattern, AISummary)
+        if len(strings) >  len(sources) and len(strings) > 1:
+            strings[-2] += strings[-1]
+            strings = strings[:-1]
         unused = set(range(inputSet.size))
         tweets = []
         for match in sources:
@@ -500,10 +510,8 @@ class Session:
                 if sourceNum in unused:
                     unused.remove(sourceNum)
                 if sourceNum < inputSet.size:
-                    currList.append(self.allData.iloc[inputSet.indices[sourceNum]]['Message'])
+                    currList.append(inputSet.indices[sourceNum])
             tweets.append(currList)
-        while len(tweets) < len(strings):
-            tweets.append([])
         return strings, tweets, list(unused)
 
 
@@ -515,11 +523,34 @@ class Session:
         data = self.allData.iloc[inputSet.indices]
         data = data.assign(centrality=scores)
         return data.sort_values(by=["centrality"], ascending=False)
+    
+    def semanticSearch(self, query, topPercent, inputSet = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        query_embedding = embedding_model.encode(
+            query, convert_to_tensor=True, normalize_embeddings=True
+        )
+        df = self.allData.iloc[inputSet.indices]
+        embeddings = embedding_model.encode(
+            df["Message"].reset_index(drop=True),
+            convert_to_tensor=True,
+            batch_size=32,
+            normalize_embeddings=True,
+        )
+        cos_scores = torch.matmul(query_embedding, embeddings.T).to("cpu").numpy().flatten()
+        df = df.assign(cos_score=cos_scores)
+        df = df.nlargest(topPercent * inputSet.size, 'cos_score')
+        self.makeOperation(df.index, df.shape[0], "semanticSearch", topPercent)
 
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
     s = Session(data, logSearches)
     return s
+
+
+
+
+
 
 if __name__=='__main__':
     print("You weren't supposed to run this")

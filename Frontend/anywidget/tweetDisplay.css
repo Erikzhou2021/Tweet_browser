@@ -1,9 +1,11 @@
 /*Here is CSS code modify the style of post display section on whole site*/
 .tweet-display {
-    background-color: #F5F5F5;
+    /* background-color: #F5F5F5; */
     padding: 0px 2px;
     overflow: auto;
-    height: var(--height);
+    max-height: 60vh;
+    /* flex-grow: 1; */
+    /* flex-basis: 60%; */
     /* min-width: 70%; */
 }
 .tweet-display::-webkit-scrollbar {
@@ -15,10 +17,10 @@
     border: 1px solid rgba(119, 119, 119, 0.47);
     background: #FFF;
     padding: 16px 32px;
-    margin: 4px auto;
+    margin: 8px 0px;
     display: flex;
     flex-wrap: wrap;
-    width: 94%;
+    gap: 8px;
     align-items: center;
 }
 .tweet-data img{
@@ -27,39 +29,34 @@
 }
 .userName{
     color: #000;
-    flex-basis: 20%;
     font-weight: bold;
     font-size: 1.1em;
     vertical-align: bottom;
     padding: 5px 0px;
-
+    margin-right: 8px
 }
 .date{
     color: #686868;
-    flex-basis: 10%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .state{
     color: #686868;
-    flex-basis: 55%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .retweets{
     color: #000;
-    flex-basis: 7%;
+    margin-left: auto;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .likes{
     color: #000;
-    flex-basis: 8%;
     vertical-align: bottom;
     padding: 5px 0px;
 }
 .message{
-    flex-basis: 100%;
     padding: 5px 0px;
 }
 .icon{
