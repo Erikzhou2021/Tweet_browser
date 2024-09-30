@@ -452,8 +452,12 @@ def test25(s):
 
 def test26(s):
     s.searchKeyword(["election"])
-    s.semanticSearch("2020 U.S. census", 0.1)
-    s.printCurrSubset()
+    s.semanticSearch("2020 U.S. election", 0.1)
+    s.back()
+    s.back()
+    s.searchKeyword(["68", "days", "until", "election"])
+    df = s.allData.iloc[s.currentSet.indices]
+    print(df['SimilarityScore'])
 
 def test99(s):
     columns = []

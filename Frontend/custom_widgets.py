@@ -38,12 +38,12 @@ class TweetDisplay(anywidget.AnyWidget):
     tweetsPerPage = traitlets.Int(TWEETS_PER_PAGE).tag(sync=True)
     filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
     
-class DatasetDisplay(anywidget.AnyWidget):
-    _esm = "anywidget/datasetDisplay.js"
-    _css = "anywidget/datasetDisplay.css"
-    size = traitlets.Int().tag(sync=True)
-    fileName = traitlets.Unicode().tag(sync=True)
-    filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
+# class DatasetDisplay(anywidget.AnyWidget):
+#     _esm = "anywidget/datasetDisplay.js"
+#     _css = "anywidget/datasetDisplay.css"
+#     size = traitlets.Int().tag(sync=True)
+#     fileName = traitlets.Unicode().tag(sync=True)
+#     filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
     
 class PageSelect(anywidget.AnyWidget):
     _esm = "anywidget/pageSelect.js"

@@ -124,6 +124,7 @@ class Session:
         self.allData = data
         self.allData['CreatedTime'] = pd.to_datetime(self.allData['CreatedTime']).dt.floor('D')
         self.allData['Message'] = self.allData['Message'].astype("string")
+        self.allData['SimilarityScore'] = np.nan
         # self.allData['State'] = self.allData['State'].str.lower()
         self.headerDict = dict()
         headers = self.allData.columns
@@ -539,7 +540,8 @@ class Session:
         )
         cos_scores = torch.matmul(query_embedding, embeddings.T).to("cpu").numpy().flatten()
         df = df.assign(cos_score=cos_scores)
-        df = df.nlargest(topPercent * inputSet.size, 'cos_score')
+        df = df.nlargest(int(topPercent * inputSet.size), 'cos_score')
+        self.allData.loc[df.index, ["SimilarityScore"]] = df['cos_score']
         self.makeOperation(df.index, df.shape[0], "semanticSearch", topPercent)
 
 def createSession(fileName: str, logSearches = False) -> Session:
