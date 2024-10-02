@@ -3,3 +3,31 @@
     width: 100%;
     box-sizing: border-box;
 }
+
+.semantic-search-title{
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
+    margin-bottom: 0px;
+}
+
+.semantic-search-title div{
+    flex-grow: 0;
+}
+
+.int-box{
+    width: 20px;
+    margin: 2px 8px;
+    text-align: center;
+}
+
+.slider{
+    align-self: center;
+    position: relative;
+    margin-left: auto;
+    margin-right: 8px;
+}
+
+.slider::before{
+    display: none;
+}
