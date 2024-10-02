@@ -34,6 +34,18 @@ export function render({ model, el }) {
     fullHeader.appendChild(intBox);
     fullHeader.appendChild(secondText);
 
+    slider.addEventListener("input", (event) =>{
+        intBox.value = slider.value;
+        model.set("filterPercent", intBox.value);
+        model.save_changes();
+    })
+
+    intBox.addEventListener("input", (event) =>{
+        slider.value = intBox.value;
+        model.set("filterPercent", intBox.value);
+        model.save_changes();
+    })
+
     input.addEventListener("change", (event) => {
         model.set("value", input.value);
         model.save_changes();

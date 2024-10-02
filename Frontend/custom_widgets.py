@@ -113,3 +113,4 @@ class SemanticSearch(anywidget.AnyWidget):
     _css = "anywidget/semanticSearch.css"
     value = traitlets.Unicode("").tag(sync=True)
     placeholder = traitlets.Unicode("").tag(sync=True)
+    filterPercent = traitlets.CInt(50).tag(sync=True)
