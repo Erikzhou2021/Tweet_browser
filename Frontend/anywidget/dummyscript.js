@@ -65,6 +65,20 @@ export function render({ model, el }) {
     
     leftText.innerHTML = "&nbsp; &nbsp; <b><u>" + fileName + "</u></b> &nbsp; " + model.get("size") + " Posts &nbsp; &nbsp;";
 
+
+
+    function confirmChanges(){
+        let response = confirm("Apply filters?\nYou have made changes to the filter settings, but they have not been applied yet.");
+        let responseCode = 0;
+        if(response){
+            responseCode = 1;
+        }
+        model.set("userResponse", responseCode);
+        model.set("changeSignal", model.get("changeSignal") + 1);
+        model.save_changes();
+    }
+    model.on("change:alertTrigger", confirmChanges);
+
     
     label.appendChild(fileIcon);
     label.appendChild(leftText);

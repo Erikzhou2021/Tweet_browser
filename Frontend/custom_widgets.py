@@ -19,6 +19,10 @@ class DummyElement(anywidget.AnyWidget):
     filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
     size = traitlets.Int(0).tag(sync=True)
 
+    alertTrigger = traitlets.Int(0).tag(sync=True)
+    userResponse = traitlets.Int(2).tag(sync=True)
+    changeSignal = traitlets.Int(0).tag(sync=True)
+
 class SearchBar(anywidget.AnyWidget):
     _esm = "anywidget/searchBar.js"
     _css = "anywidget/searchBar.css"

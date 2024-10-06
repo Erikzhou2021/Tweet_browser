@@ -459,6 +459,12 @@ def test26(s):
     df = s.allData.iloc[s.currentSet.indices]
     print(df['SimilarityScore'])
 
+def test27(s):
+    subset = Subset(range(30))
+    subset.size = 30
+    s.semanticSearch("pandemic", 0.5, subset)
+    
+
 def test99(s):
     columns = []
     nulls = s.allData.isnull().values.all(axis=0)
@@ -489,7 +495,7 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test26(s)
+    test27(s)
     # allTests(s)
     print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()
