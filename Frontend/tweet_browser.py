@@ -120,6 +120,15 @@ class Session:
         if logSearches:
             self.createSessionDump()
 
+        if embeddings is None:
+            embeddings = embedding_model.encode(
+                data["Message"],
+                convert_to_tensor=True,
+                show_progress_bar=True,
+                batch_size=32,
+                normalize_embeddings=True,
+            )
+
         self.embeddings = embeddings
         self.allData = data
         self.allData['CreatedTime'] = pd.to_datetime(self.allData['CreatedTime']).dt.floor('D')
@@ -515,7 +524,6 @@ class Session:
             tweets.append(currList)
         return strings, tweets, list(unused)
 
-
     def getCentral(self, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
@@ -531,16 +539,9 @@ class Session:
         query_embedding = embedding_model.encode(
             query, convert_to_tensor=True, normalize_embeddings=True
         )
+        embeddingTensor = torch.from_numpy(self.embeddings.iloc[inputSet.indices].values).float()
+        cos_scores = torch.matmul(query_embedding, embeddingTensor.T).to("cpu").numpy().flatten()
         df = self.allData.iloc[inputSet.indices]
-        embeddings = embedding_model.encode(
-            df["Message"].reset_index(drop=True),
-            convert_to_tensor=True,
-            batch_size=32,
-            normalize_embeddings=True,
-        )
-        print(embeddings.shape)
-        print(embeddings)
-        cos_scores = torch.matmul(query_embedding, embeddings.T).to("cpu").numpy().flatten()
         df = df.assign(cos_score=cos_scores)
         df = df.nlargest(int(topPercent * inputSet.size), 'cos_score')
         self.allData.loc[df.index, ["SimilarityScore"]] = df['cos_score']

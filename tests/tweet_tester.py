@@ -98,7 +98,7 @@ def createSession(fileName: str, logSearches = False, useEmbeddings = False) -> 
     data = parse_data(fileName)
     embeddings = None
     if useEmbeddings:
-        embeddings = parse_data("allCensus_sample_embeddings.csv", header=None)
+        embeddings = pd.read_csv("allCensus_sample_embeddings.csv", encoding = "utf-8", index_col=0)
     s = Session(data, logSearches, embeddings)
     return s
 
@@ -495,7 +495,7 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test27(s)
+    test26(s)
     # allTests(s)
     print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()
