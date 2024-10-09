@@ -4,7 +4,7 @@ export function render({ model, el }) {
     if(placeholder != null && placeholder != ""){
         input.placeholder = placeholder;
     }
-    input.value = '';
+    input.value = model.get("value");
     input.classList.add("semantic-search");
 
     let fullHeader = document.createElement("div");
@@ -19,7 +19,7 @@ export function render({ model, el }) {
     slider.type = "range";
     slider.min = "1";
     slider.max = "100";
-    slider.classList.add("slider");
+    slider.classList.add("int-slider");
     fullHeader.appendChild(slider);
     let firstText = document.createElement("div");
     firstText.innerHTML = "Top ";

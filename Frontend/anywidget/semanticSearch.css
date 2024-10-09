@@ -21,13 +21,13 @@
     text-align: center;
 }
 
-.slider{
+.int-slider{
     align-self: center;
     position: relative;
     margin-left: auto;
     margin-right: 8px;
 }
 
-.slider::before{
+.int-slider::before{
     display: none;
 }

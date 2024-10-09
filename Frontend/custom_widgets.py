@@ -23,6 +23,9 @@ class DummyElement(anywidget.AnyWidget):
     userResponse = traitlets.Int(2).tag(sync=True)
     changeSignal = traitlets.Int(0).tag(sync=True)
 
+    calendarStart = traitlets.Unicode("").tag(sync=True)
+    calendarEnd = traitlets.Unicode("").tag(sync=True)
+
 class SearchBar(anywidget.AnyWidget):
     _esm = "anywidget/searchBar.js"
     _css = "anywidget/searchBar.css"
@@ -41,7 +44,9 @@ class TweetDisplay(anywidget.AnyWidget):
     maxPage = traitlets.Int(1).tag(sync=True)
     tweetsPerPage = traitlets.Int(TWEETS_PER_PAGE).tag(sync=True)
     filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
-    
+    displayAddOn = traitlets.Int(0).tag(sync=True)
+    addOnColumnName = traitlets.Unicode("").tag(sync=True)
+
 # class DatasetDisplay(anywidget.AnyWidget):
 #     _esm = "anywidget/datasetDisplay.js"
 #     _css = "anywidget/datasetDisplay.css"
@@ -83,8 +88,6 @@ class ToggleSwitch(anywidget.AnyWidget):
     _css = "anywidget/toggleSwitch.css"
     value = traitlets.Int(2).tag(sync=True)
     label = traitlets.Unicode("").tag(sync=True)
-    calendarStart = traitlets.Unicode("").tag(sync=True)
-    calendarEnd = traitlets.Unicode("").tag(sync=True)
 
 class ParameterDisplay(anywidget.AnyWidget):
     _esm = "anywidget/parameterDisplay.js"

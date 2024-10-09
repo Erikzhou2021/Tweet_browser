@@ -4,6 +4,7 @@ export function render({ model, el }) {
     let filePath = model.get("filePath");    
     el.classList.add("tweet-display");
     model.on("change:value", displayVals);
+    model.on("change:displayAddOn", displayVals)
     let pageNum = 1;
     el.onscroll = getNewTweets;
     let middle = model.get("tweetsPerPage");
@@ -29,7 +30,8 @@ export function render({ model, el }) {
         }
         for(let i = 0; i < value.length; i++){
             let row = JSON.parse(value[i]);
-            let tweetBox = createAndAdd(el, "", "tweet-data");
+            let tweetContainer = createAndAdd(el, "", "tweet-container");
+            let tweetBox = createAndAdd(tweetContainer, "", "tweet-data");
             createAndAdd(tweetBox, "@" + row.SenderScreenName, "userName");
             let date = new Date(row.CreatedTime);
             let dateString = date.toISOString().split('T')[0];
@@ -38,9 +40,11 @@ export function render({ model, el }) {
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'retweet.svg\" class="icon"> ' + makeNotNull(row.Retweets), "retweets");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'like.svg\" class="icon"> ' + makeNotNull(row.Favorites), "likes");
             createAndAdd(tweetBox, row.Message, "message");
-            el.appendChild(tweetBox);
             if(i == middle){
                 middleHeight = tweetBox.offsetTop;
+            }
+            if(model.get("displayAddOn") > 0){
+                createAndAdd(tweetContainer, row[model.get("addOnColumnName")], "add-on");
             }
         }
         if(pageNum > 1){

@@ -11,7 +11,12 @@
 .tweet-display::-webkit-scrollbar {
     display: none;
   }
-/*set the style for each individual post box*/
+
+.tweet-container{
+    display: flex;
+    flex-direction: row;
+}
+
 .tweet-data{
     border-radius: 8px;
     border: 1px solid rgba(119, 119, 119, 0.47);
@@ -22,7 +27,23 @@
     flex-wrap: wrap;
     gap: 8px;
     align-items: center;
+    flex-grow: 1;
 }
+
+.add-on{
+    border-radius: 8px;
+    border: 1px solid rgba(119, 119, 119, 0.47);
+    background: #FFF;
+    /* box-sizing: border-box; */
+    /* padding: 16px 32px; */
+    margin: 8px 0px;
+    width: 200px;
+    text-align: center;
+    align-content: center;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
 .tweet-data img{
     max-height: 1em;
     vertical-align: bottom;
@@ -57,6 +78,7 @@
     padding: 5px 0px;
 }
 .message{
+    flex-basis: 100%;
     padding: 5px 0px;
 }
 .icon{
@@ -75,4 +97,12 @@
     align-items: center;
     justify-content: center;
     margin: 16px auto;
+}
+
+.tweet-display-add-on{
+    margin-left: auto;
+    align-self: center;
+    width: 200px;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
