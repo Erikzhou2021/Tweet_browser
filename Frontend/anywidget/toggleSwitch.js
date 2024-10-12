@@ -15,6 +15,7 @@ export function render({ model, el }) {
 
     el.appendChild(text);
     el.appendChild(toggleSwitch);
+    toggleVisibility();
     
     if(model.get("value") >= 1){
         invisibleBox.checked = true;
@@ -33,4 +34,17 @@ export function render({ model, el }) {
             model.save_changes();
         }
     }
+    function toggleVisibility(){
+        if(model.get("hidden") > 0){
+            text.hidden = true;
+            toggleSwitch.hidden = true;
+            slider.hidden = true;
+        }
+        else{
+            text.hidden = false;
+            toggleSwitch.hidden = false;
+            slider.hidden = false;
+        }
+    }
+    model.on("change:hidden", toggleVisibility);
 }

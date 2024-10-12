@@ -56,3 +56,7 @@ input:checked + .slider:before {
     -ms-transform: translateX(1.9em);
     transform: translateX(1.9em);
 }
+
+.hide-before:before{
+    display:none;
+}

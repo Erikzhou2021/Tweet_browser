@@ -88,6 +88,7 @@ class ToggleSwitch(anywidget.AnyWidget):
     _css = "anywidget/toggleSwitch.css"
     value = traitlets.Int(2).tag(sync=True)
     label = traitlets.Unicode("").tag(sync=True)
+    hidden = traitlets.Int(0).tag(sync=True)
 
 class ParameterDisplay(anywidget.AnyWidget):
     _esm = "anywidget/parameterDisplay.js"
