@@ -463,7 +463,11 @@ def test27(s):
     subset = Subset(range(30))
     subset.size = 30
     s.semanticSearch("pandemic", 0.5, subset)
-    
+
+def test28(s):
+    s.semanticSearch("Citizenship question", 0.005)
+    result = s.stanceAnalysis("Should the census ask if the filler is a U.S. citizen?", ["Yes, the citizenship question should be included", "No, it should not"], "")
+    print(result)
 
 def test99(s):
     columns = []
@@ -495,7 +499,7 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test26(s)
+    test28(s)
     # allTests(s)
     print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()

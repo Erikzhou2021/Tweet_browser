@@ -33,17 +33,6 @@ import datetime
 #from formatter import NullFormatter
 warnings.filterwarnings("ignore")
 
-# Initialize OpenAI client
-client = OpenAI(
-    base_url="http://localhost:8000/v1",
-    api_key="token-census",
-)
-llama3_gen_prompt = """system
-
-{}user
-
-{}assistant {}"""
-
 embedding_model = SentenceTransformer(
     "BAAI/bge-base-en-v1.5", device="cuda" if torch.cuda.is_available() else "cpu"
 )
@@ -489,17 +478,7 @@ class Session:
         for i in range(len(inputSet.indices)):
             tweet = self.allData.iloc[inputSet.indices[i]]['Message']
             tweets += f"{i}-[{tweet}] "
-        input_text = llama3_gen_prompt.format(
-            AI_SUMMARY_PROMPT, 
-            tweets, 
-            ""
-        ) 
-        completion = client.chat.completions.create(
-            model="Lllama3TS_unsloth_vllm",
-            messages=[{"role": "user", "content": input_text}]
-        )
-        result = completion.choices[0].message.content
-        return result
+        return ai_summarize(tweets)
     
     def parseSummary(self, AISummary, inputSet: Subset = None):
         if inputSet == None or type(inputSet) != Subset:
@@ -546,6 +525,15 @@ class Session:
         df = df.nlargest(int(topPercent * inputSet.size), 'cos_score')
         self.allData.loc[df.index, ["SimilarityScore"]] = df['cos_score']
         self.makeOperation(df.index, df.shape[0], "semanticSearch", topPercent)
+    
+    def stanceAnalysis(self, topic, stances, examples, inputSet = None):
+        if inputSet == None or type(inputSet) != Subset:
+            inputSet = self.currentSet
+        tweets = ""
+        for i in range(len(inputSet.indices)):
+            tweet = self.allData.iloc[inputSet.indices[i]]['Message']
+            tweets += f"{i}-[{tweet}] "
+        return stance_annotation(tweets, topic, stances, examples)
 
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
