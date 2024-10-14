@@ -13,7 +13,7 @@ export function render({ model, el }) {
     header.innerHTML = "Semantic Match";
     fullHeader.appendChild(header);
     let header2 = document.createElement("h5");
-    header2.innerHTML = "(posts are about)";
+    header2.innerHTML = "&nbsp; (posts are about)";
     fullHeader.appendChild(header2);
     let slider = document.createElement("input");
     slider.type = "range";

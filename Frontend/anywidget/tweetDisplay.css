@@ -100,6 +100,7 @@
 }
 
 .tweet-display-add-on{
+    justify-content: space-around !important;
     margin-left: auto;
     align-self: center;
     width: 200px;

@@ -3,6 +3,7 @@
     align-items: center;
     justify-content: space-between;
 }
+
 /* The switch - the box around the slider */
 .switch {
     position: relative;
