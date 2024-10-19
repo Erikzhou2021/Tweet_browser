@@ -35,6 +35,9 @@ body{
     font-size: 0.9em;
     border-radius: 10px;
     text-align: center;
+    padding: 8px;
+    align-content: center;
+    height: auto;
 }
 
 p{
@@ -73,6 +76,7 @@ p{
     border:0px !important;
     box-shadow: none !important;
     margin-right: 2em;
+    align-self: center;
 }
 .close-button{
     background-color: white;
@@ -257,3 +261,88 @@ p{
     position: absolute;
     bottom: 0;
 }
+
+/* h1{
+    font-family: Roboto;
+    font-size: 48px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 56px;
+}
+
+h2{
+    font-family: Roboto;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 48px;
+}
+
+h3{
+    font-family: Roboto;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 36px;
+}
+
+h4{
+    font-family: Roboto;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.18px;
+}
+
+h5{
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.15px;
+} */
+
+.body0{
+    font-family: Roboto;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+/*
+.body1{
+    font-family: Roboto;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+.body2{
+    font-family: Roboto;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+}
+
+.body3{
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 14px;
+}
+
+.menu-text{
+    font-family: Roboto;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.15px;
+}
+ */

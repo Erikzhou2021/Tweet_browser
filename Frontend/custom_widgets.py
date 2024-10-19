@@ -122,3 +122,8 @@ class SemanticSearch(anywidget.AnyWidget):
     value = traitlets.Unicode("").tag(sync=True)
     placeholder = traitlets.Unicode("").tag(sync=True)
     filterPercent = traitlets.CInt(50).tag(sync=True)
+
+class StanceAnalysis(anywidget.AnyWidget):
+    _esm = "anywidget/stanceAnalysis.js"
+    _css = "anywidget/stanceAnalysis.css"
+    pageNumber = traitlets.Int(-1).tag(sync=True)

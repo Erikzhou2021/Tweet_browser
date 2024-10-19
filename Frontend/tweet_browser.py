@@ -23,6 +23,7 @@ import torch
 from openai import OpenAI
 from prompts import *
 from sentence_transformers import SentenceTransformer
+from transformers import AutoTokenizer
 
 # Ignore warnings
 import warnings
@@ -530,9 +531,16 @@ class Session:
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         tweets = ""
+        tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+        totalTokens = 0
         for i in range(len(inputSet.indices)):
             tweet = self.allData.iloc[inputSet.indices[i]]['Message']
+            tokens = tokenizer.tokenize(tweet)
+            if totalTokens + len(tokens) > 7500:
+                break
             tweets += f"{i}-[{tweet}] "
+            totalTokens += len(tokens)
+        print(totalTokens)
         return stance_annotation(tweets, topic, stances, examples)
 
 def createSession(fileName: str, logSearches = False) -> Session:
