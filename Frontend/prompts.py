@@ -54,12 +54,12 @@ def stance_annotation(tweets, topic, stances, examples):
         {
             "role": "user",
             "content": f"""
-    Determine whether each tweet discusses the topic of {topic}. If it does, indicate the stance of the Twitter user who posted the tweet as one of '{stances}', otherwise label the stance as "irrelevant". Your response should be in JSON format as shown below. No other output is necessary:
+    Determine whether each tweet discusses the topic of {topic}. If it does, indicate the stance of the Twitter user who posted the tweet as one of '{stances}', otherwise label the stance as "{{-1: irrelevant}}". Your response should be in JSON format as shown below. No other output is necessary:
     {{
-        "tweet_number": "selected stance here"
+        "tweet_number": "stance_number"
     }}
 
-    The stance must be one of the following: "{stances}", "irrelevant".
+    The stance number must be between -1 and {len(stances)-1}.
 
     {examples}
 

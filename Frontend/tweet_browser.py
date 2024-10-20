@@ -533,6 +533,8 @@ class Session:
         tweets = ""
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
         totalTokens = 0
+        for i in range(len(stances)):
+            stances[i] = {i, stances[i]}
         for i in range(len(inputSet.indices)):
             tweet = self.allData.iloc[inputSet.indices[i]]['Message']
             tokens = tokenizer.tokenize(tweet)
