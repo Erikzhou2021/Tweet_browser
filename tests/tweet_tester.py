@@ -466,7 +466,10 @@ def test27(s):
 
 def test28(s):
     s.semanticSearch("Citizenship question", 0.005)
-    result = s.stanceAnalysis("Should the census ask if the filler is a U.S. citizen?", ["Yes, the citizenship question should be included", "No, it should not"], "")
+    topic = "Should the census ask if the filler is a U.S. citizen?"
+    examples = ["", "", "", ""]
+    stances = ["Yes, the citizenship question should be included", "No, it should not", "", ""]
+    result = s.stanceAnalysis(topic, stances, examples)
     print(result)
 
 def test99(s):

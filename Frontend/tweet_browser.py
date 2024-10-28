@@ -530,20 +530,22 @@ class Session:
     def stanceAnalysis(self, topic, stances, examples, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        tweets = ""
+        results = []
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
-        totalTokens = 0
-        for i in range(len(stances)):
-            stances[i] = {i, stances[i]}
-        for i in range(len(inputSet.indices)):
-            tweet = self.allData.iloc[inputSet.indices[i]]['Message']
-            tokens = tokenizer.tokenize(tweet)
-            if totalTokens + len(tokens) > 7500:
-                break
-            tweets += f"{i}-[{tweet}] "
-            totalTokens += len(tokens)
-        print(totalTokens)
-        return stance_annotation(tweets, topic, stances, examples)
+        i = 0
+        while i < len(inputSet.indices):
+            totalTokens = 0
+            tweets = ""
+            tokens = []
+            while i < len(inputSet.indices) and totalTokens + len(tokens) < 7500:
+                tweet = self.allData.iloc[inputSet.indices[i]]['Message']
+                tokens = tokenizer.tokenize(tweet)
+                tweets += f"{i}-[{tweet}] "
+                totalTokens += len(tokens)
+                i += 1
+            results.append(stance_annotation(tweets, topic, stances, examples))
+            
+        return results
 
 def createSession(fileName: str, logSearches = False) -> Session:
     data = parse_data(fileName)
