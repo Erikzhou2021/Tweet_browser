@@ -148,6 +148,7 @@ p{
     padding: 16px 32px;
     min-width: 6%;
     max-width: 321px;
+    justify-content: space-between;
 }
 .filter-bar-label{
     font-size: 14px !important;
@@ -181,9 +182,6 @@ p{
     display: none;
 }
 
-.filter-box{
-    justify-content: space-between;
-}
 .filter-box h4{
     font-weight: bold;
 }
@@ -201,6 +199,9 @@ p{
     background-color: lightgray;
 }
 
+.date-constraint{
+    max-width: 100%;
+}
 
 /* Advanced page main box */
 .advanced-box{
