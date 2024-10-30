@@ -2,6 +2,7 @@ from ast import keyword
 from cmath import exp
 import numpy as np
 import os.path
+import json
 import pandas as pd
 import random
 import re
@@ -530,7 +531,7 @@ class Session:
     def stanceAnalysis(self, topic, stances, examples, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        results = []
+        resultDict = {}
         tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
         i = 0
         while i < len(inputSet.indices):
@@ -543,8 +544,9 @@ class Session:
                 tweets += f"{i}-[{tweet}] "
                 totalTokens += len(tokens)
                 i += 1
-            results.append(stance_annotation(tweets, topic, stances, examples))
-            
+            batchResult = stance_annotation(tweets, topic, stances, examples)
+            resultDict = {**resultDict, **(json.loads(batchResult))}
+        results = [resultDict[tweetNum] for tweetNum in range(len(inputSet.indices))]
         return results
 
 def createSession(fileName: str, logSearches = False) -> Session:

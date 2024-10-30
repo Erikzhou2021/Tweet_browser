@@ -1,5 +1,6 @@
 export function render({ model, el }) { 
     el.classList.add("sample-selector");
+    let buttonText = model.get("label");
 
     let filePath = model.get("filePath");   
     let select = document.createElement("Select");
@@ -9,7 +10,7 @@ export function render({ model, el }) {
     }
 
     let text = document.createElement("option");
-    text.innerHTML = "Generate New Sample >";
+    text.innerHTML = buttonText;
     text.value = -2;
     text.classList.add("hide");
     select.appendChild(text);

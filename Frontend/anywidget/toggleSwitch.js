@@ -39,11 +39,13 @@ export function render({ model, el }) {
             text.hidden = true;
             toggleSwitch.hidden = true;
             slider.hidden = true;
+            invisibleBox.disabled = true;
         }
         else{
             text.hidden = false;
             toggleSwitch.hidden = false;
             slider.hidden = false;
+            invisibleBox.disabled = false;
         }
     }
     model.on("change:hidden", toggleVisibility);

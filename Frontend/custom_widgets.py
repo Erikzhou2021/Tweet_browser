@@ -81,6 +81,7 @@ class SampleSelector(anywidget.AnyWidget):
     filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
     value = traitlets.Int(50).tag(sync=True)
     total = traitlets.Int(0).tag(sync=True)
+    label = traitlets.Unicode("").tag(sync=True)
     changeSignal = traitlets.Int(0).tag(sync=True)
 
 class ToggleSwitch(anywidget.AnyWidget):
@@ -105,6 +106,7 @@ class AiSummary(anywidget.AnyWidget):
     _esm = "anywidget/aiSummary.js"
     _css = "anywidget/aiSummary.css"
     value = traitlets.List().tag(sync=True)
+    rerender = traitlets.Int(0).tag(sync=True)
     sentenceNums = []
     unused = []
     selected = traitlets.CInt(0).tag(sync=True)

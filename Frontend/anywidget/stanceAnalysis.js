@@ -55,6 +55,12 @@ export function render({ model, el }) {
         applyButton.innerText = "Apply Stance Annotation";
         applyButton.classList.add("generic-button");
         applyButton.style.marginLeft = "auto";
+        applyButton.addEventListener("click", changeToResultsPage);
         el.appendChild(applyButton);
+    }
+
+    function changeToResultsPage(){
+        model.set("pageNumber", 1);
+        model.save_changes();
     }
 }
