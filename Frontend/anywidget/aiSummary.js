@@ -46,6 +46,7 @@ export function render({ model, el }) {
         }
     }
     
+    renderSentences();
     model.on("change:value", renderSentences);
     model.on("change:selected", changePage);
     let caveat = document.createElement("h3");

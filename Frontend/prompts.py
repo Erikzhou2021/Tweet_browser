@@ -1,11 +1,15 @@
 from tqdm import tqdm
 import openai
 
-AI_SUMMARY_PROMPT = """I would like you to help me by summarizing a group of tweets, delimited by triple backticks, 
-and each tweet is labeled by a number in a given format: number-[tweet]. 
-Give me a comprehensive summary in a concise paragraph and as you generate each sentence, 
-provide the comma seperated identifying numbers of the tweets on which that sentence is based, no other response is necessary.
-Do not provide any unecessary output.
+AI_SUMMARY_PROMPT = """I would like you to help me by summarizing a group of tweets, delimited by triple backticks.
+Each tweet is labeled by a number with the format: number-[tweet]. 
+Give me a comprehensive summary in a concise paragraph. While generating the summary the end of each sentence, provide the list of tweets on which the sentence was based.
+
+For example, a sentence summarizing tweets 1 through 3 should end with:
+
+"(1, 2, 3)."
+
+Only output a summary. Do not provide any unecessary output.
 
 Here are the actual tweets for you to summarize in the triple backticks:
 ```

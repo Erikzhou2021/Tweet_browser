@@ -27,7 +27,7 @@ export function render({ model, el }) {
     intBox.classList.add("int-box");
     intBox.min = "1";
     intBox.max = "100";
-    intBox.value = 50;
+    intBox.value = model.get("filterPercent");
     let secondText = document.createElement("div");
     secondText.innerHTML = "% Most Relavent";
     fullHeader.appendChild(firstText);
