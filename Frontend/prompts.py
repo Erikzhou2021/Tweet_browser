@@ -3,7 +3,7 @@ import openai
 
 AI_SUMMARY_PROMPT = """I would like you to help me by summarizing a group of tweets, delimited by triple backticks.
 Each tweet is labeled by a number with the format: number-[tweet]. 
-Give me a comprehensive summary in a concise paragraph. While generating the summary the end of each sentence, provide the list of tweets on which the sentence was based.
+Give a comprehensive summary in a concise paragraph. While generating the summary, at the end of each sentence, provide the list of tweets on which the sentence was based.
 
 For example, a sentence summarizing tweets 1 through 3 should end with:
 
@@ -35,7 +35,8 @@ def ai_summarize(tweets):
     ) 
     completion = summarizerClient.chat.completions.create(
         model="Lllama3TS_unsloth_vllm",
-        messages=[{"role": "user", "content": input_text}]
+        messages=[{"role": "user", "content": input_text}],
+        temperature=0
     )
     result = completion.choices[0].message.content
     return result

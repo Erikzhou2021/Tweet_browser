@@ -502,7 +502,7 @@ if __name__=='__main__':
     # allTests(s)
 
     begin = time.perf_counter()
-    test28(s)
+    test25(s)
     # allTests(s)
     print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()
