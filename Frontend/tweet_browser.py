@@ -488,10 +488,10 @@ class Session:
         pattern = re.compile(r'\([\d,\s]+\)')
         sources = re.findall(pattern, AISummary)
         strings = re.split(pattern, AISummary)
-        strings = [re.sub(r'\s+([,\.])', r'\1', sentence) for sentence in strings]
+        # strings = [re.sub(r'\s+([,\.])', r'\1', sentence) for sentence in strings]
         for i in range(1, len(strings)):
-            if len(strings[i-1]) > 0 and len(strings[i]) > 0:
-                if strings[i-1][-1] == " " and strings[i][0] == '.' or strings[i][0] == ",":
+            if len(strings[i-1]) > 0 and len(strings[i]) > 0 and (strings[i][0] == '.' or strings[i][0] == ","):
+                while strings[i][-1] == " ":
                     strings[i] = strings[i][:-1]
         if len(strings) >  len(sources) and len(strings) > 1:
             strings[-2] += strings[-1]
