@@ -1,12 +1,16 @@
 body{
     font-family: 'Roboto';
 }
+.widget-html-content {
+    line-height: inherit !important;
+}
 
 .title{
+    height: 48px;
     font-size: 32px;
-    font-weight: bold;
-    align-self: center;
-    height: 100%;
+    font-weight: 700;
+    padding-left: 32px;
+    align-self: flex-end;
 }
 
 .text-block{
@@ -15,7 +19,7 @@ body{
 }
 
 .advanced-bar{
-    margin: 16px 0px 16px 0px;
+    margin-top: 16px;
 }
 
 .small-font{
@@ -49,22 +53,15 @@ p{
     background-color: white;
     border: 1px solid black;
     text-align: left;
-    width: calc(100% - 10px);
-    margin-top: 16px;
+    width: calc(100% - 64px);
+    margin: 16px 32px;
     font-size: 16px;
+    line-height: 24px !important;
     font-weight: 400;
+    align-self: center;
     /* padding: 8px 16px; */
 }
 
-.header{
-    font-size: 24px;
-    font-weight: 500;
-}
-
-.modify-search{
-    font-size: 1em;
-    align-self: center;
-}
 .generic-button img{
     color: white;
 }
@@ -114,6 +111,7 @@ p{
 .jupyter-widget-tab {
     flex-grow: 1;
     flex-basis: 70%;
+    margin-right: 32px;
 }
 
 /* Search Box */
@@ -229,18 +227,26 @@ p{
     pointer-events: none
 }
 
+.top-bar{
+    justify-content: space-between;
+    height: 80px;
+    border-bottom: 5px solid black;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
 /* File upload dataset widget */
 .dataset-display {
-    background-color: lightgray;
-    max-width: 30%;
-    height: 3.5em;
+    background-color: #F0F1F1;
+    width: 320px;
+    height: 48px;
     display: flex;
     flex-direction: row;
     align-items: center;
     padding: 8px 16px 8px 8px;
-    margin: 8px;
+    margin-right: 32px;
     border-radius: 5px;
-    /* align-self: center; */
+    align-self: center;
     justify-content: center;
     cursor: pointer;
 }
@@ -263,63 +269,58 @@ p{
     bottom: 0;
 }
 
-/* h1{
-    font-family: Roboto;
+.heading1{
     font-size: 48px;
     font-style: normal;
     font-weight: 500;
-    line-height: 56px;
+    line-height: 56px !important;
 }
 
-h2{
-    font-family: Roboto;
+.heading2{
     font-size: 40px;
     font-style: normal;
     font-weight: 500;
-    line-height: 48px;
+    line-height: 48px !important;
 }
 
-h3{
-    font-family: Roboto;
+.heading3{
     font-size: 32px;
     font-style: normal;
     font-weight: 500;
-    line-height: 36px;
+    line-height: 36px !important;
 }
 
-h4{
-    font-family: Roboto;
+.heading4{
     font-size: 24px;
     font-style: normal;
     font-weight: 500;
-    line-height: 24px;
+    line-height: 24px !important;
     letter-spacing: 0.18px;
 }
 
-h5{
-    font-family: Roboto;
+.heading5{
     font-size: 20px;
     font-style: normal;
     font-weight: 400;
-    line-height: 24px;
+    line-height: 24px !important;
     letter-spacing: 0.15px;
-} */
+}
 
 .body0{
     font-family: Roboto;
     font-size: 18px;
     font-style: normal;
     font-weight: 400;
-    line-height: 24px;
+    line-height: 24px !important;
 }
 
-/*
+
 .body1{
     font-family: Roboto;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
-    line-height: 24px;
+    line-height: 24px !important;
 }
 
 .body2{
@@ -327,7 +328,7 @@ h5{
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
-    line-height: 16px;
+    line-height: 16px !important;
 }
 
 .body3{
@@ -335,7 +336,7 @@ h5{
     font-size: 12px;
     font-style: normal;
     font-weight: 400;
-    line-height: 14px;
+    line-height: 14px !important;
 }
 
 .menu-text{
@@ -343,7 +344,7 @@ h5{
     font-size: 18px;
     font-style: normal;
     font-weight: 500;
-    line-height: 24px;
+    line-height: 24px !important;
     letter-spacing: 0.15px;
 }
- */
+
