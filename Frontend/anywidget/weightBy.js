@@ -1,7 +1,9 @@
 export function render({ model, el }) { 
     el.classList.add("weight-by");
 
-    let text1 = document.createElement("h4");
+    let text1 = document.createElement("div");
+    text1.classList.add("body2");
+    text1.classList.add("medium");
     text1.innerHTML = "Weighted By";
     let weightBy = document.createElement("select");
 

@@ -43,7 +43,7 @@
 .full-header{
     display: flex;
     align-items: baseline;
-    margin-bottom: 0px;
+    margin-bottom: 4px;
 }
 .full-header h5{
     margin-left: 10px;

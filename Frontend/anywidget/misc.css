@@ -116,7 +116,6 @@ p{
 
 /* Search Box */
 .search-box{
-    /* border-right: 2px solid black; */
     border: 2px solid black;
     border-radius: 20px;
     padding: 20px;
@@ -125,10 +124,11 @@ p{
     display: flex;
     /* width: 60%; */
     flex-grow: 1;
+    gap: 16px;
 }
-.search-box div{
+/* .search-box div{
     flex-grow: 1;
-}
+} */
 .search-box h4{
     font-weight: bold;
 }
@@ -137,6 +137,13 @@ p{
 }
 
 /* Filter box */
+.main-filters{
+    flex-grow: 1;
+    gap: 16px;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 .filter-box{
     background-color: #F5F5F5;
     border: none;
@@ -146,13 +153,18 @@ p{
     padding: 16px 32px;
     min-width: 6%;
     max-width: 321px;
-    justify-content: space-between;
 }
-.filter-bar-label{
+.pop-up-options{
+    margin-top: auto;
+    align-self: center;
+    /* position: absolute;
+    bottom: 0; */
+}
+/* .filter-bar-label{
     font-size: 14px !important;
     height: 16px;
     margin-bottom: 8px;
-}
+} */
 .date-bar{
     overflow: visible !important;
 }
@@ -199,14 +211,6 @@ p{
 
 .date-constraint{
     max-width: 100%;
-}
-
-/* Advanced page main box */
-.advanced-box{
-    border: 2px solid black;
-    margin: 10px 0px;
-    padding: 10px;
-    padding-bottom: 25px;
 }
 
 .lm-TabBar-tabLabel{
@@ -260,13 +264,6 @@ p{
     align-items: center;
     cursor: pointer;
     justify-content: space-evenly;
-}
-
-.pop-up-options{
-    background-color: #F5F5F5;
-    width: 100%;
-    position: absolute;
-    bottom: 0;
 }
 
 .heading1{
@@ -348,3 +345,10 @@ p{
     letter-spacing: 0.15px;
 }
 
+.medium{
+    font-weight: 500;
+}
+
+.semi-bold{
+    font-weight: 600;
+}

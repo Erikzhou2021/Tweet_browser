@@ -2,13 +2,18 @@ export function render({ model, el }) {
     let headerText = model.get("header");
     if(headerText != null && headerText != ""){
         let fullHeader = document.createElement("div");
-        let header = document.createElement("h4");
+        let header = document.createElement("div");
+        header.classList.add("body2");
+        header.classList.add("medium");
         header.innerHTML = headerText;
         fullHeader.appendChild(header);
         let headerText2 = model.get("header2");
         if(headerText2 != null && headerText2 != ""){
-            let header2 = document.createElement("h5");
-            header2.innerHTML = headerText2;
+            let header2 = document.createElement("div");
+            header2.classList.add("body1");
+            header.classList.remove("body2");
+            header.classList.add("body0");
+            header2.innerHTML = "&nbsp;" + headerText2;
             fullHeader.appendChild(header2);
         }
         fullHeader.classList.add("full-header");
