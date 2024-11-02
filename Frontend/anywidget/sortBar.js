@@ -3,7 +3,9 @@ export function render({ model, el }) {
     el.classList.add("sort-bar");
 
     let dropDowns = document.createElement("div");
-    let label = document.createElement("strong");
+    let label = document.createElement("div");
+    label.classList.add("body0");
+    label.classList.add("semi-bold");
     label.innerHTML = "&nbsp;Sort By";
 
     let dropDown = document.createElement("select");
@@ -23,6 +25,8 @@ export function render({ model, el }) {
 
     dropDowns.appendChild(dropDown);
     dropDowns.classList.add("dropdowns");
+    dropDowns.classList.add("body0");
+
 
     let orderBy = document.createElement("div");
     let arrow = document.createElement("img");

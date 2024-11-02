@@ -5,15 +5,18 @@ export function render({ model, el }) {
         input.placeholder = placeholder;
     }
     input.value = model.get("value");
-    input.classList.add("semantic-search");
+    input.classList.add("semantic-search-box");
 
     let fullHeader = document.createElement("div");
     fullHeader.classList.add("semantic-search-title");
-    let header = document.createElement("h4");
+    let header = document.createElement("div");
     header.innerHTML = "Semantic Match";
+    header.classList.add("heading5");
+    header.classList.add("medium");
     fullHeader.appendChild(header);
-    let header2 = document.createElement("h5");
+    let header2 = document.createElement("div");
     header2.innerHTML = "&nbsp; (posts are about)";
+    header2.classList.add("body0");
     fullHeader.appendChild(header2);
     let slider = document.createElement("input");
     slider.type = "range";
@@ -51,6 +54,7 @@ export function render({ model, el }) {
         model.save_changes();
       });
 
+    el.classList.add("semantic-search");
     el.appendChild(fullHeader);
     el.appendChild(input);
 }

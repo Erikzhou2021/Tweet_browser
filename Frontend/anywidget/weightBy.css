@@ -1,3 +1,6 @@
+.weight-by div{
+    margin-bottom: 4px;
+}
 .weight-by select{
     border: none;
     border-bottom: 3px solid black;

@@ -1,4 +1,10 @@
 .semantic-search{
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.semantic-search-box{
     border: 2px solid black;
     width: 100%;
     box-sizing: border-box;

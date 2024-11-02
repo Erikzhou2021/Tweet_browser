@@ -18,7 +18,6 @@
     display: inline-block;
     width: var(--switch-width);
     height: var(--switch-height);
-    align-self: right;
 }
 .switch input {
     opacity: 0;
