@@ -35,6 +35,21 @@ body{
     margin-top: 16px;
 }
 
+.advanced-page{
+    padding: 24px 40px;
+    border: 1px solid black;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 1230px;
+    max-height: 700px;
+    gap: 16px;
+    inset: 0px;
+    position: fixed;
+    margin: auto;
+}
+
 .small-font{
     font-size: 0.6em;
     padding: 0px 0px;
@@ -93,6 +108,7 @@ p{
     float: right;
     width: 1.5em;
     font-size: 2em;
+    margin-left: auto;
     /* pointer-events: none; */
     border:0px !important;
     box-shadow: none !important;
@@ -134,7 +150,7 @@ p{
 
 /* Search Box */
 .search-box{
-    border: 2px solid black;
+    border: 1px solid black;
     border-radius: 20px;
     padding: 20px;
     min-height: 400px;

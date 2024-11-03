@@ -24,6 +24,7 @@
 .summary-button{
     margin-left: auto; 
     margin-right: 0;
+    flex-shrink: 0;
 }
 
 .summary span:hover{
@@ -43,11 +44,13 @@
     flex-grow: 1;
     margin: 0px 16px 8px 0px;
     align-items: center;
+    max-height: 100%;
     /* padding: 16px 24px; */
 }
 
 .right-bar{
     flex-basis: 60%;
+    max-height: 100%;
 }
 
 .back-button{
