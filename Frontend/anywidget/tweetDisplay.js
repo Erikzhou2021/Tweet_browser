@@ -79,10 +79,11 @@ export function render({ model, el }) {
             pageNum--;
             updateFlag = 1;
         } 
-        else if(Math.ceil(el.scrollTop + el.offsetHeight) >= el.scrollHeight && pageNum < model.get("maxPage")){
+        else if(Math.abs(el.scrollHeight - el.clientHeight - el.scrollTop) <= 2 && pageNum < model.get("maxPage")){
             pageNum++;
             updateFlag = 2;
         }
+        // Math.ceil(el.scrollTop + el.offsetHeight) >= el.scrollHeight
         model.set("pageNum", pageNum);
         model.save_changes();
     }

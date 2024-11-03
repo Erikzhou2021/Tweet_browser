@@ -3,8 +3,8 @@
     /* background-color: #F5F5F5; */
     padding: 0px 2px;
     overflow: auto;
-    max-height: 60vh;
-    /* flex-grow: 1; */
+    flex-grow: 1;
+    /* max-height: 100%; */
     /* flex-basis: 60%; */
     /* min-width: 70%; */
 }
