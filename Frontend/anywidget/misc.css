@@ -136,6 +136,12 @@ p{
 .lm-TabBar-tab.lm-mod-current {
     background-color: #F5F5F5 !important;
 }
+.lm-TabBar-tab.lm-mod-current::before{
+    background-color: black !important;
+    top: 100% !important;
+    left: 16px !important;
+    width: calc(100% - 32px) !important;
+}
 .widget-tab-contents {
     background-color: #F5F5F5 !important;
     height: calc(100vh - 260px);
@@ -278,7 +284,7 @@ p{
 .dataset-display {
     background-color: #F0F1F1;
     width: 320px;
-    height: 48px;
+    height: 32px;
     display: flex;
     flex-direction: row;
     align-items: center;

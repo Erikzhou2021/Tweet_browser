@@ -6,12 +6,16 @@
     border: none;
     color: white;
     background-color: black;
-    font-size: 0.9em;
-    border-radius: 10px;
+    border-radius: 16px;
     text-align: center;
     -webkit-appearance: none;
     -moz-appearance: none;
-    text-indent: 1px;
+    /* text-indent: 1px; */
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.5px;
     text-overflow: '';
     padding: 16px;
 }

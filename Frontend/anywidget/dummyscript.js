@@ -63,7 +63,7 @@ export function render({ model, el }) {
     let uploadIcon = document.createElement("img");
     uploadIcon.src = filePath + "upload.svg";
     
-    leftText.innerHTML = "&nbsp; &nbsp; <b><u>" + fileName + "</u></b> &nbsp; " + model.get("size") + " Posts &nbsp; &nbsp;";
+    leftText.innerHTML = "&nbsp; &nbsp; <b><u>" + fileName + "</u></b> &nbsp; " + model.get("size").toLocaleString() + " Posts &nbsp; &nbsp;";
 
 
 
