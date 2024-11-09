@@ -39,6 +39,7 @@ class TweetDisplay(anywidget.AnyWidget):
     _esm = "anywidget/tweetDisplay.js"
     _css = "anywidget/tweetDisplay.css"
     value = traitlets.List([]).tag(sync=True)
+    keywords = traitlets.Unicode("").tag(sync=True)
     height = traitlets.Unicode("40vh").tag(sync=True)
     pageNum = traitlets.Int(1).tag(sync=True)
     maxPage = traitlets.Int(1).tag(sync=True)

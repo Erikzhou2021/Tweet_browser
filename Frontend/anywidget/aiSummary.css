@@ -1,9 +1,7 @@
 /*modify the overview summary display box*/
 .summary {
-    border-radius: 8px;
-    border: 1px solid #777;
     background-color: white;
-    height: 40vh;
+    height: 100%;
     min-width: 80%;
     margin: 16px;
     overflow: auto;
@@ -17,7 +15,8 @@
     margin-bottom: 16px;
     background: white !important;
     padding: 24px;
-    /* flex-grow: 1; */
+    flex-grow: 1;
+    /* height: 100%; */
     /* flex-basis: 26.6%; */
 }
 
@@ -49,6 +48,7 @@
 }
 
 .right-bar{
+    align-items: center;
     flex-basis: 60%;
     max-height: 100%;
 }

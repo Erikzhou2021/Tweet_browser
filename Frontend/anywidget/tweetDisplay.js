@@ -37,11 +37,18 @@ export function render({ model, el }) {
             createAndAdd(tweetBox, "@" + row.SenderScreenName, "userName");
             let date = new Date(row.CreatedTime);
             let dateString = date.toISOString().split('T')[0];
-            createAndAdd(tweetBox, dateString, "date");
+            createAndAdd(tweetBox, '<img src= \"' + filePath + 'calendar.svg\" class="icon"> ' + dateString, "date");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'location.svg\" class="icon"> ' + makeNotNull(row.State, "Unknown"), "state");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'retweet.svg\" class="icon"> ' + makeNotNull(row.Retweets), "retweets");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'like.svg\" class="icon"> ' + makeNotNull(row.Favorites), "likes");
-            createAndAdd(tweetBox, row.Message, "message");
+            let message = row.Message;
+            let keywords = model.get("keywords");
+            if(keywords != ""){
+                let words = model.get("keywords").split(',');
+                const regex = new RegExp(`\\b${words.join('|')}\\b`, 'gi');
+                message = message.replaceAll(regex, "<b>$&</b>");
+            }
+            createAndAdd(tweetBox, message, "message");
             if(i == middle){
                 middleHeight = tweetBox.offsetTop;
             }

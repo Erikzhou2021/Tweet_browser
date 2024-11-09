@@ -11,7 +11,7 @@ export function render({ model, el }) {
     container.classList.add("page-input");
 
     let text1 = document.createElement("p");
-    text1.innerHTML = "Sample &nbsp;";
+    text1.innerHTML = "Page &nbsp;";
     
     let input = document.createElement("input");
     input.type = "number";
