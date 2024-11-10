@@ -21,7 +21,8 @@ export function render({ model, el }) {
     let slider = document.createElement("input");
     slider.type = "range";
     slider.min = "1";
-    slider.max = "100";
+    slider.max = "99";
+    slider.value = model.get("filterPercent");
     slider.classList.add("int-slider");
     fullHeader.appendChild(slider);
     let firstText = document.createElement("div");
@@ -29,7 +30,7 @@ export function render({ model, el }) {
     let intBox = document.createElement("input");
     intBox.classList.add("int-box");
     intBox.min = "1";
-    intBox.max = "100";
+    intBox.max = "99";
     intBox.value = model.get("filterPercent");
     let secondText = document.createElement("div");
     secondText.innerHTML = "% Most Relavent";
