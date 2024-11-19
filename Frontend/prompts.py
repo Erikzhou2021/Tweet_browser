@@ -34,56 +34,52 @@ stanceClient = openai.OpenAI(
 )
 
 def stance_annotation(tweets, topic, stances, examples):
-    # if examples[0]:
-    #     examples_content += (
-    #         f"Tweet1: {examples[0]}\n{{\n    'stance': '{stances[0]}'\n}}\n\n"
-    #     )
     useExamples = False
-    examplePrompt = "For example, given the input\n"
+    formattedStances = []
+    examplePrompt = "### Examples: \n"
     for i in range(len(examples)):
-        if examples[i] != "":
-            useExamples = True
-            examplePrompt += f"{i}-[{examples[i]}]\n"
-    examplePrompt += "The output should be\n{\n"
-    for i in range(len(examples)):
-        if examples[i] != "":
-            examplePrompt += f"{i}:{i}\n"
-    examplePrompt += "}"
+        if stances[i] != "":
+            currStanceNum = len(formattedStances)
+            formattedStances.append(f"{currStanceNum}: {stances[i]}")
+            if examples[i] != "":
+                useExamples = True
+                examplePrompt += f"input: {examples[i]}\n"
+                examplePrompt += f'output: {{"stance": {currStanceNum} }}\n'
     if useExamples == False:
         examplePrompt = ""
 
-    formattedStances = []
-    for stance in stances:
-        if stance != "":
-            formattedStances.append(f"{len(formattedStances)}: {stance}")
-    prompt = [
-        {
-            "role": "system",
-            "content": f"You are a human annotator. You will be presented with a list of tweets, delimited by triple backticks, concerning '{topic}'. Please make the following assessment:",
-        },
-        {
-            "role": "user",
-            "content": f"""
-    Determine whether each tweet (labeled like tweet_number-[tweet]) discusses the topic of '{topic}'. If it does, indicate the stance of the Twitter user who posted the tweet as one of '{formattedStances}', otherwise label the stance as "{{-1: irrelevant}}". Your response should be in JSON format as shown below, do not provide any other output:
-    {{
-        "tweet_number": "stance_number"
-    }}
+    # for stance in stances:
+    #     if stance != "":
+    #         formattedStances.append(f"{len(formattedStances)}: {stance}")
+    response = []
+    for tweet in tweets:
+        prompt = [
+            {
+                "role": "system",
+                "content": f"You are a human annotator. You will be presented with a tweet, delimited by triple backticks, concerning '{topic}'. Please make the following assessment:",
+            },
+            {
+                "role": "user",
+                "content": f"""
+        Determine whether the tweet discusses the topic of '{topic}'. If it does, indicate the stance of the Twitter user who posted the tweet as one of '{formattedStances}', otherwise label the stance as -1. Your response should be in JSON format as shown below, do not provide any other output:
+        {{
+            "stance": "stance_number"
+        }}
 
-    The stance number must be between -1 and {len(formattedStances)-1}.
+        The stance number must be between -1 and {len(formattedStances)-1}.
 
-    {examplePrompt}
+        {examplePrompt}
 
-    ### Your Task:
-    Tweets: ```{tweets}```
-    """,
-        },
-    ]
-    print(prompt)
-    completion = stanceClient.chat.completions.create(
-        model="meta-llama/Meta-Llama-3-8B-Instruct",
-        messages=prompt,
-    )
-    response = completion.choices[0].message.content
+        ### Your Task:
+        Tweet: ```{tweet}```
+        """,
+            },
+        ]
+        completion = stanceClient.chat.completions.create(
+            model="meta-llama/Meta-Llama-3-8B-Instruct",
+            messages=prompt,
+        )
+        response.append(completion.choices[0].message.content)
 
     return response
 

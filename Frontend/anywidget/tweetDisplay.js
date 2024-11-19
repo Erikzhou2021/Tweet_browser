@@ -33,6 +33,10 @@ export function render({ model, el }) {
         for(let i = 0; i < value.length; i++){
             let row = JSON.parse(value[i]);
             let tweetContainer = createAndAdd(el, "", "tweet-container");
+            if(model.get("colorCode") > 0){
+                let colorBox = createAndAdd(tweetContainer, "", "color-code");
+                colorBox.classList.add("color" + row.stance.toString());
+            }
             let tweetBox = createAndAdd(tweetContainer, "", "tweet-data");
             createAndAdd(tweetBox, "@" + row.SenderScreenName, "userName");
             let date = new Date(row.CreatedTime);

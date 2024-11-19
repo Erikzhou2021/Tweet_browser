@@ -63,13 +63,17 @@ body{
 .generic-button{
     color: white;
     background-color: black;
-    width: fit-content;
-    font-size: 0.9em;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px; 
+    letter-spacing: 0.5px;
     border-radius: 10px;
     text-align: center;
-    padding: 8px;
+    padding: 8px 16px;
     align-content: center;
-    height: auto;
+    width: fit-content;
+    /* height: auto; */
 }
 
 p{
@@ -98,10 +102,15 @@ p{
     background-color: transparent;
     color: black;
     text-decoration: underline;
-    width: 5.5em;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 16px; /* 88.889% */
+    letter-spacing: 0.5px;
     border:0px !important;
     box-shadow: none !important;
-    align-self: center;
+    /* align-self: center; */
+    width: auto;
 }
 .close-button{
     background-color: white;
@@ -112,13 +121,6 @@ p{
     /* pointer-events: none; */
     border:0px !important;
     box-shadow: none !important;
-}
-.search-button{
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 16px; 
-    letter-spacing: 0.5px;
 }
 .hidden-button{
     display: none;
@@ -196,9 +198,9 @@ p{
 }
 .pop-up-options{
     margin-top: auto;
-    align-self: center;
-    /* position: absolute;
-    bottom: 0; */
+    /* justify-content: space-between;
+    padding: 0px 24px; */
+    justify-content: space-around;
 }
 /* .filter-bar-label{
     font-size: 14px !important;

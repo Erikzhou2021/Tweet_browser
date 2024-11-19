@@ -465,12 +465,15 @@ def test27(s):
     s.semanticSearch("pandemic", 0.5, subset)
 
 def test28(s):
-    s.semanticSearch("Citizenship question", 0.005)
-    topic = "Should the census ask if the filler is a U.S. citizen?"
+    # s.semanticSearch("Citizenship question", 0.005)
+    s.simpleRandomSample(200)
+    # topic = "Should the census ask if the filler is a U.S. citizen?"
+    topic = "should the citizenship question be included in the census?"
     examples = ["", "", "", ""]
-    stances = ["Yes, the citizenship question should be included", "No, it should not", "", ""]
+    # stances = ["Yes, the citizenship question should be included", "No, it should not", "", ""]
+    stances = ["yes", "no", "", ""]
     result = s.stanceAnalysis(topic, stances, examples)
-    print(result)
+    print(result["stance"])
 
 def test99(s):
     columns = []

@@ -108,3 +108,29 @@
     flex-grow: 0;
     flex-shrink: 0;
 }
+
+.color-code{
+    width: 22px;
+    border-radius: 8px 0px 0px 8px;
+    flex-shrink: 0;
+}
+
+.color-code.color0{
+    background: #ECF862;
+}
+
+.color-code.color1{
+    background: #8E8CE5;
+}
+
+.color-code.color2{
+    background: #D78DE9;
+}
+
+.color-code.color3{
+    background: #94E7DD;
+}
+
+.color-code.color-1{
+    background: red;
+}

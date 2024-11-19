@@ -47,6 +47,7 @@ class TweetDisplay(anywidget.AnyWidget):
     filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
     displayAddOn = traitlets.Int(0).tag(sync=True)
     addOnColumnName = traitlets.Unicode("").tag(sync=True)
+    colorCode = traitlets.Int(0).tag(sync=True)
 
 # class DatasetDisplay(anywidget.AnyWidget):
 #     _esm = "anywidget/datasetDisplay.js"
@@ -130,3 +131,6 @@ class StanceAnalysis(anywidget.AnyWidget):
     _esm = "anywidget/stanceAnalysis.js"
     _css = "anywidget/stanceAnalysis.css"
     pageNumber = traitlets.Int(-1).tag(sync=True)
+    topic = traitlets.Unicode("").tag(sync=True)
+    stances = traitlets.List(["", "", "", ""]).tag(sync=True)
+    examples = traitlets.List(["", "", "", ""]).tag(sync=True)
