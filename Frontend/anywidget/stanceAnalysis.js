@@ -8,7 +8,7 @@ export function render({ model, el }) {
     nextButton.classList.add("generic-button");
     infoPage.appendChild(nextButton);
     el.classList.add("stance-analysis");
-
+    let applyButton = document.createElement("button"); // might break something
     const NUM_INPUTS = 4;
 
     nextButton.addEventListener("click", changePage);
@@ -23,12 +23,28 @@ export function render({ model, el }) {
         return temp;
     }
 
+    function checkFilled(){
+        let numFilled = 0;
+        for(var i = 0; i < NUM_INPUTS; i++){
+            if(document.getElementById("stanceInput" + i.toString()).value != ""){
+                numFilled++;
+            }
+        }
+        if(document.getElementById("stanceTopicInput").value != "" && numFilled >= 2){
+            applyButton.classList.remove("greyed-out");
+        }
+        else{
+            applyButton.classList.add("greyed-out");
+        }
+    }
+
     function createInputs(inputNumber, parentContainer){
         let tempContainer = createAndAdd(parentContainer, "", "input-container2");
         createAndAdd(tempContainer, "Stance &nbsp;" + inputNumber, "body0");
         let stanceInput = document.createElement("input");
         stanceInput.autocomplete = "off";
         stanceInput.value = model.get("stances")[inputNumber];
+        stanceInput.addEventListener("blur", checkFilled);
         stanceInput.id = "stanceInput" + inputNumber.toString();
         tempContainer.appendChild(stanceInput);
 
@@ -53,18 +69,19 @@ export function render({ model, el }) {
         stanceTopicInput.autocomplete = "off";
         stanceTopicInput.id = "stanceTopicInput";
         stanceTopicInput.value = model.get("topic");
+        stanceTopicInput.addEventListener("blur", checkFilled);
         inputContainer1.appendChild(stanceTopicInput);
 
         for(var i = 0; i < NUM_INPUTS; i++){
             createInputs(i, userInputContainer);
         }
 
-        let applyButton = document.createElement("button");
         applyButton.innerText = "Apply Stance Annotation";
         applyButton.classList.add("generic-button");
         applyButton.style.marginLeft = "auto";
         applyButton.addEventListener("click", changeToResultsPage);
         el.appendChild(applyButton);
+        checkFilled();
     }
 
     if(model.get("pageNumber") > -1){
