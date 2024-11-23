@@ -536,29 +536,34 @@ class Session:
     def stanceAnalysis(self, topic, stances, examples, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        # resultDict = {}
-        # tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
-        # i = 0
-        # while i < len(inputSet.indices):
-        #     totalTokens = 0
-        #     tweets = ""
-        #     tokens = []
-        #     while i < len(inputSet.indices) and totalTokens + len(tokens) < 7500:
-        #         tweet = self.allData.iloc[inputSet.indices[i]]['Message']
-        #         tokens = tokenizer.tokenize(tweet)
-        #         tweets += f"{i}-[{tweet}] "
-        #         totalTokens += len(tokens)
-        #         i += 1
-        #     batchResult = stance_annotation(tweets, topic, stances, examples)
-        #     resultDict = {**resultDict, **(json.loads(batchResult))}
-        # results = [resultDict[tweetNum] for tweetNum in range(len(inputSet.indices))]
         df = self.allData.iloc[inputSet.indices].reset_index(drop=True)
-        results = stance_annotation(df['Message'], topic, stances, examples)
-        assert(len(results) == len(df))
-        stances = []
-        for i in range(len(results)):
-            stances.append(json.loads(results[i])["stance"])
-        df["stance"] = stances
+        resultDict = {}
+        results = []
+        # tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
+        i = 0
+        while i < len(inputSet.indices):
+            start = i
+            tweets = ""
+            while i < len(inputSet.indices) and i - start < 50:
+                tweet = self.allData.iloc[inputSet.indices[i]]['Message']
+                tweets += f"{i}-[{tweet}]\n"
+                i += 1
+            batchResult = stance_annotation(tweets, topic, stances, examples)
+            print(batchResult)
+            batchResult = batchResult[batchResult.find("{"): ]
+            batchResult = json.loads(batchResult)
+            # resultDict = {**resultDict, **(json.loads(batchResult))}
+            for j in range(start, i):
+                results.append(int(batchResult[str(j)]))
+        df["stance"] = results
+        # results = [resultDict[tweetNum] for tweetNum in range(len(inputSet.indices))]
+        
+        # results = stance_annotation(df['Message'], topic, stances, examples)
+        # assert(len(results) == len(df))
+        # stances = []
+        # for i in range(len(results)):
+        #     stances.append(json.loads(results[i])["stance"])
+        # df["stance"] = stances
         return df
 
 def createSession(fileName: str, logSearches = False) -> Session:

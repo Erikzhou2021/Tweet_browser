@@ -48,39 +48,33 @@ def stance_annotation(tweets, topic, stances, examples):
     if useExamples == False:
         examplePrompt = ""
 
-    # for stance in stances:
-    #     if stance != "":
-    #         formattedStances.append(f"{len(formattedStances)}: {stance}")
-    response = []
-    for tweet in tweets:
-        prompt = [
-            {
-                "role": "system",
-                "content": f"You are a human annotator. You will be presented with a tweet, delimited by triple backticks, concerning '{topic}'. Please make the following assessment:",
-            },
-            {
-                "role": "user",
-                "content": f"""
-        Determine whether the tweet discusses the topic of '{topic}'. If it does, indicate the stance of the Twitter user who posted the tweet as one of '{formattedStances}', otherwise label the stance as -1. Your response should be in JSON format as shown below, do not provide any other output:
-        {{
-            "stance": "stance_number"
-        }}
+    prompt = [
+        {
+            "role": "system",
+            "content": f"You are a human annotator. You will be presented with a list of tweets (labeled with id numbers), delimited by triple backticks, concerning '{topic}'. Please make the following assessment without further commentary:",
+        },
+        {
+            "role": "user",
+            "content": f"""
+    Determine whether each tweet discusses the topic of '{topic}'. If it does, indicate the stance of the Twitter user who posted the tweet as one of '{formattedStances}', otherwise label the stance as -1. Your response should be in JSON format as shown below, do not provide any other output:
+    {{
+        "<tweetID>" : "stance_number"
+    }}
 
-        The stance number must be between -1 and {len(formattedStances)-1}.
+    The stance number must be between -1 and {len(formattedStances)-1}.
 
-        {examplePrompt}
+    {examplePrompt}
 
-        ### Your Task:
-        Tweet: ```{tweet}```
-        """,
-            },
-        ]
-        completion = stanceClient.chat.completions.create(
-            model="meta-llama/Meta-Llama-3-8B-Instruct",
-            messages=prompt,
-        )
-        response.append(completion.choices[0].message.content)
+    ### Your Task:
+    Tweets: ```{tweets}```
+    """,
+        },
+    ]
+    completion = stanceClient.chat.completions.create(
+        model="meta-llama/Meta-Llama-3-8B-Instruct",
+        messages=prompt,
+    )
 
-    return response
+    return completion.choices[0].message.content
 
 
