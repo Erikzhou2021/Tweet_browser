@@ -38,9 +38,36 @@ export function render({ model, el }) {
         }
     }
 
+    function setColor(event){
+        let element = event.target;
+        let id = element.id;
+        const prefix = "colorPicker";
+        let num = id.substring(prefix.length);
+        let titleContainer = document.getElementById("titleContainer" + num);
+        titleContainer.style.backgroundColor = element.value;
+        let oldVals = model.get("colors");
+        oldVals[parseInt(num)] = element.value;
+        model.set("colors", oldVals);
+        model.save_changes();
+    }
+
     function createInputs(inputNumber, parentContainer){
         let tempContainer = createAndAdd(parentContainer, "", "input-container2");
-        createAndAdd(tempContainer, "Stance &nbsp;" + inputNumber, "body0");
+        let titleContainer = createAndAdd(tempContainer, "", "color-picker");
+        titleContainer.id = "titleContainer" + inputNumber.toString();
+        let colorPicker = document.createElement("input");
+        colorPicker.id = "colorPicker" + inputNumber.toString();
+        colorPicker.type = "color";
+        colorPicker.addEventListener("change", setColor);
+        colorPicker.value = model.get("colors")[inputNumber];
+        titleContainer.style.backgroundColor = colorPicker.value
+        titleContainer.appendChild(colorPicker);
+        let temp = createAndAdd(titleContainer, "Stance &nbsp;" + inputNumber, "body0");
+        temp.classList.add("medium");
+        let icon = document.createElement("img");
+        icon.src = model.get("filePath") + "colorize.svg";
+        titleContainer.appendChild(icon);
+        createAndAdd(tempContainer, "Opinion", "body3");
         let stanceInput = document.createElement("input");
         stanceInput.autocomplete = "off";
         stanceInput.value = model.get("stances")[inputNumber];
@@ -48,13 +75,13 @@ export function render({ model, el }) {
         stanceInput.id = "stanceInput" + inputNumber.toString();
         tempContainer.appendChild(stanceInput);
 
-        let tempContainer2 = createAndAdd(parentContainer, "", "input-container2");
-        createAndAdd(tempContainer2, "Stance &nbsp;" + inputNumber + "&nbsp examples", "body0");
+        createAndAdd(tempContainer, "Examples", "body3").classList.add("stance-extra-margin");
         let exampleInput = document.createElement("input");
+        exampleInput.classList.add("stance-example");
         exampleInput.autocomplete = "off";
         exampleInput.value = model.get("examples")[inputNumber];
         exampleInput.id = "exampleInput" + inputNumber.toString();
-        tempContainer2.appendChild(exampleInput);
+        tempContainer.appendChild(exampleInput);
     }
 
     function changePage(){

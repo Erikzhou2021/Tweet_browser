@@ -134,3 +134,5 @@ class StanceAnalysis(anywidget.AnyWidget):
     topic = traitlets.Unicode("").tag(sync=True)
     stances = traitlets.List(["", "", "", ""]).tag(sync=True)
     examples = traitlets.List(["", "", "", ""]).tag(sync=True)
+    colors = traitlets.List(["#EDF774", "#94E7DD", "#B8B7EE", "#D78DE9"]).tag(sync=True)
+    filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
