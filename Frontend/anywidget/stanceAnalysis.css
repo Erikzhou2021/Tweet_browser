@@ -78,6 +78,7 @@
     border-radius: 8px;
 }
 
+/* 
 .stance-checkbox{
     font-family: Roboto;
     font-size: 14px;
@@ -89,4 +90,5 @@
     align-items:center;
     display: flex;
     margin-right: 16px;
-}
+    opacity: 0;
+} */

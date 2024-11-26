@@ -136,3 +136,55 @@
 .color-1{
     background: var(--stance-color-1);
 }
+
+/* annoying but necessary */
+
+.stance-checkbox0 span{
+    padding: 4px;
+    align-self: center;
+    background: var(--stance-color0);
+}
+.stance-checkbox0{
+    width: fit-content;
+    margin-right: 16px;
+}
+
+.stance-checkbox1 span{
+    padding: 4px;
+    align-self: center;
+    background: var(--stance-color1);
+}
+.stance-checkbox1{
+    width: fit-content;
+    margin-right: 16px;
+}
+
+.stance-checkbox2 span{
+    padding: 4px;
+    align-self: center;
+    background: var(--stance-color2);
+}
+.stance-checkbox2{
+    width: fit-content;
+    margin-right: 16px;
+}
+
+.stance-checkbox3 span{
+    padding: 4px;
+    align-self: center;
+    background: var(--stance-color3);
+}
+.stance-checkbox3{
+    width: fit-content;
+    margin-right: 16px;
+}
+
+.stance-checkbox-1 span{
+    padding: 4px;
+    align-self: center;
+    background: var(--stance-color-1);
+}
+.stance-checkbox-1{
+    width: fit-content;
+    margin-right: 16px;
+}
