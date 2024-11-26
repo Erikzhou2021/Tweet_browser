@@ -113,24 +113,26 @@
     width: 22px;
     border-radius: 8px 0px 0px 8px;
     flex-shrink: 0;
+    margin: 8px -8px 8px 0px;
+    z-index: 999;
 }
 
-.color-code.color0{
-    background: #ECF862;
+.color0{
+    background: var(--stance-color0);
 }
 
-.color-code.color1{
-    background: #8E8CE5;
+.color1{
+    background: var(--stance-color1);
 }
 
-.color-code.color2{
-    background: #D78DE9;
+.color2{
+    background: var(--stance-color2);
 }
 
-.color-code.color3{
-    background: #94E7DD;
+.color3{
+    background: var(--stance-color3);
 }
 
-.color-code.color-1{
-    background: red;
+.color-1{
+    background: var(--stance-color-1);
 }

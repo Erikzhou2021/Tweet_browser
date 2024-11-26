@@ -26,6 +26,20 @@ body{
     align-self: flex-end;
 }
 
+* {
+    --switch-height: 16px;
+    --switch-padding: 2px;
+    --switch-width: calc((var(--switch-height) * 2) - var(--switch-padding));
+    --slider-height: calc(var(--switch-height) - var(--switch-padding));
+    --slider-on: calc(var(--switch-height) - var(--switch-padding));
+    --stance-color0: #EDF774;
+    --stance-color1: #94E7DD;
+    --stance-color2: #B8B7EE;
+    --stance-color3: #D78DE9;
+    --stance-color-1: #D4D4D4;
+}
+
+
 .text-block{
     overflow: hidden;
     flex-grow: 1;

@@ -79,6 +79,8 @@ export function render({ model, el }) {
         let titleContainer = document.getElementById("titleContainer" + num);
         titleContainer.style.backgroundColor = element.value;
         let oldVals = model.get("colors");
+        const root = document.documentElement;
+        root.style.setProperty('--stanceColor' + num, element.value);
         oldVals[parseInt(num)] = element.value;
         model.set("colors", oldVals);
         model.save_changes();
@@ -127,6 +129,7 @@ export function render({ model, el }) {
         }
         el.innerHTML = '';
         createAndAdd(el, "Define Topic & Stances *", "heading4").classList.add("medium");
+        createAndAdd(el, '*Posts not fitting in provided stances will be labeled as “Irrelevant”', "bodye2").style.marginTop = "-8px";
         let userInputContainer = createAndAdd(el, "", "input-page-container");
         let inputContainer1 = createAndAdd(userInputContainer, "", "input-container1");
         createAndAdd(inputContainer1, "Stance Topic", "body0");

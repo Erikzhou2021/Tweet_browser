@@ -4,14 +4,6 @@
     justify-content: space-between;
 }
 
-* {
-    --switch-height: 16px;
-    --switch-padding: 2px;
-    --switch-width: calc((var(--switch-height) * 2) - var(--switch-padding));
-    --slider-height: calc(var(--switch-height) - var(--switch-padding));
-    --slider-on: calc(var(--switch-height) - var(--switch-padding));
-}
-
 /* The switch - the box around the slider */
 .switch {
     position: relative;
