@@ -45,6 +45,9 @@ export function render({ model, el }) {
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'location.svg\" class="icon"> ' + makeNotNull(row.State, "Unknown"), "state");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'retweet.svg\" class="icon"> ' + makeNotNull(row.Retweets), "retweets");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'like.svg\" class="icon"> ' + makeNotNull(row.Favorites), "likes");
+            // if(model.get("colorCode") > 0){
+            //     createAndAdd(tweetBox, '<img src= \"' + filePath + 'option_dots.svg\" class="icon"> ');
+            // }
             let message = row.Message;
             let keywords = model.get("keywords");
             if(keywords != ""){

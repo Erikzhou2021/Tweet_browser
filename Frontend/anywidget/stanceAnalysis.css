@@ -78,6 +78,11 @@
     border-radius: 8px;
 }
 
+.stance-vbox{
+    max-height: 100%;
+    gap: 8px;
+}
+
 /* 
 .stance-checkbox{
     font-family: Roboto;

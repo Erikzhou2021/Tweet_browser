@@ -279,6 +279,7 @@ p{
 .display-count{
     font-weight: 500;
     font-size: 24px;
+    align-self: center;
     /* align-self: center; */
 }
 

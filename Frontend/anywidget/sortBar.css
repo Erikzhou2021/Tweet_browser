@@ -3,9 +3,11 @@
     align-items:center;
     justify-content: space-between;
     width: fit-content;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    /* margin-top: 8px;
+    margin-bottom: 8px; */
     font-size: 18px;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 .box-container{
     display: flex;

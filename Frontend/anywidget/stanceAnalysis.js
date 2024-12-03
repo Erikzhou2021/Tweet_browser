@@ -53,6 +53,9 @@ export function render({ model, el }) {
         for(var i = 0; i < NUM_INPUTS; i++){
             let temp = document.getElementById("stanceInput" + i.toString());
             if(temp == null){
+                if(model.get("stances")[i] != ""){
+                    numFilled++;
+                }
                 break;
             }
             if(temp.value != ""){
@@ -61,9 +64,15 @@ export function render({ model, el }) {
         }
         let temp2 = document.getElementById("stanceTopicInput");
         if(temp2 == null){
+            if(model.get("topic") == ""){
+                applyButton.classList.add("greyed-out");
+            }
+            else{
+                applyButton.classList.remove("greyed-out");
+            }
             return;
         }
-        if(temp2.value != "" && numFilled >= 2){
+        if((temp2.value != "") && numFilled >= 2){
             applyButton.classList.remove("greyed-out");
         }
         else{
@@ -93,7 +102,7 @@ export function render({ model, el }) {
         let colorPicker = document.createElement("input");
         colorPicker.id = "colorPicker" + inputNumber.toString();
         colorPicker.type = "color";
-        colorPicker.addEventListener("change", setColor);
+        colorPicker.addEventListener("blur", setColor);
         colorPicker.value = model.get("colors")[inputNumber];
         titleContainer.style.backgroundColor = colorPicker.value
         titleContainer.appendChild(colorPicker);
@@ -106,7 +115,7 @@ export function render({ model, el }) {
         let stanceInput = document.createElement("input");
         stanceInput.autocomplete = "off";
         stanceInput.value = model.get("stances")[inputNumber];
-        stanceInput.addEventListener("blur", checkFilled);
+        stanceInput.addEventListener("input", checkFilled);
         stanceInput.id = "stanceInput" + inputNumber.toString();
         tempContainer.appendChild(stanceInput);
 
@@ -137,7 +146,7 @@ export function render({ model, el }) {
         stanceTopicInput.autocomplete = "off";
         stanceTopicInput.id = "stanceTopicInput";
         stanceTopicInput.value = model.get("topic");
-        stanceTopicInput.addEventListener("blur", checkFilled);
+        stanceTopicInput.addEventListener("input", checkFilled);
         inputContainer1.appendChild(stanceTopicInput);
 
         for(var i = 0; i < NUM_INPUTS; i++){

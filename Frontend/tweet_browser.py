@@ -554,7 +554,7 @@ class Session:
             batchResult = json.loads(batchResult)
             # resultDict = {**resultDict, **(json.loads(batchResult))}
             for j in range(start, i):
-                results.append(int(batchResult[str(j)]))
+                results.append(int(batchResult["tweet-" + str(j)]))
         df["stance"] = results
         # results = [resultDict[tweetNum] for tweetNum in range(len(inputSet.indices))]
         

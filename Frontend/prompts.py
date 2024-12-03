@@ -58,7 +58,7 @@ def stance_annotation(tweets, topic, stances, examples):
             "content": f"""
     Determine whether each tweet discusses the topic of '{topic}'. If it does, indicate the stance of the Twitter user who posted the tweet as one of '{formattedStances}', otherwise label the stance as -1. Your response should be in JSON format as shown below, do not provide any other output:
     {{
-        "<tweetID>" : "stance_number"
+        "tweet-<tweetID>" : "stance_number"
     }}
 
     The stance number must be between -1 and {len(formattedStances)-1}.
