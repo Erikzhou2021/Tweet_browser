@@ -9,11 +9,16 @@ export function render({ model, el }) {
     label.innerHTML = "&nbsp;Sort By";
 
     let dropDown = document.createElement("select");
-    addOption(dropDown, "None", "None");
-    addOption(dropDown, "Date", "CreatedTime");
-    addOption(dropDown, "Geography", "State");
-    addOption(dropDown, "Retweets", "Retweets");
-    addOption(dropDown, "Username", "SenderScreenName");
+    // addOption(dropDown, "None", "None");
+    // addOption(dropDown, "Date", "CreatedTime");
+    // addOption(dropDown, "Geography", "State");
+    // addOption(dropDown, "Retweets", "Retweets");
+    // addOption(dropDown, "Username", "SenderScreenName");
+    let cols = model.get("columns");
+    let names = model.get("columnNames");
+    for(var i = 0; i < cols.length; i++){
+        addOption(dropDown, cols[i], names[i]);
+    }
     dropDown.addEventListener("change", updateSortColumn);
     dropDown.value = model.get("sortColumn");
 

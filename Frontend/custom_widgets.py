@@ -73,6 +73,8 @@ class SortBar(anywidget.AnyWidget):
     _esm = "anywidget/sortBar.js"
     _css = "anywidget/sortBar.css"
     sortScope = traitlets.Unicode("Displayed Examples").tag(sync=True)
+    columns = traitlets.List(["None", "Date", "Geography", "Retweets", "Username"]).tag(sync=True)
+    columnNames = traitlets.List(["None", "CreatedTime", "State", "Retweets", "SenderScreenName"]).tag(sync=True)
     sortColumn = traitlets.Unicode("None").tag(sync=True)
     sortOrder = traitlets.Unicode("DESC").tag(sync=True)
     filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
