@@ -53,6 +53,7 @@
 }
 
 .color-picker{
+    position: relative;
     width: 100%;
     display: flex;
 }
@@ -60,6 +61,8 @@
 .color-picker input{
     opacity: 0;
     position: absolute;
+    left: 0;
+    top: 0;
     /* width: 0;
     height: 0; */
 }
