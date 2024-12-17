@@ -106,7 +106,7 @@ export function render({ model, el }) {
         colorPicker.value = model.get("colors")[inputNumber];
         titleContainer.style.backgroundColor = colorPicker.value
         titleContainer.appendChild(colorPicker);
-        let temp = createAndAdd(titleContainer, "Stance &nbsp;" + inputNumber, "body0");
+        let temp = createAndAdd(titleContainer, "Stance &nbsp;" + String(inputNumber + 1), "body0");
         temp.classList.add("medium");
         let icon = document.createElement("img");
         icon.src = model.get("filePath") + "colorize.svg";

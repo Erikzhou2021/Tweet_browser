@@ -48,6 +48,7 @@ class TweetDisplay(anywidget.AnyWidget):
     displayAddOn = traitlets.Int(0).tag(sync=True)
     addOnColumnName = traitlets.Unicode("").tag(sync=True)
     colorCode = traitlets.Int(0).tag(sync=True)
+    stances = traitlets.List([]).tag(sync=True)
 
 # class DatasetDisplay(anywidget.AnyWidget):
 #     _esm = "anywidget/datasetDisplay.js"

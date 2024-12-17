@@ -61,7 +61,7 @@ def stance_annotation(tweets, topic, stances, examples):
         "tweet-<tweetID>" : "stance_number"
     }}
 
-    The stance number must be between -1 and {len(formattedStances)-1}.
+    The stance number must be between -1 and {len(formattedStances)-1}, no other text should be in the stance number field.
 
     {examplePrompt}
 

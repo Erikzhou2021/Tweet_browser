@@ -140,14 +140,14 @@ p{
     display: none;
 }
 
-.jupyter-widget-tab li{
-    padding: 16px 24px !important;
+.lm-Widget.jupyter-widget-TabPanel.jupyter-widgets.widget-container.jupyter-widget-tab.widget-tab li{
+    padding: 16px 24px;
     justify-content: center;
     align-items: center;
-    width: fit-content !important;
+    width: fit-content;
     margin-right: 8px;
     border-radius: 8px 8px 0px 0px;
-    background-color: #DEDEDE !important;
+    background-color: #DEDEDE;
 }
 .lm-TabBar-tab.lm-mod-current {
     background-color: #F5F5F5 !important;

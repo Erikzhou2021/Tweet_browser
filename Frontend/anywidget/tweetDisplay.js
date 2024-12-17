@@ -45,9 +45,9 @@ export function render({ model, el }) {
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'location.svg\" class="icon"> ' + makeNotNull(row.State, "Unknown"), "state");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'retweet.svg\" class="icon"> ' + makeNotNull(row.Retweets), "retweets");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'like.svg\" class="icon"> ' + makeNotNull(row.Favorites), "likes");
-            // if(model.get("colorCode") > 0){
-            //     createAndAdd(tweetBox, '<img src= \"' + filePath + 'option_dots.svg\" class="icon"> ');
-            // }
+            if(model.get("colorCode") > 0){
+                makeOptionSelect(tweetBox, row.stance);
+            }
             let message = row.Message;
             let keywords = model.get("keywords");
             if(keywords != ""){
@@ -77,6 +77,51 @@ export function render({ model, el }) {
             el.scrollTop = 0;
         }
         updateFlag = 0;
+    }
+
+    function makeOptionSelect(tweetBox, currStanceNum){
+        let container = document.createElement("div");
+        container.classList.add("dropdown");
+        let button = document.createElement("button");
+        button.innerHTML = "&#183;&#183;&#183;";
+        button.addEventListener("click", (event) => toggleDropDown(button));
+        let firstLayer = document.createElement("ul");
+        firstLayer.classList.add("dropdown-menu");
+        let currentStance = document.createElement("li");
+        currentStance.innerHTML = "Current Stance";
+        currentStance.classList.add("metatext");
+        let currentStanceNumber = document.createElement("li");
+        currentStanceNumber.innerHTML = "Stance " + String(parseInt(currStanceNum) + 1);
+        if(currStanceNum == "-1"){
+            currentStanceNumber.innerHTML = "Irrelavent";
+        }
+        currentStanceNumber.classList.add("color" + currStanceNum);
+        let newStance = document.createElement("li");
+        newStance.innerHTML = "New Stance";
+        newStance.classList.add("metatext");
+
+        tweetBox.appendChild(container);
+        container.appendChild(button);
+        container.appendChild(firstLayer);
+        firstLayer.appendChild(currentStance);
+        firstLayer.appendChild(currentStanceNumber);
+        firstLayer.appendChild(newStance);
+        let availableStances = model.get("stances");
+        for(var i = 0; i < availableStances.length; i++){
+            if(availableStances[i] != parseInt(currStanceNum)){
+                let tempStance = document.createElement("li");
+                tempStance.innerHTML = "Stance " + String(availableStances[i] + 1);
+                if(availableStances[i] == -1){
+                    tempStance.innerHTML = "Irrelavent";
+                }
+                tempStance.classList.add("color" + String(availableStances[i]));
+                firstLayer.appendChild(tempStance);
+            }
+        }
+    }
+    function toggleDropDown(button){
+        const dropdown = button.parentElement;
+        dropdown.classList.toggle('open');
     }
     function makeNotNull(val, replace = 0){
         if (val == null){
