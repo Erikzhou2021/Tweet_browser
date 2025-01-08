@@ -211,10 +211,16 @@ p{
     max-width: 321px;
 }
 .pop-up-options{
-    margin-top: auto;
-    /* justify-content: space-between;
-    padding: 0px 24px; */
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    bottom: 0;
     justify-content: space-around;
+}
+.stance-pop-up{
+    background: white !important;
+    width: 100%;
+    z-index: 99999999;
 }
 /* .filter-bar-label{
     font-size: 14px !important;

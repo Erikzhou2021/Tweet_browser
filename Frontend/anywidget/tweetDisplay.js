@@ -35,7 +35,7 @@ export function render({ model, el }) {
             let tweetContainer = createAndAdd(el, "", "tweet-container");
             if(model.get("colorCode") > 0){
                 let colorBox = createAndAdd(tweetContainer, "", "color-code");
-                colorBox.classList.add("color" + row.stance.toString());
+                colorBox.classList.add("color" + row.stance);
             }
             let tweetBox = createAndAdd(tweetContainer, "", "tweet-data");
             createAndAdd(tweetBox, "@" + row.SenderScreenName, "userName");
@@ -46,7 +46,7 @@ export function render({ model, el }) {
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'retweet.svg\" class="icon"> ' + makeNotNull(row.Retweets), "retweets");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'like.svg\" class="icon"> ' + makeNotNull(row.Favorites), "likes");
             if(model.get("colorCode") > 0){
-                makeOptionSelect(tweetBox, row.stance);
+                makeOptionSelect(tweetBox, row.stance, i);
             }
             let message = row.Message;
             let keywords = model.get("keywords");
@@ -79,12 +79,14 @@ export function render({ model, el }) {
         updateFlag = 0;
     }
 
-    function makeOptionSelect(tweetBox, currStanceNum){
+    function makeOptionSelect(tweetBox, currStanceNum, rowNumber){
         let container = document.createElement("div");
         container.classList.add("dropdown");
         let button = document.createElement("button");
         button.innerHTML = "&#183;&#183;&#183;";
-        button.addEventListener("click", (event) => toggleDropDown(button));
+        button.classList.add("dropdownbtn");
+        button.addEventListener("click", (event) => container.classList.toggle("open"));
+        // button.addEventListener("blur", (event) => container.classList.remove("open"));
         let firstLayer = document.createElement("ul");
         firstLayer.classList.add("dropdown-menu");
         let currentStance = document.createElement("li");
@@ -108,21 +110,30 @@ export function render({ model, el }) {
         firstLayer.appendChild(newStance);
         let availableStances = model.get("stances");
         for(var i = 0; i < availableStances.length; i++){
-            if(availableStances[i] != parseInt(currStanceNum)){
+            const currentStance = availableStances[i];
+            if(currentStance != parseInt(currStanceNum)){
                 let tempStance = document.createElement("li");
-                tempStance.innerHTML = "Stance " + String(availableStances[i] + 1);
-                if(availableStances[i] == -1){
-                    tempStance.innerHTML = "Irrelavent";
+                tempStance.innerHTML = '<img src= \"' + filePath + 'option_select.svg\" class="icon"> ';
+                if(currentStance == -1){
+                    tempStance.innerHTML += "Irrelavent";
                 }
-                tempStance.classList.add("color" + String(availableStances[i]));
+                else{
+                    tempStance.innerHTML += "Stance " + String(currentStance + 1);
+                }
+                tempStance.classList.add("color" + String(currentStance));
+                tempStance.addEventListener("click", (event) => { 
+                    model.set("stanceCorrection", rowNumber);
+                    model.set("newStanceCorrectionNum", currentStance);
+                    model.save_changes();
+                    closeDropdowns();
+                    tempStance.parentElement.parentElement.parentElement.parentElement.classList.add("stance-corrected");
+                    // alert(tempStance.parentElement.parentElement.parentElement.parentElement.matches('.tweet-container'));
+                });
                 firstLayer.appendChild(tempStance);
             }
         }
     }
-    function toggleDropDown(button){
-        const dropdown = button.parentElement;
-        dropdown.classList.toggle('open');
-    }
+
     function makeNotNull(val, replace = 0){
         if (val == null){
             return replace;
@@ -152,5 +163,19 @@ export function render({ model, el }) {
         temp.classList.add(cssClass);
         parent.appendChild(temp);
         return temp;
+    }
+    function closeDropdowns(){
+        var dropdowns = document.getElementsByClassName("dropdown");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('open')) {
+                openDropdown.classList.remove('open');
+            }
+        }
+    }
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown button') && !event.target.matches(".dropdown li")) {
+            closeDropdowns();
+        }
     }
 }
