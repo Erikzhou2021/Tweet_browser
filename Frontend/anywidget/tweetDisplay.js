@@ -46,7 +46,7 @@ export function render({ model, el }) {
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'retweet.svg\" class="icon"> ' + makeNotNull(row.Retweets), "retweets");
             createAndAdd(tweetBox, '<img src= \"' + filePath + 'like.svg\" class="icon"> ' + makeNotNull(row.Favorites), "likes");
             if(model.get("colorCode") > 0){
-                makeOptionSelect(tweetBox, row.stance, i);
+                makeOptionSelect(tweetBox, row.stance, row.Message);
             }
             let message = row.Message;
             let keywords = model.get("keywords");
@@ -79,7 +79,7 @@ export function render({ model, el }) {
         updateFlag = 0;
     }
 
-    function makeOptionSelect(tweetBox, currStanceNum, rowNumber){
+    function makeOptionSelect(tweetBox, currStanceNum, tweetText){
         let container = document.createElement("div");
         container.classList.add("dropdown");
         let button = document.createElement("button");
@@ -122,7 +122,7 @@ export function render({ model, el }) {
                 }
                 tempStance.classList.add("color" + String(currentStance));
                 tempStance.addEventListener("click", (event) => { 
-                    model.set("stanceCorrection", rowNumber);
+                    model.set("stanceCorrection", tweetText);
                     model.set("newStanceCorrectionNum", currentStance);
                     model.save_changes();
                     closeDropdowns();

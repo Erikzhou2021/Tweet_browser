@@ -40,15 +40,20 @@ def stance_annotation(tweets, topic, stances, examples):
         if stances[i] != "":
             currStanceNum = len(formattedStances)
             formattedStances.append(f"{currStanceNum}: {stances[i]}")
-                
-    for i in range(len(examples.keys())):
-        examplePrompt += f"{i}-{examples.keys()[i]}\n"
+    
+    exampleCount = 0
+    for key in examples.keys():
+        examplePrompt += f"{exampleCount}-{key}\n"
+        exampleCount += 1
     examplePrompt += "output:\n{\n"
-    for i in range(len(examples.keys())):
-        examplePrompt += f"tweet-{i}: {examples[examples.keys()[i]]},\n"
+    exampleCount = 0
+    for key in examples.keys():
+        examplePrompt += f'"tweet-{exampleCount}": {examples[key]},\n'
+        exampleCount += 1
     examplePrompt += "}"
     if len(examples) == 0:
         examplePrompt = ""
+    print(examplePrompt)
 
     prompt = [
         {

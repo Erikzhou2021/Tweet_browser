@@ -49,7 +49,7 @@ class TweetDisplay(anywidget.AnyWidget):
     addOnColumnName = traitlets.Unicode("").tag(sync=True)
     colorCode = traitlets.Int(0).tag(sync=True)
     stances = traitlets.List([]).tag(sync=True)
-    stanceCorrection = traitlets.Int(-1).tag(sync=True)
+    stanceCorrection = traitlets.Unicode("").tag(sync=True)
     newStanceCorrectionNum = traitlets.Int(-2).tag(sync=True)
 
 # class DatasetDisplay(anywidget.AnyWidget):

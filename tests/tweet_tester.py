@@ -466,10 +466,10 @@ def test27(s):
 
 def test28(s):
     # s.semanticSearch("Citizenship question", 0.005)
-    s.simpleRandomSample(200)
-    # topic = "Should the census ask if the filler is a U.S. citizen?"
-    topic = "should the citizenship question be included in the census?"
-    examples = {}
+    s.simpleRandomSample(50)
+    topic = "Should you fill out the census?"
+    examples = {"Don't miss your chance to be counted! The US Census only comes once every 10 years. 2020 Census data will help inform how billions of dollars are distributed to states and communities every year! Visit 2020census.gov @uscensusbureau #Census2020 #CompleteCount #NKYcounts https://t.co/BPgocWkKps": 0,
+                "F the #2020Census With the @GOP in complete control over our lives, I don't want to give them any more ammunition. #FuckGerrymanderingGOP #DitchMitch2020 #VoteAmyMcGrath @AmyMcGrathKY": 1}
     # stances = ["Yes, the citizenship question should be included", "No, it should not", "", ""]
     stances = ["yes", "no", "", ""]
     result = s.stanceAnalysis(topic, stances, examples)
