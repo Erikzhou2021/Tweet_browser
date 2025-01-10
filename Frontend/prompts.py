@@ -34,18 +34,20 @@ stanceClient = openai.OpenAI(
 )
 
 def stance_annotation(tweets, topic, stances, examples):
-    useExamples = False
     formattedStances = []
-    examplePrompt = "### Examples: \n"
-    for i in range(len(examples)):
+    examplePrompt = "### Examples: \ninput:\n"
+    for i in range(len(stances)):
         if stances[i] != "":
             currStanceNum = len(formattedStances)
             formattedStances.append(f"{currStanceNum}: {stances[i]}")
-            if examples[i] != "":
-                useExamples = True
-                examplePrompt += f"input: {examples[i]}\n"
-                examplePrompt += f'output: {{"stance": {currStanceNum} }}\n'
-    if useExamples == False:
+                
+    for i in range(len(examples.keys())):
+        examplePrompt += f"{i}-{examples.keys()[i]}\n"
+    examplePrompt += "output:\n{\n"
+    for i in range(len(examples.keys())):
+        examplePrompt += f"tweet-{i}: {examples[examples.keys()[i]]},\n"
+    examplePrompt += "}"
+    if len(examples) == 0:
         examplePrompt = ""
 
     prompt = [

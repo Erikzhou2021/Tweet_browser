@@ -469,7 +469,7 @@ def test28(s):
     s.simpleRandomSample(200)
     # topic = "Should the census ask if the filler is a U.S. citizen?"
     topic = "should the citizenship question be included in the census?"
-    examples = ["", "", "", ""]
+    examples = {}
     # stances = ["Yes, the citizenship question should be included", "No, it should not", "", ""]
     stances = ["yes", "no", "", ""]
     result = s.stanceAnalysis(topic, stances, examples)
