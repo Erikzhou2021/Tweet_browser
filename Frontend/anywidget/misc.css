@@ -221,6 +221,7 @@ p{
     background: white !important;
     width: 100%;
     z-index: 99999999;
+    justify-content: right !important;
 }
 /* .filter-bar-label{
     font-size: 14px !important;

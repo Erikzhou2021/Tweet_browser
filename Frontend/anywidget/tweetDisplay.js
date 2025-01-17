@@ -1,8 +1,8 @@
 export function render({ model, el }) {   
     // let height = model.get("height");
     var rect = el.getBoundingClientRect();
-    let height = window.innerHeight - rect.top;
-    el.setAttribute("style", "max-height: " + height); 
+    // let height = window.innerHeight - rect.top;
+    // el.setAttribute("style", "max-height: " + height); 
     let filePath = model.get("filePath");    
     el.classList.add("tweet-display");
     model.on("change:value", displayVals);
