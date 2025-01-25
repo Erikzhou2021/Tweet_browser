@@ -89,7 +89,7 @@ export function render({ model, el }) {
         titleContainer.style.backgroundColor = element.value;
         let oldVals = model.get("colors");
         const root = document.documentElement;
-        root.style.setProperty('--stanceColor' + num, element.value);
+        root.style.setProperty('--stance-color' + num, element.value);
         oldVals[parseInt(num)] = element.value;
         model.set("colors", oldVals);
         model.save_changes();

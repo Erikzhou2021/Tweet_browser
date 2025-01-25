@@ -17,14 +17,42 @@
     gap: 4px;
 }
 
-.stance-corrected div{
-    background-color: #e4e8f8 !important;
+.stance-corrected0 div, .stance-corrected0 button{
+    background-color: transparent !important;
     border: none;
 }
-
-.stance-corrected button{
-    background-color: #e4e8f8 !important;
+.stance-corrected0 span{
+    background-color: rgb(from var(--stance-color0) r g b / 0.2) !important;
 }
+.stance-corrected1 div, .stance-corrected1 button{
+    background-color: transparent !important;
+    border: none;
+}
+.stance-corrected1 span{
+    background-color: rgb(from var(--stance-color1) r g b / 0.2) !important;
+}
+.stance-corrected2 div, .stance-corrected2 button{
+    background-color: transparent !important;
+    border: none;
+}
+.stance-corrected2 span{
+    background-color: rgb(from var(--stance-color2) r g b / 0.2) !important;
+}
+.stance-corrected3 div, .stance-corrected3 button{
+    background-color: transparent !important;
+    border: none;
+}
+.stance-corrected3 span{
+    background-color: rgb(from var(--stance-color3) r g b / 0.2) !important;
+}
+.stance-corrected-1 div, .stance-corrected-1 button{
+    background-color: transparent !important;
+    border: none;
+}
+.stance-corrected-1 span{
+    background-color: rgb(from var(--stance-color-1) r g b / 0.2) !important;
+}
+
 
 .tweet-data{
     border-radius: 8px;

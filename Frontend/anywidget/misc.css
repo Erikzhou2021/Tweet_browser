@@ -26,7 +26,7 @@ body{
     align-self: flex-end;
 }
 
-* {
+:root {
     --switch-height: 16px;
     --switch-padding: 2px;
     --switch-width: calc((var(--switch-height) * 2) - var(--switch-padding));
@@ -218,7 +218,7 @@ p{
     justify-content: space-around;
 }
 .stance-pop-up{
-    background: white !important;
+    background: #F5F5F5 !important;
     width: 100%;
     z-index: 99999999;
     justify-content: right !important;

@@ -32,7 +32,10 @@ export function render({ model, el }) {
         }
         for(let i = 0; i < value.length; i++){
             let row = JSON.parse(value[i]);
-            let tweetContainer = createAndAdd(el, "", "tweet-container");
+            let  dummy = createAndAdd(el, "", "tweet-container");
+            let tweetContainer = document.createElement("span");
+            dummy.appendChild(tweetContainer);
+            tweetContainer.classList.add("tweet-container");
             if(model.get("colorCode") > 0){
                 let colorBox = createAndAdd(tweetContainer, "", "color-code");
                 colorBox.classList.add("color" + row.stance);
@@ -126,7 +129,11 @@ export function render({ model, el }) {
                     model.set("newStanceCorrectionNum", currentStance);
                     model.save_changes();
                     closeDropdowns();
-                    tempStance.parentElement.parentElement.parentElement.parentElement.classList.add("stance-corrected");
+                    var dummyEl = tempStance.parentElement.parentElement.parentElement.parentElement.parentElement;
+                    for(var i = -1; i < 4; i++){
+                        dummyEl.classList.remove("stance-corrected"+i);
+                    }
+                    dummyEl.classList.add("stance-corrected"+currentStance);
                     // alert(tempStance.parentElement.parentElement.parentElement.parentElement.matches('.tweet-container'));
                 });
                 firstLayer.appendChild(tempStance);
