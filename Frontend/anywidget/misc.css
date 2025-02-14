@@ -17,6 +17,42 @@ body{
 .widget-html-content {
     line-height: inherit !important;
 }
+.widget-toggle-buttons .widget-toggle-button{
+    margin: 0 !important;
+    background-color: white !important;
+    padding: 16px !important;
+    height: auto;
+}
+.jupyter-button.mod-active {
+    font-weight: bold !important;
+}
+.mod-active:after{
+    content: "";
+    position: relative;
+    display: block;
+    bottom: -16px;
+    height: 2px;
+    width: 100%;
+    border-bottom: 2px solid black;
+}
+.lm-Widget.jupyter-widget-TabPanel.jupyter-widgets.widget-container.jupyter-widget-tab.widget-tab li{
+    padding: 16px 24px;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    margin-right: 8px;
+    border-radius: 8px 8px 0px 0px;
+    background-color: #DEDEDE;
+}
+.lm-TabBar-tab.lm-mod-current {
+    background-color: #F5F5F5 !important;
+}
+.lm-TabBar-tab.lm-mod-current::before{
+    background-color: black !important;
+    top: 100% !important;
+    left: 16px !important;
+    width: calc(100% - 32px) !important;
+}
 
 .title{
     height: 48px;
@@ -140,24 +176,6 @@ p{
     display: none;
 }
 
-.lm-Widget.jupyter-widget-TabPanel.jupyter-widgets.widget-container.jupyter-widget-tab.widget-tab li{
-    padding: 16px 24px;
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
-    margin-right: 8px;
-    border-radius: 8px 8px 0px 0px;
-    background-color: #DEDEDE;
-}
-.lm-TabBar-tab.lm-mod-current {
-    background-color: #F5F5F5 !important;
-}
-.lm-TabBar-tab.lm-mod-current::before{
-    background-color: black !important;
-    top: 100% !important;
-    left: 16px !important;
-    width: calc(100% - 32px) !important;
-}
 .widget-tab-contents {
     background-color: #F5F5F5 !important;
     height: calc(100vh - 260px);
@@ -420,4 +438,17 @@ p{
 
 .time-series{
     gap: 16px;
+    height: 100%;
+}
+
+.time-series-toggle{
+    margin-bottom: 8px;
+}
+
+.graph-checkboxes div{
+    width: fit-content;
+    padding: 0px 4px 0px 4px;
+}
+.graph-checkboxes .widget-label{
+    width: fit-content;
 }

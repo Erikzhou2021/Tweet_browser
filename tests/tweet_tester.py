@@ -495,10 +495,11 @@ def allTests(s1):
         func = getattr(current_module, "test{}".format(i))
         func(s) 
 
+
 if __name__=='__main__':
     #s = createSession("allCensus_sample.csv")
-
-    s = createSession("allCensus_sample.csv", False, True)
+    
+    # s = createSession("allCensus_sample.csv", False, True)
 
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
@@ -511,3 +512,14 @@ if __name__=='__main__':
     # begin = time.perf_counter()
     # test99(s)
     # print("second time", time.perf_counter() - begin)
+
+
+    """ Stance analysis time measurements:
+
+    50 tweets: 5.67 sec average
+    100 tweets: 11.44 sec average
+    200 tweets: 22.71 sec average
+    500 tweets: 57.44 
+    1000 tweets: 117.19
+
+    """
