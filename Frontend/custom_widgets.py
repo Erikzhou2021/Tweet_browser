@@ -88,6 +88,7 @@ class SampleSelector(anywidget.AnyWidget):
     filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
     value = traitlets.Int(50).tag(sync=True)
     total = traitlets.Int(0).tag(sync=True)
+    options = traitlets.List([50, 100, 150, 200]).tag(sync=True)
     label = traitlets.Unicode("").tag(sync=True)
     changeSignal = traitlets.Int(0).tag(sync=True)
 
@@ -124,6 +125,9 @@ class LoadingPage(anywidget.AnyWidget):
     _css = "anywidget/loadingScreen.css"
     filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
     text = traitlets.Unicode().tag(sync=True)
+    processRate = traitlets.Int(500).tag(sync=True)
+    processInitial = traitlets.Int(-1).tag(sync=True)
+
 
 class SemanticSearch(anywidget.AnyWidget):
     _esm = "anywidget/semanticSearch.js"

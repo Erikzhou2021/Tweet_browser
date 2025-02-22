@@ -533,13 +533,12 @@ class Session:
         self.allData.loc[df.index, ["SimilarityScore"]] = df['cos_score']
         self.makeOperation(df.index, df.shape[0], "semanticSearch", topPercent)
     
-    def stanceAnalysis(self, topic, stances, examples, inputSet = None):
+    def stanceAnalysis(self, topic, stances, examples, updateAllData = False, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
-        df = self.allData.iloc[inputSet.indices].reset_index(drop=True)
+        df = self.allData.iloc[inputSet.indices]
         resultDict = {}
         results = []
-        # tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
         i = 0
         while i < len(inputSet.indices):
             start = i
@@ -549,21 +548,15 @@ class Session:
                 tweets += f"{i}-[{tweet}]\n"
                 i += 1
             batchResult = stance_annotation(tweets, topic, stances, examples)
-            print(batchResult)
             batchResult = batchResult[batchResult.find("{"): ]
             batchResult = json.loads(batchResult)
             # resultDict = {**resultDict, **(json.loads(batchResult))}
             for j in range(start, i):
                 results.append(int(batchResult["tweet-" + str(j)]))
         df["stance"] = results
-        # results = [resultDict[tweetNum] for tweetNum in range(len(inputSet.indices))]
-        
-        # results = stance_annotation(df['Message'], topic, stances, examples)
-        # assert(len(results) == len(df))
-        # stances = []
-        # for i in range(len(results)):
-        #     stances.append(json.loads(results[i])["stance"])
-        # df["stance"] = stances
+        if updateAllData:
+            self.allData["stance"] = None
+            self.allData.update(df)
         return df
 
 def createSession(fileName: str, logSearches = False) -> Session:

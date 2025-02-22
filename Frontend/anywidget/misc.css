@@ -1,5 +1,6 @@
 body{
     font-family: 'Roboto';
+    /* aspect-ratio: 16/9; */
 }
 .jp-Notebook{
     padding: 0 !important;
@@ -30,7 +31,7 @@ body{
     content: "";
     position: relative;
     display: block;
-    bottom: -16px;
+    bottom: -14px;
     height: 2px;
     width: 100%;
     border-bottom: 2px solid black;
