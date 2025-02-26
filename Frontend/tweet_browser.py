@@ -22,6 +22,7 @@ import textwrap # hover text on dimension reduction/clustering plot
 import ai_summary
 import torch
 from openai import OpenAI
+import asyncio
 from prompts import *
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer
@@ -533,7 +534,7 @@ class Session:
         self.allData.loc[df.index, ["SimilarityScore"]] = df['cos_score']
         self.makeOperation(df.index, df.shape[0], "semanticSearch", topPercent)
     
-    def stanceAnalysis(self, topic, stances, examples, updateAllData = False, inputSet = None):
+    async def stanceAnalysis(self, topic, stances, examples, updateAllData = False, inputSet = None):
         if inputSet == None or type(inputSet) != Subset:
             inputSet = self.currentSet
         df = self.allData.iloc[inputSet.indices]
@@ -547,7 +548,7 @@ class Session:
                 tweet = self.allData.iloc[inputSet.indices[i]]['Message']
                 tweets += f"{i}-[{tweet}]\n"
                 i += 1
-            batchResult = stance_annotation(tweets, topic, stances, examples)
+            batchResult = await stance_annotation(tweets, topic, stances, examples)
             batchResult = batchResult[batchResult.find("{"): ]
             batchResult = json.loads(batchResult)
             # resultDict = {**resultDict, **(json.loads(batchResult))}

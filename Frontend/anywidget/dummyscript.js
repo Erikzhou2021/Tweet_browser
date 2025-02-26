@@ -71,7 +71,15 @@ export function render({ model, el }) {
         let response = confirm("Apply filters?\nYou have made changes to the filter settings, but they have not been applied yet.");
         let responseCode = 0;
         if(response){
-            responseCode = 1;
+            if(isLoading){
+                let comfirmation = confirm("Apply Refine Results modification?\nStance Annotation is running in the background. Modifying the Refine Results selections will end Stance Annotation. If you want to continue Refining Results, click OK.");
+                if(comfirmation){
+                    responseCode = 1;
+                }
+            }
+            else{
+                responseCode = 1;
+            }
         }
         model.set("userResponse", responseCode);
         model.set("changeSignal", model.get("changeSignal") + 1);
@@ -84,4 +92,22 @@ export function render({ model, el }) {
     label.appendChild(leftText);
     label.appendChild(uploadIcon);
     parent.appendChild(label);
+
+    let isLoading = false;
+    function updateLoading(){
+        if(model.get("activeStanceAnalysis") == 1){
+            isLoading = true;
+        }
+        else{
+            isLoading = false;
+        }
+    }
+    model.on("change:activeStanceAnalysis", updateLoading);
+    window.addEventListener("beforeunload", (event) => {
+        event.stopImmediatePropagation();
+        if (isLoading) {
+            event.preventDefault();
+            event.returnValue = "";
+        }
+    });
 }

@@ -26,6 +26,8 @@ class DummyElement(anywidget.AnyWidget):
     calendarStart = traitlets.Unicode("").tag(sync=True)
     calendarEnd = traitlets.Unicode("").tag(sync=True)
 
+    activeStanceAnalysis = traitlets.Int(0).tag(sync=True)
+
 class SearchBar(anywidget.AnyWidget):
     _esm = "anywidget/searchBar.js"
     _css = "anywidget/searchBar.css"

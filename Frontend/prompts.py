@@ -1,5 +1,7 @@
 from tqdm import tqdm
 import openai
+from openai import AsyncOpenAI
+import asyncio
 
 AI_SUMMARY_PROMPT = """"I would like you to help me by summarizing a group of tweets, delimited by triple backticks, and each tweet is labeled by a number in a given format: number-[tweet]. Give me a comprehensive summary in a concise paragraph and as you generate each sentence, provide the identifying number of tweets on which that sentence is based:"""
 
@@ -28,12 +30,12 @@ def ai_summarize(tweets):
     return result
 
 
-stanceClient = openai.OpenAI(
+stanceClient = AsyncOpenAI(
     base_url="http://localhost:8001/v1",
     api_key="token-census",
 )
 
-def stance_annotation(tweets, topic, stances, examples):
+async def stance_annotation(tweets, topic, stances, examples):
     formattedStances = []
     examplePrompt = "### Examples: \ninput:\n"
     for i in range(len(stances)):
@@ -53,7 +55,7 @@ def stance_annotation(tweets, topic, stances, examples):
     examplePrompt += "}"
     if len(examples) == 0:
         examplePrompt = ""
-    print(examplePrompt)
+    # print(examplePrompt)
 
     prompt = [
         {
@@ -77,7 +79,7 @@ def stance_annotation(tweets, topic, stances, examples):
     """,
         },
     ]
-    completion = stanceClient.chat.completions.create(
+    completion = await stanceClient.chat.completions.create(
         model="meta-llama/Meta-Llama-3-8B-Instruct",
         messages=prompt,
     )

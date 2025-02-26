@@ -891,12 +891,12 @@ c.NotebookApp.token = ''
 #          Values of 0 or lower disable culling. Very short timeouts may result in kernels being culled
 #          for users with poor network connections.
 #  Default: 0
-# c.MappingKernelManager.cull_idle_timeout = 0
+c.MappingKernelManager.cull_idle_timeout = 5
 
 ## The interval (in seconds) on which to check for idle kernels exceeding the
 #  cull timeout value.
 #  Default: 300
-# c.MappingKernelManager.cull_interval = 300
+c.MappingKernelManager.cull_interval = 1
 
 ## The name of the default kernel to start
 #  See also: MultiKernelManager.default_kernel_name

@@ -20,6 +20,7 @@ from fastlexrank import FastLexRankSummarizer
 
 import pickle
 import datetime
+import asyncio
 
 import sys
 # sys.path.insert(0, '/mnt/c/Users/erikz/Documents/Tweet_browser/Tweet_browser/src/tweet_browser_test')
@@ -464,7 +465,7 @@ def test27(s):
     subset.size = 30
     s.semanticSearch("pandemic", 0.5, subset)
 
-def test28(s):
+async def test28(s):
     # s.semanticSearch("Citizenship question", 0.005)
     s.simpleRandomSample(50)
     topic = "Should you fill out the census?"
@@ -472,7 +473,7 @@ def test28(s):
                 "F the #2020Census With the @GOP in complete control over our lives, I don't want to give them any more ammunition. #FuckGerrymanderingGOP #DitchMitch2020 #VoteAmyMcGrath @AmyMcGrathKY": 1}
     # stances = ["Yes, the citizenship question should be included", "No, it should not", "", ""]
     stances = ["yes", "no", "", ""]
-    result = s.stanceAnalysis(topic, stances, examples)
+    result = await s.stanceAnalysis(topic, stances, examples)
     print(result["stance"])
 
 def test99(s):
@@ -497,29 +498,20 @@ def allTests(s1):
 
 
 if __name__=='__main__':
-    #s = createSession("allCensus_sample.csv")
+    # s = createSession("allCensus_sample.csv")
     
-    # s = createSession("allCensus_sample.csv", False, True)
+    s = createSession("allCensus_sample.csv", False, True)
 
     #with open(fileName, "rb") as input:
         #s = pickle.load(input) 
     # allTests(s)
 
-    begin = time.perf_counter()
-    test28(s)
+    # begin = time.perf_counter()
+    asyncio.run(test28(s))
     # allTests(s)
-    print("total time", time.perf_counter() - begin)
+    # print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()
     # test99(s)
     # print("second time", time.perf_counter() - begin)
 
 
-    """ Stance analysis time measurements:
-
-    50 tweets: 5.67 sec average
-    100 tweets: 11.44 sec average
-    200 tweets: 22.71 sec average
-    500 tweets: 57.44 
-    1000 tweets: 117.19
-
-    """
