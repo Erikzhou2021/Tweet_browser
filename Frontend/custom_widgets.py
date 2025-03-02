@@ -22,6 +22,10 @@ class DummyElement(anywidget.AnyWidget):
     alertTrigger = traitlets.Int(0).tag(sync=True)
     userResponse = traitlets.Int(2).tag(sync=True)
     changeSignal = traitlets.Int(0).tag(sync=True)
+    searchTrigger = traitlets.Int(0).tag(sync=True)
+    filterTrigger = traitlets.Int(0).tag(sync=True)
+    searchChangeSignal = traitlets.Int(0).tag(sync=True)
+    filterChangeSignal = traitlets.Int(0).tag(sync=True)
 
     calendarStart = traitlets.Unicode("").tag(sync=True)
     calendarEnd = traitlets.Unicode("").tag(sync=True)

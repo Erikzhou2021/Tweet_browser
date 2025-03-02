@@ -21,10 +21,13 @@ RUN pip install --upgrade "pyzmq<25" "jupyter_client<8"
 RUN pip install --upgrade "voila<0.5"
 
 WORKDIR /home/jovyan/.jupyter
-COPY jupyter_notebook_config.py jupyter_notebook_config.py 
+COPY docker/jupyter_notebook_config.py jupyter_notebook_config.py 
 
 WORKDIR /opt/conda/lib/python3.11/site-packages/voila
-COPY app.py app.py
+COPY docker/app.py app.py
+
+WORKDIR /opt/conda/share/jupyter/voila/templates/base/static
+COPY docker/main.js main.js
 
 WORKDIR /home/jovyan
 COPY tweet_browser.ipynb tweet_browser.ipynb
