@@ -12,9 +12,6 @@ from enum import Enum
 import string
 import scipy
 import sklearn
-import nltk
-#nltk.download('stopwords')
-#from nltk.corpus import stopwords
 
 from fastlexrank import FastLexRankSummarizer
 
@@ -150,6 +147,8 @@ def test2(s):
     #s.next()
 
 def test3(s):
+    s.searchKeyword(["test"], True)
+    s.back()
     s.simpleRandomSample(170)
     print(s.currentSet.size)
     tempSet = s.currentSet
@@ -509,7 +508,7 @@ if __name__=='__main__':
         #s = pickle.load(input) 
     # allTests(s)
 
-    test1(s)
+    test3(s)
     # begin = time.perf_counter()
     # asyncio.run(test28(s))
     # allTests(s)

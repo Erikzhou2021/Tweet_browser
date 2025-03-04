@@ -41,3 +41,23 @@ class FilterModule():
         self.toDate.observe(self.displayPopUp, names=["value"])
         self.mainFilters = widgets.VBox([self.filterBy, self.dateBox, self.retweets, self.geography, self.userName, self.weightBy]).add_class("main-filters")
         self.filterBox = widgets.VBox([self.mainFilters]).add_class("filter-box")
+
+class AdvancedPage():
+    def __init__(self):
+        self.searchButton = widgets.Button(description='Search', icon="search").add_class("generic-button").add_class("search-button")
+        self.hiddenButton = widgets.Button()
+        self.hiddenButton.add_class("hidden-button") # work around for syncing search when the user still has input in the search bars
+        
+        self.clearButton = widgets.Button(description='Clear All').add_class("clear-button")
+        
+        self.bottomBar = widgets.HBox([self.clearButton, self.searchButton, self.hiddenButton], layout = widgets.Layout(justify_content = "flex-end"))
+        self.keyWordSearch = widgets.HTML(value = "Exact Match", layout = widgets.Layout(margin = "0px 0px -8px 0px")).add_class("heading5").add_class("medium")
+        self.mustInclude = SearchBar(header = "Must include all", header2="(AND)", placeholder='e.g. “civil null” means each post in the result must contain the word “civil” and “null”')
+        self.containOneOf = SearchBar(header = "Must include one of", header2="(OR)", placeholder='e.g. “census penny” means each post in the result must contain either “census” or “penny” or both')
+        self.exclude = SearchBar(header = "Must not include", header2="(NOT)", placeholder='e.g. “toxic ban” means none of the posts in the result contains the word “toxic” and “ban”')
+        self.semanticSearch = SemanticSearch(placeholder = "e.g. misinformation and miscommunication")
+        self.searches = widgets.VBox([widgets.HTML(value = "<b>Search Criteria</b>"), self.semanticSearch, self.keyWordSearch, self.mustInclude, self.containOneOf, self.exclude])
+        self.searches.add_class("search-box")
+        self.closeButton = widgets.Button(description = 'X')
+        self.closeButton.add_class("close-button")
+        self.advancedPage = widgets.VBox([self.closeButton, self.searches, self.bottomBar]).add_class("advanced-page")
