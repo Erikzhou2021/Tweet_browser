@@ -124,6 +124,7 @@ class Session:
         self.embeddings = embeddings
         self.allData = data
         self.allData['CreatedTime'] = pd.to_datetime(self.allData['CreatedTime']).dt.floor('D')
+        self.allData['State'] = self.allData['State'].str.lower()
         self.allData['Message'] = self.allData['Message'].astype("string")
         self.allData['SimilarityScore'] = np.nan
         # self.allData['State'] = self.allData['State'].str.lower()

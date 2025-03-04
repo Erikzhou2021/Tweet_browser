@@ -104,6 +104,9 @@ def createSession(fileName: str, logSearches = False, useEmbeddings = False) -> 
     return s
 
 def test1(s):
+    s.filterBy("State", "New York")
+    print(s.currentSet.size)
+    s.back()
     s.advancedSearch("'covid' and ('hospital' or 'vaccine')")
     #s.printCurrSubset()
     print(s.currentSet.size)
@@ -506,8 +509,9 @@ if __name__=='__main__':
         #s = pickle.load(input) 
     # allTests(s)
 
+    test1(s)
     # begin = time.perf_counter()
-    asyncio.run(test28(s))
+    # asyncio.run(test28(s))
     # allTests(s)
     # print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()
