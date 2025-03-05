@@ -98,3 +98,34 @@ class AISummaryModule():
         self.summaryContent = widgets.HBox([self.leftBar, widgets.VBox([widgets.HTML("Contributing Posts").add_class("heading4").add_class("medium"), self.summaryDisplay]).add_class("right-bar")])
         self.summaryContent.add_class("summary-tab")
         self.summaryTab = widgets.VBox([self.title, self.summaryContent, self.newSummaryButton], layout=widgets.Layout(height="100%"))
+
+
+class StanceAnalysisModule():
+    def __init__(self):
+        self.stanceAnalysis = StanceAnalysis()
+        self.modifyStanceButton = widgets.Button(description="< Modify Stance Annotation", layout=widgets.Layout(margin="0 auto 0 0", flex="0 0")).add_class("clear-button")
+        
+        self.sampleSelector = SampleSelector(label="New Stance Analysis >", options=[50, 100, 200, 500, 1000])
+        self.loadingScreen = LoadingPage(text="Applying Stance Annotation")
+        self.title = widgets.HTML().add_class("display-count")
+        self.stance0CheckBox = widgets.Checkbox(value=True, indent=False).add_class("stance-checkbox0")
+        self.stance1CheckBox = widgets.Checkbox(value=True, indent=False).add_class("stance-checkbox1")
+        self.stance2CheckBox = widgets.Checkbox(value=True, indent=False).add_class("stance-checkbox2")
+        self.stance3CheckBox = widgets.Checkbox(value=True, indent=False).add_class("stance-checkbox3")
+        self.defaultStanceCheckBox = widgets.Checkbox(value=True, indent=False, description="System Default - Irrelevant").add_class("stance-checkbox-1")
+        self.checkboxes = [self.stance0CheckBox, self.stance1CheckBox, self.stance2CheckBox, self.stance3CheckBox, self.defaultStanceCheckBox]
+        
+        self.checkboxBar = widgets.HBox(self.checkboxes, layout=widgets.Layout(flex="0 0"))
+        self.topBar = widgets.HBox([self.title, self.sampleSelector], layout=widgets.Layout(flex="0 0", justify_content="space-between"))
+        self.sortBar = SortBar(columns=["None", "Date", "Geography", "Retweets", "Username", "Stance"], columnNames=["None", "CreatedTime", "State", "Retweets", "SenderScreenName", "stance"])
+        
+        self.tweetDisplay = TweetDisplay(displayAddOn=0, colorCode=1)
+        
+        self.stanceCorrections = []
+        self.stanceCorrectionNums = []
+        self.cancelModification = widgets.Button(description="Cancel").add_class("clear-button")
+        
+        self.retrainButton = widgets.Button(description="Update Classification").add_class("generic-button")
+        
+        self.popUp = widgets.HBox([self.cancelModification, self.retrainButton]).add_class("pop-up-options").add_class("stance-pop-up")
+        self.stanceAnalysisResults = widgets.VBox([self.modifyStanceButton, self.topBar, self.checkboxBar, self.sortBar, self.tweetDisplay]).add_class("stance-vbox")
