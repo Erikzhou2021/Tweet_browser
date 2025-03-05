@@ -61,3 +61,26 @@ class AdvancedPage():
         self.closeButton = widgets.Button(description = 'X')
         self.closeButton.add_class("close-button")
         self.advancedPage = widgets.VBox([self.closeButton, self.searches, self.bottomBar]).add_class("advanced-page")
+
+class RandomSampleTab():
+    def toggleSimilarityScore(self, change=None):
+        self.tweetDisplay.displayAddOn = self.displaySimilarityScore.value
+        if self.displaySimilarityScore.hidden > 0:
+            self.tweetDisplay.displayAddOn = 0
+
+    def __init__(self):
+        self.tweetDisplay = TweetDisplay(height = "60vh", displayAddOn = 0, addOnColumnName = "SimilarityScore")
+        self.sortBar = SortBar()
+        self.displaySimilarityScore = ToggleSwitch(label = "Relevance", hidden=1, value=0).add_class("tweet-display-add-on")
+        self.displaySimilarityScore.observe(self.toggleSimilarityScore, ["value"])
+
+        # optionsBar = widgets.Box(children = [self.sortBar])
+        # optionsBar.layout = widgets.Layout(align_items = "center", justify_content = "space-between", width = "100%")
+        # self.searchedKeywords = ParameterDisplay(firstWord = "Searched", secondWord = "Keywords", headers = ["Must Include", "Contain one of", "Exclude"], notFound = 'To enter keywords, click "Search & Filter"')
+        # self.appliedFilters = ParameterDisplay(firstWord = "Applied", secondWord = "Filters", headers = ["calendar.svg", "geography.svg", "username.svg", "repost.svg", "weight.svg"], notFound = 'To enter filters, click "Search & Filter"')
+
+        self.sampleTitle = widgets.HTML().add_class("display-count")
+        self.sampleSelector = SampleSelector(label="Generate New Sample >")
+        self.sampleTopBar = widgets.HBox([self.sampleTitle, self.sampleSelector], layout=widgets.Layout(justify_content="space-between", flex="0 0"))
+        self.sortingBar = widgets.HBox([self.sortBar, self.displaySimilarityScore], layout=widgets.Layout(flex="0 0"))
+        self.randomSelection = widgets.VBox([self.sampleTopBar, self.sortingBar, self.tweetDisplay], layout=widgets.Layout(max_height="100%"))

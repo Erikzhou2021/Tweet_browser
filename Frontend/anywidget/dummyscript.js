@@ -107,8 +107,6 @@ export function render({ model, el }) {
         let prompt = "Apply Refine Results modification?\nStance Annotation is running in the background. Modifying the Refine Results selections will end Stance Annotation. If you want to continue Refining Results, click OK.";
         doComfirmation(prompt, "filterChangeSignal");
     }
-    // model.on("change:searchTrigger", window.confirmSearch);
-    // model.on("change:filterTrigger", window.confirmFilter);
 
 
     label.appendChild(fileIcon);
