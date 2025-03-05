@@ -97,7 +97,7 @@ body{
     max-height: 700px;
     gap: 16px;
     inset: 0px;
-    position: fixed;
+    /* position: fixed; */
     margin: auto;
 }
 

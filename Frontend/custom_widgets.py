@@ -134,7 +134,6 @@ class LoadingPage(anywidget.AnyWidget):
     processRate = traitlets.Int(500).tag(sync=True)
     processInitial = traitlets.Int(-1).tag(sync=True)
 
-
 class SemanticSearch(anywidget.AnyWidget):
     _esm = "anywidget/semanticSearch.js"
     _css = "anywidget/semanticSearch.css"
