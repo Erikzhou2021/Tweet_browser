@@ -84,3 +84,17 @@ class RandomSampleTab():
         self.sampleTopBar = widgets.HBox([self.sampleTitle, self.sampleSelector], layout=widgets.Layout(justify_content="space-between", flex="0 0"))
         self.sortingBar = widgets.HBox([self.sortBar, self.displaySimilarityScore], layout=widgets.Layout(flex="0 0"))
         self.randomSelection = widgets.VBox([self.sampleTopBar, self.sortingBar, self.tweetDisplay], layout=widgets.Layout(max_height="100%"))
+
+    
+class AISummaryModule():
+    def __init__(self):
+        self.loadingPage = LoadingPage(text="Generating AI Summary")
+        self.aiSummary = AiSummary()
+        self.title = widgets.HTML().add_class("display-count")
+        self.pageSelect = PageSelect()
+        self.summaryDisplay = TweetDisplay(height="60vh")
+        self.leftBar = widgets.VBox([widgets.HTML("AI Generated Summary").add_class("heading4").add_class("medium"), self.aiSummary, self.pageSelect]).add_class("left-bar")
+        self.newSummaryButton = widgets.Button(description="Generate Another Summary").add_class("generic-button").add_class("summary-button")
+        self.summaryContent = widgets.HBox([self.leftBar, widgets.VBox([widgets.HTML("Contributing Posts").add_class("heading4").add_class("medium"), self.summaryDisplay]).add_class("right-bar")])
+        self.summaryContent.add_class("summary-tab")
+        self.summaryTab = widgets.VBox([self.title, self.summaryContent, self.newSummaryButton], layout=widgets.Layout(height="100%"))
