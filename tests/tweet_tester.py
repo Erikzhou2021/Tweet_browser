@@ -12,9 +12,6 @@ from enum import Enum
 import string
 import scipy
 import sklearn
-import nltk
-#nltk.download('stopwords')
-#from nltk.corpus import stopwords
 
 from fastlexrank import FastLexRankSummarizer
 
@@ -104,6 +101,9 @@ def createSession(fileName: str, logSearches = False, useEmbeddings = False) -> 
     return s
 
 def test1(s):
+    s.filterBy("State", "New York")
+    print(s.currentSet.size)
+    s.back()
     s.advancedSearch("'covid' and ('hospital' or 'vaccine')")
     #s.printCurrSubset()
     print(s.currentSet.size)
@@ -147,6 +147,8 @@ def test2(s):
     #s.next()
 
 def test3(s):
+    s.searchKeyword(["test"], True)
+    s.back()
     s.simpleRandomSample(170)
     print(s.currentSet.size)
     tempSet = s.currentSet
@@ -506,8 +508,9 @@ if __name__=='__main__':
         #s = pickle.load(input) 
     # allTests(s)
 
+    test3(s)
     # begin = time.perf_counter()
-    asyncio.run(test28(s))
+    # asyncio.run(test28(s))
     # allTests(s)
     # print("total time", time.perf_counter() - begin)
     # begin = time.perf_counter()

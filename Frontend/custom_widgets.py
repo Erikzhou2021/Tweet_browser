@@ -22,8 +22,6 @@ class DummyElement(anywidget.AnyWidget):
     alertTrigger = traitlets.Int(0).tag(sync=True)
     userResponse = traitlets.Int(2).tag(sync=True)
     changeSignal = traitlets.Int(0).tag(sync=True)
-    searchTrigger = traitlets.Int(0).tag(sync=True)
-    filterTrigger = traitlets.Int(0).tag(sync=True)
     searchChangeSignal = traitlets.Int(0).tag(sync=True)
     filterChangeSignal = traitlets.Int(0).tag(sync=True)
 
@@ -133,7 +131,6 @@ class LoadingPage(anywidget.AnyWidget):
     text = traitlets.Unicode().tag(sync=True)
     processRate = traitlets.Int(500).tag(sync=True)
     processInitial = traitlets.Int(-1).tag(sync=True)
-
 
 class SemanticSearch(anywidget.AnyWidget):
     _esm = "anywidget/semanticSearch.js"

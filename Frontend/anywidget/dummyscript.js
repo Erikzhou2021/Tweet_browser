@@ -99,16 +99,14 @@ export function render({ model, el }) {
         model.set(varName, model.get(varName) + 1);
         model.save_changes();
     }
-    function comfirmSearch(){
+    window.confirmSearch = function(){
         let prompt = "Attempt to modify Search Criteria?\nStance Annotation is running in the background. Modifying Search Criteria will end Stance Annotation. If you want to continue modifying Search Criteria, click OK.";
         doComfirmation(prompt, "searchChangeSignal");
     }
-    function confirmFilter(){
+    window.confirmFilter = function(){
         let prompt = "Apply Refine Results modification?\nStance Annotation is running in the background. Modifying the Refine Results selections will end Stance Annotation. If you want to continue Refining Results, click OK.";
         doComfirmation(prompt, "filterChangeSignal");
     }
-    model.on("change:searchTrigger", comfirmSearch);
-    model.on("change:filterTrigger", confirmFilter);
 
 
     label.appendChild(fileIcon);
