@@ -103,6 +103,7 @@ class AISummaryModule():
 class StanceAnalysisModule():
     def __init__(self):
         self.stanceAnalysis = StanceAnalysis()
+        self.lastSearchedStances = []
         self.modifyStanceButton = widgets.Button(description="< Modify Stance Annotation", layout=widgets.Layout(margin="0 auto 0 0", flex="0 0")).add_class("clear-button")
         
         self.sampleSelector = SampleSelector(label="New Stance Analysis >", options=[50, 100, 200, 500, 1000])
