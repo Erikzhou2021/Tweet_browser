@@ -453,3 +453,19 @@ p{
 .graph-checkboxes .widget-label{
     width: fit-content;
 }
+
+.time-checkbox0 span{
+    padding: 4px;
+    align-self: center;
+    background: #636efa;
+}
+.time-checkbox1 span{
+    padding: 4px;
+    align-self: center;
+    background: #ef553b;
+}
+.time-checkbox2 span{
+    padding: 4px;
+    align-self: center;
+    background: #00cc96;
+}

@@ -130,3 +130,17 @@ class StanceAnalysisModule():
         
         self.popUp = widgets.HBox([self.cancelModification, self.retrainButton]).add_class("pop-up-options").add_class("stance-pop-up")
         self.stanceAnalysisResults = widgets.VBox([self.modifyStanceButton, self.topBar, self.checkboxBar, self.sortBar, self.tweetDisplay]).add_class("stance-vbox")
+
+
+class TimeSeriesModule():
+    def __init__(self):
+        self.timeSeriesMode = widgets.ToggleButtons(options = ["Overview", "Gender", "Stance"]).add_class("time-series-toggle")
+        self.genderCheckboxes = [widgets.Checkbox(value=True, description = "MALE"), widgets.Checkbox(value=True, description = "FEMALE"), widgets.Checkbox(value=True, description = "OTHER")]
+
+        self.stanceCheckboxes = []
+
+        self.graphTitle = widgets.HTML("Number of posts across time").add_class("heading4").add_class("medium")
+        self.graphSubtitle = widgets.HTML("Total number of posts: ").add_class("body1")
+        self.timeSeries = widgets.VBox([self.timeSeriesMode, self.graphTitle, self.graphSubtitle]).add_class("time-series")
+        self.stanceNote = widgets.HTML("No stance information available.\nPlease use the 'Stance Analysis' tab to generate a stance analysis.")
+

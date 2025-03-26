@@ -35,6 +35,7 @@ COPY allCensus_sample.csv allCensus_sample.csv
 COPY allCensus_sample_embeddings.csv allCensus_sample_embeddings.csv
 COPY tweet_browser.py tweet_browser.py
 COPY custom_widgets.py custom_widgets.py
+COPY ui_modules.py ui_modules.py
 COPY prompts.py prompts.py
 COPY ai_summary.py ai_summary.py
 COPY anywidget/ anywidget/
