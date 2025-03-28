@@ -86,6 +86,7 @@ export function render({ model, el }) {
         model.save_changes();
     }
     model.on("change:alertTrigger", confirmChanges);
+    window.confirmChanges = confirmChanges;
 
     function doComfirmation(prompt, varName){
         let responseCode = 1;

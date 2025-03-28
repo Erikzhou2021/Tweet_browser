@@ -13,10 +13,6 @@ TWEETS_PER_PAGE = 20
 JUPYTER_FILE_PATH = "images/"
 
 class FilterModule():
-    def displayPopUp(self, change=None):
-        self.hasChanges = True
-        self.filterBox.children = [self.mainFilters, self.popUpOptions]
-
     def __init__(self):
         self.filterBy = widgets.HTML(value = "Refine Results").add_class("heading5").add_class("medium")
         dateRange = widgets.HTML(value = "Date").add_class("body2").add_class("medium")
@@ -33,12 +29,6 @@ class FilterModule():
         self.mainPageClear = widgets.Button(description='Clear All').add_class("clear-button")
         self.mainPageSearch = widgets.Button(description='Apply').add_class("generic-button").add_class("main-page-search")
         self.popUpOptions = widgets.HBox([self.mainPageClear, self.mainPageSearch]).add_class("pop-up-options")
-        self.userName.observe(self.displayPopUp, names=["value"])
-        self.geography.observe(self.displayPopUp, names=["value"])
-        self.allowRetweets.observe(self.displayPopUp, names=["value"])
-        self.weightBy.observe(self.displayPopUp, names=["value"])
-        self.fromDate.observe(self.displayPopUp, names=["value"])
-        self.toDate.observe(self.displayPopUp, names=["value"])
         self.mainFilters = widgets.VBox([self.filterBy, self.dateBox, self.retweets, self.geography, self.userName, self.weightBy]).add_class("main-filters")
         self.filterBox = widgets.VBox([self.mainFilters]).add_class("filter-box")
 
