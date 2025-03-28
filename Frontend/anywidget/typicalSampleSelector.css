@@ -1,0 +1,35 @@
+.typical-sample-selector{
+    display: flex !important;
+    flex-direction: row;
+    font-size: 24px;
+    line-height: 24px;
+    gap: 5px;
+    width: 100%;
+}
+
+.typical-sample-selector select{
+    display: block;
+    border: none;
+    text-align: center;
+    background-color: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+    text-decoration: underline;
+    width: fit-content;
+    height: fit-content;
+}
+
+.typical-sample-selector .hide{
+    display: none;
+}
+
+.typical-sample-selector option{
+    background-color: white;
+    color: black;
+    text-align: center;
+    font-size: 16px;
+}

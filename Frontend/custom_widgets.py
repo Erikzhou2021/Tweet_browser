@@ -96,6 +96,17 @@ class SampleSelector(anywidget.AnyWidget):
     label = traitlets.Unicode("").tag(sync=True)
     changeSignal = traitlets.Int(0).tag(sync=True)
 
+class TypicalSampleSelector(anywidget.AnyWidget):
+    _esm = "anywidget/typicalSampleSelector.js"
+    _css = "anywidget/typicalSampleSelector.css"
+    filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
+    value = traitlets.Int(5).tag(sync=True)
+    total = traitlets.Int(0).tag(sync=True)
+    options = traitlets.List([5, 10, 15, 20]).tag(sync=True)
+    label = traitlets.Unicode("").tag(sync=True)
+    changeSignal = traitlets.Int(0).tag(sync=True)
+    visible = traitlets.Int(1).tag(sync=True)
+
 class ToggleSwitch(anywidget.AnyWidget):
     _esm = "anywidget/toggleSwitch.js"
     _css = "anywidget/toggleSwitch.css"
