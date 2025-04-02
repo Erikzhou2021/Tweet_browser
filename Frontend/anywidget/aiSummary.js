@@ -23,7 +23,11 @@ export function render({ model, el }) {
         for(let i = 0; i < highlighted.length; i++){
             highlighted[i].classList.remove("selected");
         }
+        let sentences = model.get("value");
         let newPage = model.get("selected");
+        if(newPage >= sentences.length){
+            return;
+        }
         let toHighlight = document.getElementById("sentence-" + newPage);
         toHighlight.classList.add("selected");
     }
@@ -49,10 +53,10 @@ export function render({ model, el }) {
     renderSentences();
     model.on("change:value", renderSentences);
     model.on("change:selected", changePage);
-    let caveat = document.createElement("h3");
+    let caveat = document.createElement("div");
     caveat.innerHTML = "*Not all tweets are captured in the summary. Click to view ommited tweets"
     // el.appendChild(header);
     // el.appendChild(tip);
     el.appendChild(summary);
-    // el.appendChild(caveat);
+    el.appendChild(caveat);
 }
