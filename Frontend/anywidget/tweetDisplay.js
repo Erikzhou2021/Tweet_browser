@@ -26,7 +26,9 @@ export function render({ model, el }) {
             let text = document.createElement("div");
             text.innerHTML = "Click <b>MODIFY SEARCH</b> to change keywords or filters";
             box.appendChild(title);
-            box.appendChild(text);
+            if (model.get("noResultsVersion") == 0){
+                box.appendChild(text);
+            }
             el.appendChild(box);
             return;
         }

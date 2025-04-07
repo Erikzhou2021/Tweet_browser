@@ -55,6 +55,7 @@ class TweetDisplay(anywidget.AnyWidget):
     stances = traitlets.List([]).tag(sync=True)
     stanceCorrection = traitlets.Unicode("").tag(sync=True)
     newStanceCorrectionNum = traitlets.Int(-2).tag(sync=True)
+    noResultsVersion = traitlets.Int(0).tag(sync=True)
 
 # class DatasetDisplay(anywidget.AnyWidget):
 #     _esm = "anywidget/datasetDisplay.js"
