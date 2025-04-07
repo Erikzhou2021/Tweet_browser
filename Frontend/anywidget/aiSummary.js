@@ -6,6 +6,7 @@ export function render({ model, el }) {
     let tip = document.createElement("h3");
     tip.innerHTML = "Click each sentence to view the contributing tweets";
     let summary = document.createElement("div");
+    summary.classList.add("summary-text");
 
     function showcontributing(){
         model.set("selected", this.dataset.num);
@@ -49,14 +50,21 @@ export function render({ model, el }) {
             summary.appendChild(temp);
         }
     }
+
+    function showLastPage(){
+        let sentences = model.get("value");
+        model.set("selected", sentences.length);
+        model.save_changes();
+    }
     
     renderSentences();
     model.on("change:value", renderSentences);
     model.on("change:selected", changePage);
     let caveat = document.createElement("div");
-    caveat.innerHTML = "*Not all tweets are captured in the summary. Click to view ommited tweets"
+    caveat.innerHTML = "*Not all tweets are captured in the summary. Click to view omitted tweets";
+    caveat.classList.add("summary-clickable-text");
+    caveat.onclick = showLastPage;
     // el.appendChild(header);
     // el.appendChild(tip);
     el.appendChild(summary);
-    el.appendChild(caveat);
 }

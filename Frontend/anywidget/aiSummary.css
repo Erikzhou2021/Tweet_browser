@@ -1,13 +1,17 @@
 /*modify the overview summary display box*/
-.summary {
-    background-color: white;
+.summary{
     height: 100%;
     min-width: 80%;
     margin: 16px;
-    overflow: auto;
+    background-color: white;
     /*following code try to limit view width and center the content for an easy reading experience*/
     /*width: 80%;
     transform: translateX(25%);*/
+}
+.summary-text {
+    margin-bottom: 16px;
+    height: calc(90% - 16px);
+    overflow: auto;
 }
 
 .summary-tab{
@@ -64,4 +68,10 @@
 .selected-sentence{
     width: auto;
     text-wrap: wrap;
+}
+
+.summary-clickable-text{
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 10px;
 }

@@ -83,7 +83,7 @@ class AISummaryModule():
         self.title = widgets.HTML().add_class("display-count")
         self.pageSelect = PageSelect()
         self.summaryDisplay = TweetDisplay(height="60vh")
-        self.leftBar = widgets.VBox([widgets.HTML("AI Generated Summary").add_class("heading4").add_class("medium"), self.aiSummary, self.pageSelect]).add_class("left-bar")
+        self.leftBar = widgets.VBox([widgets.HTML("AI Generated Summary*").add_class("heading4").add_class("medium"), self.aiSummary, self.pageSelect]).add_class("left-bar")
         self.newSummaryButton = widgets.Button(description="Generate Another Summary").add_class("generic-button").add_class("summary-button")
         self.displayTitle = widgets.HTML("Contributing Posts").add_class("heading4").add_class("medium")
         self.summaryContent = widgets.HBox([self.leftBar, widgets.VBox([self.displayTitle, self.summaryDisplay]).add_class("right-bar")])
