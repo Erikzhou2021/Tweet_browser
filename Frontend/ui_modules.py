@@ -135,3 +135,8 @@ class TimeSeriesModule():
         self.timeSeries = widgets.VBox([self.timeSeriesMode, self.graphTitle, self.graphSubtitle]).add_class("time-series")
         self.stanceNote = widgets.HTML("No stance information available.\nPlease use the 'Stance Analysis' tab to generate a stance analysis.")
 
+class WordCloudModule():
+    def __init__(self):
+        self.title = widgets.HTML("")
+        self.title.add_clas("heading4").add_class("medium")
+        self.page = widgets.VBox([self.title])
