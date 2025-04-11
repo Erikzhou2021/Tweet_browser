@@ -138,5 +138,5 @@ class TimeSeriesModule():
 class WordCloudModule():
     def __init__(self):
         self.title = widgets.HTML("")
-        self.title.add_clas("heading4").add_class("medium")
-        self.page = widgets.VBox([self.title])
+        self.title.add_class("heading4").add_class("medium")
+        self.page = widgets.VBox([self.title]).add_class("word-cloud-page")

@@ -471,3 +471,18 @@ p{
     align-self: center;
     background: #00cc96;
 }
+
+.word-cloud{
+    height: 90%;
+    width: auto;
+    object-fit: contain;
+}
+
+.word-cloud-page{
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    gap: 8px;
+    height: 100%;
+}
