@@ -475,6 +475,7 @@ p{
 .word-cloud{
     height: 90%;
     width: auto;
+    max-width: 60%;
     object-fit: contain;
 }
 
@@ -484,5 +485,16 @@ p{
     margin-top: 16px;
     margin-bottom: 16px;
     gap: 8px;
+    height: 100%;
+}
+
+.word-cloud-tools{
+    margin-top: 16px;
+    gap: 16px;
+    width: 30%;
+}
+
+.word-cloud-content{
+    gap: 16px;
     height: 100%;
 }

@@ -139,4 +139,8 @@ class WordCloudModule():
     def __init__(self):
         self.title = widgets.HTML("")
         self.title.add_class("heading4").add_class("medium")
-        self.page = widgets.VBox([self.title]).add_class("word-cloud-page")
+        self.searchBar = SearchBar(header = "<b>Exclude words</b>", placeholder = "")
+        self.regenerate = widgets.Button(description="Regenerate word cloud").add_class("generic-button")
+        self.tools = widgets.VBox([self.searchBar, self.regenerate]).add_class("word-cloud-tools")
+        self.content = widgets.HBox([self.tools]).add_class("word-cloud-content")
+        self.page = widgets.VBox([self.title, self.content]).add_class("word-cloud-page")
