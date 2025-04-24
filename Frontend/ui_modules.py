@@ -8,9 +8,11 @@ from IPython.display import display, Javascript
 import voila
 from custom_widgets import *
 
-TWEETS_PER_PAGE = 20
-# JUPYTER_FILE_PATH = "../tree/images/"
-JUPYTER_FILE_PATH = "images/"
+def createTooltip(description):
+    source = JUPYTER_FILE_PATH + "info.svg"
+    return f"""&nbsp; <img src="{source}"
+    style="cursor:pointer;position:absolute;top:0px;"
+    title="{description}">"""
 
 class FilterModule():
     def __init__(self):
@@ -22,7 +24,8 @@ class FilterModule():
         self.toDate.add_class("date-constraint") # This was done for convenience and should be changed later
         self.weightBy = WeightBy()
         self.dateBox = widgets.VBox([dateRange, widgets.HBox([self.fromDate, self.toDate])]).add_class("date-bar")
-        self.allowRetweets = ToggleSwitch(label = "Include reposts")
+        repostsToolTip = createTooltip("When disabled, only original posts will appear in search results")
+        self.allowRetweets = ToggleSwitch(label = "Include reposts" + repostsToolTip)
         self.retweets = widgets.VBox([widgets.HTML(value = "Retweets").add_class("body2").add_class("medium"), self.allowRetweets])
         self.geography = SearchBar(header = "Geography", placeholder = "Search")
         self.userName = SearchBar(header = "Username", placeholder = "Search")

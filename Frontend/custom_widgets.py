@@ -9,8 +9,8 @@ import voila
 
 TWEETS_PER_PAGE = 20
 DEBUG_MODE = True
-# JUPYTER_FILE_PATH = "../tree/images/"
-JUPYTER_FILE_PATH = "images/"
+JUPYTER_FILE_PATH = "../tree/images/"
+# JUPYTER_FILE_PATH = "images/"
 
 class DummyElement(anywidget.AnyWidget):
     _esm = "anywidget/dummyscript.js"
@@ -76,6 +76,7 @@ class WeightBy(anywidget.AnyWidget):
     _esm = "anywidget/weightBy.js"
     _css = "anywidget/weightBy.css"
     value = traitlets.Unicode("None").tag(sync=True)
+    filePath = traitlets.Unicode(JUPYTER_FILE_PATH).tag(sync=True)
 
 class SortBar(anywidget.AnyWidget):
     _esm = "anywidget/sortBar.js"

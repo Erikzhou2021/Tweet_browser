@@ -4,7 +4,10 @@ export function render({ model, el }) {
     let text1 = document.createElement("div");
     text1.classList.add("body2");
     text1.classList.add("medium");
-    text1.innerHTML = "Weighted By";
+    let tooltipText = "Select what attribute to weigh by for random sampling.\nIf 'likes' is selected, a post with 10 likes will be around 10 times as likely to be sampled as a post with 1 like.";
+    let tooltip = '&nbsp; <img src="' + model.get("filePath") + 'info.svg"';
+    tooltip += '" style="cursor:pointer;position:absolute;top:0px;" title="' + tooltipText + '">';
+    text1.innerHTML = "Weighted By" + tooltip;
     let weightBy = document.createElement("select");
 
     let option1 = document.createElement("option");
