@@ -1,0 +1,17 @@
+torch
+regex
+anywidget
+plotly
+nltk
+peft
+sentence_transformers
+transformers
+igraph
+pandas
+matplotlib
+openai
+tqdm
+wordcloud
+pyzmq<25
+jupyter_client<8
+voila<0.5

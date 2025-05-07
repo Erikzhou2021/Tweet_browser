@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore")
 from ast import keyword
 from cmath import exp
 import numpy as np
@@ -7,34 +9,19 @@ import pandas as pd
 import random
 import re
 from enum import Enum
-import string
-import scipy
-import sklearn
-import nltk
 import plotly.express as px
-from nltk.stem import PorterStemmer
-#nltk.download('stopwords')
-#from nltk.corpus import stopwords
 from scipy.sparse import csc_matrix
-import igraph as ig
-import textwrap # hover text on dimension reduction/clustering plot
-# from fastlexrank import FastLexRankSummarizer
 import ai_summary
 import torch
 from openai import OpenAI
 import asyncio
 from prompts import *
+from transformers.utils.logging import disable_progress_bar
+disable_progress_bar()
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer
-
-# Ignore warnings
-import warnings
 import pickle
 import datetime
-#from pyparsing import null_debug_action
-
-#from formatter import NullFormatter
-warnings.filterwarnings("ignore")
 
 embedding_model = SentenceTransformer(
     "BAAI/bge-base-en-v1.5", device="cuda" if torch.cuda.is_available() else "cpu"
@@ -58,29 +45,29 @@ def parse_data(filename, header='infer'):
         return
     return df
 
-def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, removeStopwords=True, 
-    removeNumbers=False, removePunctuation=True):
-    """
-    Cleans tweets by removing words, stemming, etc.
-    """
-    ps = PorterStemmer()
-    tweet = tweet.lower()
-    tweet = re.sub(r"\\n", " ", tweet)
-    tweet = re.sub(r"&amp", " ", tweet)
-    if removeURL==True:
-        tweet = re.sub(r"http\S+", " ", tweet)
-    if removeNumbers==True:
-        tweet=  ''.join(i for i in tweet if not i.isdigit())
-    if removePunctuation==True:
-        for punct in string.punctuation:
-            tweet = tweet.replace(punct, ' ')
-    #if removeStopwords==True:
-        #tweet = ' '.join([word for word in tweet.split() if word not in stopwords.words('english')])
-    if len(removeWords)>0:
-        tweet = ' '.join([word for word in tweet.split() if word not in removeWords])
-    if stem==True:
-        tweet = ' '.join([ps.stem(word) for word in tweet.split()])
-    return tweet
+# def preProcessingFcn(tweet, removeWords=list(), stem=True, removeURL=True, removeStopwords=True, 
+#     removeNumbers=False, removePunctuation=True):
+#     """
+#     Cleans tweets by removing words, stemming, etc.
+#     """
+#     ps = PorterStemmer()
+#     tweet = tweet.lower()
+#     tweet = re.sub(r"\\n", " ", tweet)
+#     tweet = re.sub(r"&amp", " ", tweet)
+#     if removeURL==True:
+#         tweet = re.sub(r"http\S+", " ", tweet)
+#     if removeNumbers==True:
+#         tweet=  ''.join(i for i in tweet if not i.isdigit())
+#     if removePunctuation==True:
+#         for punct in string.punctuation:
+#             tweet = tweet.replace(punct, ' ')
+#     #if removeStopwords==True:
+#         #tweet = ' '.join([word for word in tweet.split() if word not in stopwords.words('english')])
+#     if len(removeWords)>0:
+#         tweet = ' '.join([word for word in tweet.split() if word not in removeWords])
+#     if stem==True:
+#         tweet = ' '.join([ps.stem(word) for word in tweet.split()])
+#     return tweet
 
 
 class Operation:

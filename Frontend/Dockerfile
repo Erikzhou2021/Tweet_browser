@@ -12,13 +12,16 @@ WORKDIR /home/jovyan
 # USER 1000
 
 #RUN /usr/bin/python3 -m pip3 install --upgrade pip
-RUN pip install torch
-RUN pip install regex anywidget plotly nltk peft sentence_transformers transformers igraph pandas matplotlib openai tqdm
-# RUN pip install fastlexrank
+# RUN pip install torch
+# RUN pip install regex anywidget plotly nltk peft sentence_transformers transformers igraph pandas matplotlib openai tqdm
+# RUN pip install wordcloud
+
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
 
 # Need to roll back versions (Not tested on docker yet)
-RUN pip install --upgrade "pyzmq<25" "jupyter_client<8"
-RUN pip install --upgrade "voila<0.5"
+# RUN pip install --upgrade "pyzmq<25" "jupyter_client<8"
+# RUN pip install --upgrade "voila<0.5"
 
 WORKDIR /home/jovyan/.jupyter
 COPY docker/jupyter_notebook_config.py jupyter_notebook_config.py 

@@ -9,8 +9,8 @@ import voila
 
 TWEETS_PER_PAGE = 20
 DEBUG_MODE = True
-JUPYTER_FILE_PATH = "../tree/images/"
-# JUPYTER_FILE_PATH = "images/"
+# JUPYTER_FILE_PATH = "../tree/images/"
+JUPYTER_FILE_PATH = "images/"
 
 class DummyElement(anywidget.AnyWidget):
     _esm = "anywidget/dummyscript.js"
